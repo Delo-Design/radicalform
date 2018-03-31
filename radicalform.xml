@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<extension type="plugin" version="3.5" method="upgrade" group="system">
+    <name>PLG_RADICALFORM</name>
+    <author>Progreccor</author>
+    <authorEmail>info@hika.su</authorEmail>
+    <authorUrl>https://hika.su</authorUrl>
+    <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later;</license>
+    <version>1.2.0</version>
+    <description>PLG_RADICALFORM_DESC</description>
+    <scriptfile>script.php</scriptfile>
+    <files>
+        <filename plugin="radicalform">radicalform.php</filename>
+        <filename>buttonradicalform.php</filename>
+        <filename>historyradicalform.php</filename>
+        <filename>index.html</filename>
+    </files>
+	<languages folder="language">
+        <language tag="en-GB">en-GB/en-GB.plg_system_radicalform.ini</language>
+        <language tag="ru-RU">ru-RU/ru-RU.plg_system_radicalform.ini</language>
+        <language tag="en-GB">en-GB/en-GB.plg_system_radicalform.sys.ini</language>
+        <language tag="ru-RU">ru-RU/ru-RU.plg_system_radicalform.sys.ini</language>
+    </languages>
+    <media folder="media" destination="plg_system_radicalform">
+	<folder>js</folder>
+	<filename>index.html</filename>
+    </media>
+    <updateservers>
+        <server type="extension" priority="1" name="Radical Form">
+            https://hika.su/update/free/radicalform.xml
+        </server>
+    </updateservers>
+
+
+    <config>
+        <fields name="params" addfieldpath="/plugins/system/radicalform">
+            <fieldset name="basic">
+
+				<field 
+						name="dangerclass"
+						type="text"
+						label="PLG_RADICALFORM_DANGER_CLASS"
+                        description="PLG_RADICALFORM_DANGER_CLASS_DESCRIPTION"
+						required="false"
+                        default="uk-form-danger"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+				</field>
+                <field
+                        name="errorfile"
+                        type="text"
+                        label="PLG_RADICALFORM_ERROR_FILE"
+                        description="PLG_RADICALFORM_ERROR_FILE_DESCRIPTION"
+                        required="false"
+                        default="uk-text-danger"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+                </field>
+                <field type="spacer" name="myspacer" hr="true" />
+                <field
+                        name="rfCall_1"
+                        type="textarea"
+                        label="PLG_RADICALFORM_RF_CALL_1"
+                        description="PLG_RADICALFORM_RF_CALL_1_DESCRIPTION"
+                        filter="raw"
+                        class="my-class"/>
+                <field
+                        name="rfCall_2"
+                        type="textarea"
+                        label="PLG_RADICALFORM_RF_CALL_2"
+                        description="PLG_RADICALFORM_RF_CALL_2_DESCRIPTION"
+                        class="my-class"
+                        filter="raw"
+                        default="alert(rfMessage);"
+                />
+                <field
+                        name="rfCall_3"
+                        type="textarea"
+                        label="PLG_RADICALFORM_RF_CALL_3"
+                        description="PLG_RADICALFORM_RF_CALL_3_DESCRIPTION"
+                        filter="raw"
+                        class="my-class"/>
+                <field type="spacer" name="myspacer1" hr="true" />
+                <field
+                        name="emailon"
+                        type="radio"
+                        label="PLG_RADICALFORM_EMAILON_LABEL"
+                        description="PLG_RADICALFORM_EMAILON_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="1"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field
+                        name="email"
+                        type="email"
+                        label="PLG_RADICALFORM_EMAIL"
+                        required="false"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        showon="emailon:1"
+                        disabled="false" />
+                <field
+                        name="emailcc"
+                        type="email"
+                        label="PLG_RADICALFORM_EMAIL_CC"
+                        required="false"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        showon="emailon:1"
+                        disabled="false" />
+                <field
+                        name="rfSubject"
+                        type="text"
+                        label="PLG_RADICALFORM_SUBJECT"
+                        description="PLG_RADICALFORM_WAIT_SUBJECT_DESCRIPTION"
+                        required="false"
+                        default="Обратная связь"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+                </field>
+                <field
+                        name="rfWaitMessage"
+                        type="text"
+                        label="PLG_RADICALFORM_WAIT_MESSAGE"
+                        description="PLG_RADICALFORM_WAIT_MESSAGE_DESCRIPTION"
+                        required="false"
+                        default="Ждите..."
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+                <field
+                        name="waitingupload"
+                        type="text"
+                        label="PLG_RADICALFORM_WAITING_FOR_UPLOAD"
+                        description="PLG_RADICALFORM_WAITING_FOR_UPLOAD_DESCRIPTION"
+                        required="false"
+                        default="Ждите..."
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+                <field
+                        name="maxfile"
+                        type="text"
+                        label="PLG_RADICALFORM_MAXFILE"
+                        description="PLG_RADICALFORM_MAXFILE_DESCRIPTION"
+                        required="false"
+                        default="20000000"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+                </field>
+                <field
+                        name="aftersend"
+                        type="text"
+                        label="PLG_RADICALFORM_AFTERSEND"
+                        description="PLG_RADICALFORM_AFTERSEND_DESCRIPTION"
+                        required="false"
+                        default="Сообщение было отправлено"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+
+
+
+            </fieldset>
+            <fieldset name="advanced" label="PLG_RADICALFORM_ADVANCEDPARAMS">
+                <field
+                        name="telegram"
+                        type="radio"
+                        label="PLG_RADICALFORM_TELEGRAM_LABEL"
+                        description="PLG_RADICALFORM_TELEGRAM_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+
+                <field
+                        name="telegramtoken"
+                        type="textarea"
+                        label="PLG_RADICALFORM_TELEGRAM_TOKEN"
+                        description="PLG_RADICALFORM_TELEGRAM_TOKEN_DESCRIPTION"
+                        required="false"
+                        default=""
+                        size="20"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        showon="telegram:1"
+                        filter="raw">
+                </field>
+                <field name="chatids"
+                       type="repeatable"
+                       icon="list"
+                       description="PLG_RADICALFORM_TELEGRAMCHATIDCHOOSE_DESC"
+                       label="PLG_RADICALFORM_TELEGRAMCHATIDCHOOSE_LABEL"
+                       showon="telegram:1"
+                       default=''>
+                    <fieldset hidden="true" name="chatids_modal" repeat="true">
+                        <field name="chat_id"
+                               label="chat_id"
+                               size="9"
+                               type="text" />
+                        <field name="username"
+                               label="username"
+                               size="30"
+                               type="text" />
+
+                    </fieldset>
+                </field>
+                <field
+                        name="checktelegram"
+                        type="buttonradicalform"
+                        id="radicalformcheck"
+                        label=" "
+                        showon="telegram:1"
+                        value="PLG_RADICALFORM_TELEGRAMCHECK_LABEL"
+                         />
+
+                <field name="offset" type="hidden" default="" />
+            </fieldset>
+            <fieldset name="list" label="PLG_RADICALFORM_HISTORY">
+                <field
+                        name="maxlogfile"
+                        type="text"
+                        label="PLG_RADICALFORM_MAXLOGFILE"
+                        description="PLG_RADICALFORM_MAXLOGFILE_DESC"
+                        required="false"
+                        size="10"
+                        class=""
+                        default="500000"
+                        readonly="false"
+                        disabled="false" />
+
+                <field
+                        name="historytable"
+                        type="historyradicalform"
+                        label="PLG_RADICALFORM_HISTORY"
+                />
+            </fieldset>
+        </fields>
+    </config>
+</extension>
