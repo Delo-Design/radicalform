@@ -6,7 +6,7 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.2.0</version>
+    <version>1.2.1</version>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -257,6 +257,18 @@
                         readonly="false"
                         disabled="false" />
 
+                <field
+                        name="hiddeninfo"
+                        type="radio"
+                        label="PLG_RADICALFORM_HIDDENINFO"
+                        description="PLG_RADICALFORM_HIDDENINFO_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field type="spacer" name="myspacer3" hr="true" />
                 <field
                         name="historytable"
                         type="historyradicalform"

@@ -13,7 +13,8 @@ class JFormFieldHistoryradicalform extends JFormField {
 	private function getCSV($file, $delimiter = ';')
 	{
 		$a = [];
-		if (($handle = fopen($file, 'r')) !== false)
+
+		if (file_exists($file) && ($handle = fopen($file, 'r')) !== false)
 		{
 			while (($data = fgetcsv($handle, 10000, $delimiter)) !== false)
 			{
@@ -26,14 +27,20 @@ class JFormFieldHistoryradicalform extends JFormField {
 
 	function getInput() {
 
+
+		$params=$this->form->getData()->get("params");
+
 		$log_path = str_replace('\\', '/', JFactory::getConfig()->get('log_path'));
 
 		$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
-		for ($i = 0; $i < 6; $i++)
+		if(count($data)>0)
 		{
-			if (count($data[$i]) < 4 || $data[$i][0][0] == '#')
+			for ($i = 0; $i < 6; $i++)
 			{
-				unset($data[$i]);
+				if (count($data[$i]) < 4 || $data[$i][0][0] == '#')
+				{
+					unset($data[$i]);
+				}
 			}
 		}
 		$data = array_reverse($data);
@@ -44,6 +51,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 		{
 			$html= "<p>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<span style='color: green; font-weight: bold'>".filesize($log_path . '/plg_system_radicalform.php')."</span> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE')."</p>";
 			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button></p>";
+			$html.="<br><br>";
 			$html.= '<table class="table table-striped table-bordered adminlist" style="max-width: 900px"><thead><tr>';
 			$html.= '<th width="5%">' . JText::_('PLG_RADICALFORM_HISTORY_TIME') . '</th>';
 			$html.= '<th width="5%">' . JText::_('PLG_RADICALFORM_HISTORY_DATE') . '</th>';
@@ -56,6 +64,12 @@ class JFormFieldHistoryradicalform extends JFormField {
 				$json_result = json_last_error() === JSON_ERROR_NONE;
 
 				$itog="";
+				if(!$params->hiddeninfo)
+				{
+					unset($json["reffer"]);
+					unset($json["resolution"]);
+					unset($json["url"]);
+				}
 				foreach ($json as $key=>$record) {
 					$itog.=JText::_($key). ": <b>" . $record ."</b><br />";
 				}
@@ -63,7 +77,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 					'<td class="nowrap">' . $item[0] . '</td>' .
 					'<td>' . $item[1] . '</td>' .
 					'<td>' . $item[2] . '</td>' .
-					'<td>' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
+					'<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
 					'</tr>';
 			}
 			$html.= '</tbody></table>';
