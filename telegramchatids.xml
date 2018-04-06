@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field name="chat_id" type="text" label="Chat_id" />
+    <field name="username" type="text" label="Username" />
+    <field name="target" type="text" label="Target ID" />
+
+</form>

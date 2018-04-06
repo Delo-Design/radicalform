@@ -9,6 +9,7 @@ defined('_JEXEC') or die;
  * @since         3.5+
  * @author        Progreccor
  */
+use Joomla\String\StringHelper;
 class plgSystemRadicalform extends JPlugin
 {
 	private $logPath;
@@ -114,9 +115,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				// тут проверка телеграма на предмет обновлений диалогов (ловим chat_id)
 
-				$qv="https://api.telegram.org/bot".$this->params->get('telegramtoken')."/getUpdates?".http_build_query([
-						'offset' => $this->params->get('offset')
-					]);
+				$qv="https://api.telegram.org/bot".$this->params->get('telegramtoken')."/getUpdates";
 				$ch = curl_init();
 
 
@@ -129,21 +128,15 @@ class plgSystemRadicalform extends JPlugin
 				curl_close($ch);
 				$output=$output["result"];
 
-				$chatIDs = json_decode( $this->params->get('chatids'),true);
-				if(!isset($chatIDs['çhat_id']) && !isset($chatIDs['username'])) {
-					$chatIDs = [
-						'chat_id' => [],
-						'username' => []
-					];
-				}
+				$chatIDs = [];
+
 
 				// проверяем все сообщения присланные боту и вытаскиваем оттуда chat_id
 				foreach ($output as $chat)
 				{
 					if(!in_array($chat["message"]["chat"]["id"],$chatIDs["chat_id"]))
 					{
-						$this->params->set('offset',(int)$chat['update_id']+1);
-						array_push($chatIDs["chat_id"],$chat["message"]["chat"]["id"]);
+						$chatID=$chat["message"]["chat"]["id"];
 						$name="";
 						if(isset($chat["message"]["chat"]["username"])) {
 							$name.=$chat["message"]["chat"]["username"];
@@ -161,24 +154,12 @@ class plgSystemRadicalform extends JPlugin
 						if(isset($chat["message"]["chat"]["first_name"]) || isset($chat["message"]["chat"]["last_name"])) {
 							$name.=")";
 						}
-
-						array_push($chatIDs["username"],$name);
+						array_push($chatIDs,["name"=>$name,"chatID"=>$chatID]);
 					}
 				}
 
-				$temp=json_encode($chatIDs);
-				if(is_null($temp)) {
-					$temp="";
-				}
-				$this->params->set('chatids',$temp);
 
-				$table = new JTableExtension(JFactory::getDbo());
-				$table->load(array('element' => 'radicalform'));
-
-				$table->set('params', $this->params->toString('JSON'));
-
-				$table->store();
-				return $output;
+				return $chatIDs;
 			} else
 			{
 				return false;
@@ -318,24 +299,23 @@ class plgSystemRadicalform extends JPlugin
 		);
 
 		$mailer->setSender($sender);
-		$mailer->addRecipient($this->params->get('email'));
-		if (!empty($this->params->get('emailcc')))
-		{
-			$mailer->addCc($this->params->get('emailcc'));
-		}
+
 
 		if (isset($input["phone"]) && (!empty($input["phone"])))
 		{
-			$mailer->setSubject($this->params->get('rfSubject') . ': ' . $input["phone"]);
+			$subject=$this->params->get('rfSubject') . ': ' . $input["phone"];
+			$mailer->setSubject($subject);
 		}
 		else
 		{
-			$mailer->setSubject($this->params->get('rfSubject'));
+			$subject=$this->params->get('rfSubject');
+			$mailer->setSubject($subject);
 		}
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
-			$mailer->setSubject($input["rfSubject"]);
+			$subject=$input["rfSubject"];
+			$mailer->setSubject($subject);
 			unset($input["rfSubject"]);
 		}
 
@@ -364,6 +344,12 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+		if (isset($input["rfTarget"]) && (!empty($input["rfTarget"])))
+		{
+			$target=$input["rfTarget"];
+			unset($input["rfTarget"]);
+		}
+
 		unset($input["uniq"]);
 		unset($input["needToSendFiles"]);
 		unset($input[JSession::getFormToken()]);
@@ -383,7 +369,8 @@ class plgSystemRadicalform extends JPlugin
 
 
 		$mainbody="";
-		$telegram="";
+		$subject=StringHelper::strtoupper($subject);
+		$telegram="<b>".$subject."</b><br /><br />";
 		foreach ($input as $key => $record)
 		{
 			$mainbody .= "<p>".JText::_($key) . ": <strong>" . $record . "</strong></p>";
@@ -615,24 +602,55 @@ EOT;
 
 		if($this->params->get('telegram'))
 		{
-			$chatIDs = json_decode( $this->params->get('chatids'),true);
-			foreach ($chatIDs['chat_id'] as $chatID) {
-				$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
-					.http_build_query([
-						'disable_web_page_preview' => true,
-						'chat_id' => $chatID,
-						'parse_mode' => 'HTML',
-						'text' => str_replace("<br />","\r\n",$telegram)
-					]);
 
-				$ch = curl_init();
-				curl_setopt($ch, CURLOPT_URL, "$url");
-				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-				curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-				curl_setopt($ch, CURLOPT_HEADER, 0);
-				curl_exec($ch);
-				curl_close($ch);
+			$chatIDs = (array) $this->params->get('chatids');
+			foreach ($chatIDs as $chatID)
+			{
+
+				if(isset($target)&& (!empty($target)))
+				{
+					if($chatID->target == $target)
+					{
+						$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
+							.http_build_query([
+								'disable_web_page_preview' => true,
+								'chat_id' => $chatID->chat_id,
+								'parse_mode' => 'HTML',
+								'text' => str_replace("<br />","\r\n",$telegram)
+							]);
+
+						$ch = curl_init();
+						curl_setopt($ch, CURLOPT_URL, "$url");
+						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+						curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+						curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+						curl_setopt($ch, CURLOPT_HEADER, 0);
+						curl_exec($ch);
+						curl_close($ch);
+
+					}
+				}
+				else
+				{
+					$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
+						.http_build_query([
+							'disable_web_page_preview' => true,
+							'chat_id' => $chatID->chat_id,
+							'parse_mode' => 'HTML',
+							'text' => str_replace("<br />","\r\n",$telegram)
+						]);
+
+					$ch = curl_init();
+					curl_setopt($ch, CURLOPT_URL, "$url");
+					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+					curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+					curl_setopt($ch, CURLOPT_HEADER, 0);
+					curl_exec($ch);
+					curl_close($ch);
+				}
+
+
 			}
 
 		}
@@ -641,19 +659,48 @@ EOT;
 
 		if($this->params->get('emailon'))
 		{
+			// if we need to send email
 			$mailer->isHtml(true);
 			$mailer->Encoding = 'base64';
 			$mailer->setBody($body);
-			$send = $mailer->Send();
-			if ($send !== true)
+
+			$needToSendEmail=false;
+			if(isset($target)&& (!empty($target)))
 			{
-				return $send->get("message");
+				// if we need to send to alternative emails
+				$emailalt = (array)$this->params->get('emailalt');
+				foreach($emailalt as $item) {
+					if($target==$item->target) {
+						$mailer->addRecipient($item->email);
+						$needToSendEmail=true;
+					}
+				}
 			}
 			else
 			{
-				JFolder::delete($uploaddir);
+			//traditional send
+				$mailer->addRecipient($this->params->get('email'));
+				if (!empty($this->params->get('emailcc')))
+				{
+					$mailer->addCc($this->params->get('emailcc'));
+				}
+				$needToSendEmail=true;
+			}
 
-				return 'ok';
+			if($needToSendEmail)
+			{
+				$send = $mailer->Send();
+				if ($send !== true)
+				{
+					return $send->get("message");
+				}
+				else
+				{
+					JFolder::delete($uploaddir);
+
+					return 'ok';
+				}
+
 			}
 
 		}
