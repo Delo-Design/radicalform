@@ -36,6 +36,7 @@ class plgSystemRadicalform extends JPlugin
 				. "'}, AfterSend:'" . $this->params->get('aftersend')
 				. "'};");
 
+			$doc->addScriptDeclaration("function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
 			$doc->addScriptDeclaration("function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
 			$doc->addScriptDeclaration("function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
 			$doc->addScriptDeclaration("function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");

@@ -6,7 +6,7 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.3.0</version>
+    <version>1.3.1</version>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -66,12 +66,21 @@
                 </field>
                 <field type="spacer" name="myspacer" hr="true" />
                 <field
+                        name="rfCall_0"
+                        type="textarea"
+                        label="PLG_RADICALFORM_RF_CALL_0"
+                        description="PLG_RADICALFORM_RF_CALL_0_DESCRIPTION"
+                        filter="raw"
+                        class="my-class"
+                />
+                <field
                         name="rfCall_1"
                         type="textarea"
                         label="PLG_RADICALFORM_RF_CALL_1"
                         description="PLG_RADICALFORM_RF_CALL_1_DESCRIPTION"
                         filter="raw"
-                        class="my-class"/>
+                        class="my-class"
+                />
                 <field
                         name="rfCall_2"
                         type="textarea"
@@ -87,7 +96,8 @@
                         label="PLG_RADICALFORM_RF_CALL_3"
                         description="PLG_RADICALFORM_RF_CALL_3_DESCRIPTION"
                         filter="raw"
-                        class="my-class"/>
+                        class="my-class"
+                />
                 <field type="spacer" name="myspacer1" hr="true" />
                 <field
                         name="emailon"

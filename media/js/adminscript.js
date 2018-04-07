@@ -1,6 +1,9 @@
 jQuery(document).ready(function () {
     jQuery(function ($) {
 
+        $("#general .adminlist.table").css("max-width",760);
+        $("#general .adminlist.table th:nth-child(2)").css("width","16%");
+
         $("#attrib-advanced .adminlist.table").css("max-width",960);
         $("#attrib-advanced .adminlist.table th:first-child").css("width","16%");
         $("#attrib-advanced .adminlist.table th:nth-child(3)").css("width","16%");

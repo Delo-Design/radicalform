@@ -86,13 +86,10 @@ jQuery(document).ready(function () {
         jQuery(self).find("[name]").removeClass(RadicalForm.DangerClass);
         // просмотрим все переданные поля в форме
         for (var i = 0; i < inputArray.length; i++) {
-            // jQuery(self).find("[name='" + inputArray[i].name + "']").removeClass(RadicalForm.DangerClass);
 
             // если поле пустое то помечаем его красным
             if (jQuery(self).find("[name='" + inputArray[i].name + "']").hasClass('required') && jQuery.trim(inputArray[i].value) == "") {
                 RadicalForm.FormFields[i]=jQuery(self).find("[name='" + inputArray[i].name + "']").get(0);
-                // jQuery(self).find("[name='" + inputArray[i].name + "']").addClass(RadicalForm.DangerClass);
-
                 needReturn = true; // признак того что надо прервать отсылку и выйти. была обнаружена ошибка в валидации полей
             }
         }
@@ -109,6 +106,13 @@ jQuery(document).ready(function () {
             jQuery(this).prop('disabled', true);
 
             jQuery(this).html(RadicalForm.WaitMessage);
+
+            if(jQuery(self2).data("rfCall")!==undefined) {
+                rfCall = String(jQuery(self2).data("rfCall"));
+                if(rfCall[0]==="0") {
+                    rfCall_0(self2);
+                }
+            }
             jQuery.ajax({
                 type: "POST",
                 url: "/index.php?option=com_ajax&plugin=radicalform&format=json&group=system",
@@ -124,7 +128,7 @@ jQuery(document).ready(function () {
 	                    jQuery(self2).closest("form").find(".rf-filenames-list").empty();
 	                    jQuery(self2).closest("form").trigger("reset");
 	                } else {
-	                    message='Ошибка во время отправки!<br />' + data.responseJSON.data[0];
+	                    message='Error during the sending of form!<br />' + data.responseJSON.data[0];
 	                }
 	                if(jQuery(self2).data("rfCall")===undefined) {
 	                    rfCall_2(message);
@@ -138,7 +142,7 @@ jQuery(document).ready(function () {
 	                            case "2":
 	                                rfCall_2(message,self2);
 	                                break;
-	                            default:
+	                            case "3":
 	                                rfCall_3(message,self2);
 	                        }
 
