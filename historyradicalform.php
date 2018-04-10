@@ -76,9 +76,18 @@ class JFormFieldHistoryradicalform extends JFormField {
 				$html.= '<tr class="row' . ($i % 2) . '">' .
 					'<td class="nowrap">' . $item[0] . '</td>' .
 					'<td>' . $item[1] . '</td>' .
-					'<td><a href="http://whois.domaintools.com/'. $item[2] .'" target="_blank">' . $item[2] . '</a></td>' .
-					'<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
+					'<td><a href="http://whois.domaintools.com/'. $item[2] .'" target="_blank">' . $item[2] . '</a></td>';
+				if(isset($item[4]) && $item[4]=="WARNING")
+				{
+					$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
 					'</tr>';
+				}
+				else
+				{
+					$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
+						'</tr>';
+				}
+
 			}
 			$html.= '</tbody></table>';
 		}

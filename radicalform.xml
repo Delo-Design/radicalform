@@ -6,7 +6,7 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.3.1</version>
+    <version>1.3.2</version>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -46,7 +46,7 @@
 						required="false"
                         default="uk-form-danger"
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="">
@@ -59,7 +59,7 @@
                         required="false"
                         default="uk-text-danger"
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="">
@@ -71,7 +71,7 @@
                         label="PLG_RADICALFORM_RF_CALL_0"
                         description="PLG_RADICALFORM_RF_CALL_0_DESCRIPTION"
                         filter="raw"
-                        class="my-class"
+                        class="input-xxlarge"
                 />
                 <field
                         name="rfCall_1"
@@ -79,14 +79,14 @@
                         label="PLG_RADICALFORM_RF_CALL_1"
                         description="PLG_RADICALFORM_RF_CALL_1_DESCRIPTION"
                         filter="raw"
-                        class="my-class"
+                        class="input-xxlarge"
                 />
                 <field
                         name="rfCall_2"
                         type="textarea"
                         label="PLG_RADICALFORM_RF_CALL_2"
                         description="PLG_RADICALFORM_RF_CALL_2_DESCRIPTION"
-                        class="my-class"
+                        class="input-xxlarge"
                         filter="raw"
                         default="alert(rfMessage);"
                 />
@@ -96,7 +96,7 @@
                         label="PLG_RADICALFORM_RF_CALL_3"
                         description="PLG_RADICALFORM_RF_CALL_3_DESCRIPTION"
                         filter="raw"
-                        class="my-class"
+                        class="input-xxlarge"
                 />
                 <field type="spacer" name="myspacer1" hr="true" />
                 <field
@@ -116,7 +116,7 @@
                         label="PLG_RADICALFORM_EMAIL"
                         required="false"
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         showon="emailon:1"
                         disabled="false" />
@@ -126,7 +126,7 @@
                         label="PLG_RADICALFORM_EMAIL_CC"
                         required="false"
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         showon="emailon:1"
                         disabled="false" />
@@ -150,7 +150,7 @@
                         required="false"
                         default="Обратная связь"
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="">
@@ -163,7 +163,7 @@
                         required="false"
                         default="Ждите..."
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="raw">
@@ -176,7 +176,7 @@
                         required="false"
                         default="Ждите..."
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="raw">
@@ -202,7 +202,7 @@
                         required="false"
                         default="Сообщение было отправлено"
                         size="10"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="raw">
@@ -229,7 +229,7 @@
                         required="false"
                         default=""
                         size="20"
-                        class=""
+                        class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         showon="telegram:1"

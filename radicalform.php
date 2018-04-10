@@ -23,7 +23,7 @@ class plgSystemRadicalform extends JPlugin
 	{
 		parent::__construct($subject, $config);
 		$doc            = JFactory::getDocument();
-		if (!$this->app->isAdmin())
+		if (!$this->app->isClient('administrator'))
 		{
 			$doc->addScriptDeclaration("var RadicalForm={DangerClass:'" . $this->params->get('dangerclass')
 				. "', ErrorFile:'" . $this->params->get('errorfile')
@@ -53,7 +53,7 @@ class plgSystemRadicalform extends JPlugin
 				// Sets file name
 				'text_file' => 'plg_system_radicalform.php',
 				// Sets the format of each line
-				'text_entry_format' => "{TIME}\t{DATE}\t{CLIENTIP}\t{MESSAGE}"
+				'text_entry_format' => "{TIME}\t{DATE}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"
 			),
 			// Sets all but DEBUG log level messages to be sent to the file
 			JLog::ALL & ~JLog::DEBUG,
@@ -65,7 +65,7 @@ class plgSystemRadicalform extends JPlugin
 
 	function onBeforeRender()
 	{
-		if (!$this->app->isAdmin())
+		if ($this->app->isClient('site'))
 		{
 			JHtml::_('script', 'plg_system_radicalform/script.js', array('version' => 'auto', 'relative' => true));
 		}
@@ -91,7 +91,7 @@ class plgSystemRadicalform extends JPlugin
 	function onAfterRender()
 	{
 
-		if ($this->app->isAdmin())
+		if ($this->app->isClient('administrator'))
 		{
 			return false;
 		}
@@ -104,7 +104,7 @@ class plgSystemRadicalform extends JPlugin
 
 	function onAjaxRadicalform()
 	{
-		$r     = JFactory::getApplication()->input;
+		$r     = $this->app->input;
 		$input = $r->post->getArray();
 		$get   = $r->get->getArray();
 		$files = $r->files->getArray();
@@ -112,7 +112,7 @@ class plgSystemRadicalform extends JPlugin
 
 		if (isset($get['admin']) && $get['admin'] == 1 )
 		{
-			if ($this->app->isAdmin())
+			if ($this->app->isClient('administrator'))
 			{
 				// тут проверка телеграма на предмет обновлений диалогов (ловим chat_id)
 
@@ -358,10 +358,14 @@ class plgSystemRadicalform extends JPlugin
 		$resolution=$input["resolution"];
 		$ref=$input["reffer"];
 
-		if($this->params->get('maxlogfile')<filesize($this->logPath))
+		if(file_exists($this->logPath))
 		{
-			unlink($this->logPath);
+			if($this->params->get('maxlogfile')<filesize($this->logPath))
+			{
+				unlink($this->logPath);
+			}
 		}
+
 		JLog::add(json_encode($input), JLog::NOTICE, 'plg_system_radicalform');
 
 		unset($input["url"]);
@@ -691,17 +695,26 @@ EOT;
 			if($needToSendEmail)
 			{
 				$send = $mailer->Send();
+				if($send===false)
+				{
+					$input=[];
+					$input["message"]=JText::_('PLG_RADICALFORM_MAIL_DISABLED');
+					JLog::add(json_encode($input), JLog::WARNING, 'plg_system_radicalform');
+					return JText::_('PLG_RADICALFORM_MAIL_DISABLED');
+				}
+
 				if ($send !== true)
 				{
-					return $send->get("message");
+					$input=[];
+					$input["message"]=$send->getMessage();
+					JLog::add(json_encode($input), JLog::WARNING, 'plg_system_radicalform');
+					return $send->getMessage();
 				}
 				else
 				{
 					JFolder::delete($uploaddir);
-
 					return 'ok';
 				}
-
 			}
 
 		}

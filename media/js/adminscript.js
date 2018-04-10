@@ -12,7 +12,7 @@ jQuery(document).ready(function () {
         $("#historyclear").on("click", function (event) {
             $("#historyclear").html("Wait...")
                 .prop('disabled', true);
-            $.getJSON("/administrator/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2", function (data) {
+            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2", function (data) {
                 location.reload();
             });
 
@@ -24,7 +24,7 @@ jQuery(document).ready(function () {
             $("#radicalformcheck").html("Wait...")
                                   .prop('disabled', true);
 
-            $.getJSON("/administrator/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=1", function (data) {
+            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=1", function (data) {
                 var output=data.data[0];
                 for(var i=0;i<output.length;i++) {
                     var found=false;

@@ -38,7 +38,7 @@ jQuery(document).ready(function () {
                     .prop('disabled', true);
 
                 jQuery.ajax({
-                    url: '/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&file=1&size=' + this.files[0].size,
+                    url: 'index.php?option=com_ajax&plugin=radicalform&format=json&group=system&file=1&size=' + this.files[0].size,
                     type: 'post',
                     contentType: false, // важно - убираем форматирование данных по умолчанию
                     processData: false, // важно - убираем преобразование строк по умолчанию
@@ -48,6 +48,7 @@ jQuery(document).ready(function () {
 
                         jQuery(textForUploadButton).html(tmp)
                             .prop('disabled', false);
+
                         if ("error" in json.responseJSON) {
                             jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.error + "</div>"); // добавляем имя файла
                         } else {
@@ -115,7 +116,7 @@ jQuery(document).ready(function () {
             }
             jQuery.ajax({
                 type: "POST",
-                url: "/index.php?option=com_ajax&plugin=radicalform&format=json&group=system",
+                url: "index.php?option=com_ajax&plugin=radicalform&format=json&group=system",
                 dataType: "json",
                 data: jQuery(self).serialize(),
                 complete: function(data, status) {
@@ -123,13 +124,18 @@ jQuery(document).ready(function () {
 	                jQuery(self2).html(tmp);
 	                jQuery(self2).prop('disabled', false);
 
-	                if (data.responseJSON.data[0] === "ok") {
-	                    message=RadicalForm.AfterSend;
-	                    jQuery(self2).closest("form").find(".rf-filenames-list").empty();
-	                    jQuery(self2).closest("form").trigger("reset");
-	                } else {
-	                    message='Error during the sending of form!<br />' + data.responseJSON.data[0];
-	                }
+	                if(data.responseJSON===undefined) {
+                        message=data.responseText;
+                    } else {
+                        if (data.responseJSON.data[0] === "ok") {
+                            message=RadicalForm.AfterSend;
+                            jQuery(self2).closest("form").find(".rf-filenames-list").empty();
+                            jQuery(self2).closest("form").trigger("reset");
+                        } else {
+                            message='Error during the sending of form!<br />' + data.responseJSON.data[0];
+                        }
+                    }
+
 	                if(jQuery(self2).data("rfCall")===undefined) {
 	                    rfCall_2(message);
 	                } else {
