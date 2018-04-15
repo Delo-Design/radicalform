@@ -14,33 +14,14 @@ class plgSystemRadicalform extends JPlugin
 {
 	private $logPath;
 
-	protected $autoloadLanguage = true;
+	protected $autoloadLanguage = true; // для корректной работы JText::_
 	protected $db;
 	protected $app;
 	protected $maxDirSize; // максимальный размер отправляемых файлов
-
+	
 	public function __construct(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
-		$doc            = JFactory::getDocument();
-		if (!$this->app->isClient('administrator'))
-		{
-			$doc->addScriptDeclaration("var RadicalForm={DangerClass:'" . $this->params->get('dangerclass')
-				. "', ErrorFile:'" . $this->params->get('errorfile')
-				. "', thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND')
-				. "', waitingForUpload:'" . $this->params->get('waitingupload')
-				. "', WaitMessage:'" . $this->params->get('rfWaitMessage')
-				. "', ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS')
-				. "', MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize")))
-				. "', IP:{ip: '" . $_SERVER['REMOTE_ADDR']
-				. "'}, AfterSend:'" . $this->params->get('aftersend')
-				. "'};");
-
-			$doc->addScriptDeclaration("function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
-			$doc->addScriptDeclaration("function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
-			$doc->addScriptDeclaration("function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
-			$doc->addScriptDeclaration("function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };");
-		}
 
 		JLoader::register('JFile', JPATH_LIBRARIES . '/joomla/filesystem/file.php');
 		JLoader::register('JFolder', JPATH_LIBRARIES . '/joomla/filesystem/folder.php');
@@ -62,17 +43,8 @@ class plgSystemRadicalform extends JPlugin
 		);
 
 	}
-
-	function onBeforeRender()
-	{
-		if ($this->app->isClient('site'))
-		{
-			JHtml::_('script', 'plg_system_radicalform/script.js', array('version' => 'auto', 'relative' => true));
-		}
-		return true;
-	}
-
-	function return_bytes($size_str)
+		
+	private function return_bytes($size_str)
 	{
 		switch (substr($size_str, -1))
 		{
@@ -87,23 +59,50 @@ class plgSystemRadicalform extends JPlugin
 		}
 	}
 
-
-	function onAfterRender()
+	public function onAfterRender()
 	{
 
 		if ($this->app->isClient('administrator'))
 		{
 			return false;
 		}
-
+			
 		$body = $this->app->getBody();
-		$body = str_replace("</body>", "<script> var rfToken='" . JHtml::_('form.token') . "';" . "</script></body>", $body);
-		$this->app->setBody($body);
+		$lnEnd = JFactory::getDocument()->_getLineEnd();
+		$tab = JFactory::getDocument()->_getTab();
+		
+		if (strpos($body, 'rf-button-send') !== false)
+		{
+			//$base = JURI::base(true);
+			
+			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js\"></script>" . $lnEnd
+				. "<script>" . $lnEnd
+				. "var RadicalForm={" . $lnEnd
+				. $tab . "DangerClass:'" . $this->params->get('dangerclass') . "'," . $lnEnd
+				. $tab . "ErrorFile:'" . $this->params->get('errorfile') . "'," . $lnEnd
+				. $tab . "thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND') . "'," . $lnEnd
+				. $tab . "waitingForUpload:'" . $this->params->get('waitingupload') . "'," . $lnEnd
+				. $tab . "WaitMessage:'" . $this->params->get('rfWaitMessage') . "'," . $lnEnd
+				. $tab . "ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS') . "'," . $lnEnd
+				. $tab . "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "'," . $lnEnd
+				. $tab . "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}," . $lnEnd
+				. $tab . "AfterSend:'" . $this->params->get('aftersend') . "'" . $lnEnd
+				. "};" . $lnEnd;
 
+			$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
+			$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
+			$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
+			$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
+			$js .= "var rfToken='" . JHtml::_('form.token') . "';" . $lnEnd . "</script>" . $lnEnd;
+						
+			$body = str_replace("</body>", $js . "</body>", $body);
+			$this->app->setBody($body);
+			
+		}
 	}
 
-	function onAjaxRadicalform()
-	{
+	public function onAjaxRadicalform()
+	{		
 		$r     = $this->app->input;
 		$input = $r->post->getArray();
 		$get   = $r->get->getArray();
