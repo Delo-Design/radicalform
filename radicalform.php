@@ -8,17 +8,19 @@ defined('_JEXEC') or die;
  * @subpackage    System.Radicalform
  * @since         3.5+
  * @author        Progreccor
+ * @copyright     Copyright 2018 Progreccor
+ * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
 use Joomla\String\StringHelper;
 class plgSystemRadicalform extends JPlugin
 {
 	private $logPath;
 
-	protected $autoloadLanguage = true; // для корректной работы JText::_
+	protected $autoloadLanguage = true;
 	protected $db;
 	protected $app;
-	protected $maxDirSize; // максимальный размер отправляемых файлов
-	
+	protected $maxDirSize;
+
 	public function __construct(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
@@ -38,12 +40,11 @@ class plgSystemRadicalform extends JPlugin
 			),
 			// Sets all but DEBUG log level messages to be sent to the file
 			JLog::ALL & ~JLog::DEBUG,
-			// The log category which should be recorded in this file
 			array('plg_system_radicalform')
 		);
 
-	}
-		
+    }
+
 	private function return_bytes($size_str)
 	{
 		switch (substr($size_str, -1))
@@ -66,43 +67,40 @@ class plgSystemRadicalform extends JPlugin
 		{
 			return false;
 		}
-			
+
 		$body = $this->app->getBody();
 		$lnEnd = JFactory::getDocument()->_getLineEnd();
-		$tab = JFactory::getDocument()->_getTab();
-		
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			//$base = JURI::base(true);
-			
-			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js\"></script>" . $lnEnd
-				. "<script>" . $lnEnd
-				. "var RadicalForm={" . $lnEnd
-				. $tab . "DangerClass:'" . $this->params->get('dangerclass') . "'," . $lnEnd
-				. $tab . "ErrorFile:'" . $this->params->get('errorfile') . "'," . $lnEnd
-				. $tab . "thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND') . "'," . $lnEnd
-				. $tab . "waitingForUpload:'" . $this->params->get('waitingupload') . "'," . $lnEnd
-				. $tab . "WaitMessage:'" . $this->params->get('rfWaitMessage') . "'," . $lnEnd
-				. $tab . "ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS') . "'," . $lnEnd
-				. $tab . "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "'," . $lnEnd
-				. $tab . "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}," . $lnEnd
-				. $tab . "AfterSend:'" . $this->params->get('aftersend') . "'" . $lnEnd
-				. "};" . $lnEnd;
 
-			$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
-			$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
-			$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
-			$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } };" . $lnEnd;
-			$js .= "var rfToken='" . JHtml::_('form.token') . "';" . $lnEnd . "</script>" . $lnEnd;
-						
+			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js\"></script>" . $lnEnd
+				. "<script>"
+				. "var RadicalForm={"
+				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
+				. "ErrorFile:'" . $this->params->get('errorfile') . "', "
+				. "thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND') . "', "
+				. "waitingForUpload:'" . $this->params->get('waitingupload') . "', "
+				. "WaitMessage:'" . $this->params->get('rfWaitMessage') . "', "
+				. "ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS') . "', "
+				. "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "', "
+				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, "
+				. "AfterSend:'" . $this->params->get('aftersend') . "'"
+				. "};" ;
+
+			$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			$js .= "var rfToken='" . JHtml::_('form.token') . "'; </script>" . $lnEnd;
+
 			$body = str_replace("</body>", $js . "</body>", $body);
 			$this->app->setBody($body);
-			
+
 		}
 	}
 
 	public function onAjaxRadicalform()
-	{		
+	{
 		$r     = $this->app->input;
 		$input = $r->post->getArray();
 		$get   = $r->get->getArray();
@@ -278,7 +276,6 @@ class plgSystemRadicalform extends JPlugin
 
 					}
 
-
 				}
 
 			}
@@ -301,23 +298,38 @@ class plgSystemRadicalform extends JPlugin
 		$mailer->setSender($sender);
 
 
-		if (isset($input["phone"]) && (!empty($input["phone"])))
+		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
-			$subject=$this->params->get('rfSubject') . ': ' . $input["phone"];
-			$mailer->setSubject($subject);
+			$subject=$input["rfSubject"];
+			unset($input["rfSubject"]);
 		}
 		else
 		{
 			$subject=$this->params->get('rfSubject');
-			$mailer->setSubject($subject);
 		}
 
-		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
+
+		// Expression to search for (positions)
+		$regex = '/{(.*?)}/i';
+
+		// Find all instances of fields
+		preg_match_all($regex, $subject, $matches, PREG_SET_ORDER);
+
+		// No matches, skip this
+		if ($matches)
 		{
-			$subject=$input["rfSubject"];
-			$mailer->setSubject($subject);
-			unset($input["rfSubject"]);
+			foreach ($matches as $match)
+			{
+				if(isset($input[$match[1]]))
+				{
+					$set=$input[$match[1]];
+					$subject = preg_replace("|$match[0]|", $set, $subject, 1);
+				}
+			}
 		}
+
+		$mailer->setSubject($subject);
+
 
 		if (isset($input["needToSendFiles"]) && ($input["needToSendFiles"] == 1))
 		{
@@ -377,8 +389,17 @@ class plgSystemRadicalform extends JPlugin
 		$telegram="<b>".$subject."</b><br /><br />";
 		foreach ($input as $key => $record)
 		{
-			$mainbody .= "<p>".JText::_($key) . ": <strong>" . $record . "</strong></p>";
-			$telegram.= JText::_($key) . ": <b>" . $record ."</b><br />";
+			if($key=="phone")
+			{
+				$mainbody .= "<p>".JText::_($key) . ": <strong><a href='tel://". $record ."'>" . $record . "</a></strong></p>";
+				$telegram.= JText::_($key) . ': <b>' . $record .'</b><br />';
+			}
+			else
+			{
+				$mainbody .= "<p>".JText::_($key) . ": <strong>" . $record . "</strong></p>";
+				$telegram.= JText::_($key) . ": <b>" . $record ."</b><br />";
+
+			}
 		}
 
 
@@ -659,7 +680,22 @@ EOT;
 
 		}
 
+		if($this->params->get('dialog'))
+		{
+			$data=str_replace("<br />"," \r\n",$telegram);
+			$data=str_replace(["<b>","</b>"],"*",$data);
+			$data_string = json_encode(array("text" =>$data));
+			$ch = curl_init($this->params->get('dialogurl'));
+			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
+			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+					'Content-Type: application/json',
+					'Content-Length: ' . strlen($data_string))
+			);
 
+			curl_exec($ch);
+		}
 
 		if($this->params->get('emailon'))
 		{

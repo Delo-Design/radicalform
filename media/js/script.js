@@ -1,7 +1,7 @@
 if(!window.jQuery) {console.log("RadicalForm: There is no jQuery library!")}
 jQuery(document).ready(function () {
 
-    var uniq = (new Date).getTime() + Math.floor(Math.random()*100); // создаем уникальный id для загрузки файлов
+    var uniq = (new Date).getTime() + Math.floor(Math.random()*100); // get uniq id for upload a file
 
     jQuery(".rf-button-send").after('<input type="hidden" name="uniq" value="'+uniq+'" />')
                              .after(rfToken)
@@ -22,14 +22,14 @@ jQuery(document).ready(function () {
     });
 
 
-    // по нажатию "загрузить файл"
+    // file upload
     jQuery("input[type='file'].rf-upload-button").on("change", function (e) {
             if(!jQuery(this).attr("name")) {console.log("RadicalForm: There is no 'name' attribute for rf-upload-button!"); return; }
 
             var that = jQuery(this).closest('form'),
                 textForUploadButton = jQuery(this).siblings('.rf-upload-button-text')[0],
                 tmp = jQuery(textForUploadButton).html(),
-                formData = new FormData(); // передаем новому элементу нашу форму
+                formData = new FormData();
             formData.append(this.name, this.files[0]);
             if(this.files[0].size<RadicalForm.MaxSize) {
                 formData.append("uniq", uniq);
@@ -40,8 +40,8 @@ jQuery(document).ready(function () {
                 jQuery.ajax({
                     url: 'index.php?option=com_ajax&plugin=radicalform&format=json&group=system&file=1&size=' + this.files[0].size,
                     type: 'post',
-                    contentType: false, // важно - убираем форматирование данных по умолчанию
-                    processData: false, // важно - убираем преобразование строк по умолчанию
+                    contentType: false,
+                    processData: false,
                     dataType: "json",
                     data: formData,
                     complete: function (json, status) {
@@ -50,7 +50,7 @@ jQuery(document).ready(function () {
                             .prop('disabled', false);
 
                         if ("error" in json.responseJSON) {
-                            jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.error + "</div>"); // добавляем имя файла
+                            jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.error + "</div>"); // add the name of file
                         } else {
                             jQuery('.rf-filenames-list').find("."+RadicalForm.ErrorFile).remove();
                             if (jQuery.trim(jQuery('.rf-filenames-list').text()) == "") {
@@ -58,9 +58,9 @@ jQuery(document).ready(function () {
                                 jQuery("form").append('<input type="hidden" name="needToSendFiles" value="1" />');
                             }
                             if ("error" in json.responseJSON.data[0]) {
-                                jQuery('.rf-filenames-list').append("<div class='"+RadicalForm.ErrorFile+"'>" + json.responseJSON.data[0].error + "</div>"); // добавляем ошибку
+                                jQuery('.rf-filenames-list').append("<div class='"+RadicalForm.ErrorFile+"'>" + json.responseJSON.data[0].error + "</div>"); // add error
                             } else {
-                                jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.data[0].name + "</div>"); // добавляем имя файла
+                                jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.data[0].name + "</div>"); // add name file
                             }
                         }
 
@@ -68,7 +68,7 @@ jQuery(document).ready(function () {
                 });
             } else {
                 jQuery('.rf-filenames-list').find("."+RadicalForm.ErrorFile).remove();
-                jQuery('.rf-filenames-list').append("<div class='"+RadicalForm.ErrorFile+"'>" + RadicalForm.ErrorMax + "</div>"); // добавляем ошибку о превышении размера
+                jQuery('.rf-filenames-list').append("<div class='"+RadicalForm.ErrorFile+"'>" + RadicalForm.ErrorMax + "</div>"); // size is more than limit
             }
 
         }
@@ -85,13 +85,13 @@ jQuery(document).ready(function () {
         }
         RadicalForm.FormFields=[];
         jQuery(self).find("[name]").removeClass(RadicalForm.DangerClass);
-        // просмотрим все переданные поля в форме
+        // let's see the fields of form
         for (var i = 0; i < inputArray.length; i++) {
 
-            // если поле пустое то помечаем его красным
+            // if field is empty
             if (jQuery(self).find("[name='" + inputArray[i].name + "']").hasClass('required') && jQuery.trim(inputArray[i].value) == "") {
                 RadicalForm.FormFields[i]=jQuery(self).find("[name='" + inputArray[i].name + "']").get(0);
-                needReturn = true; // признак того что надо прервать отсылку и выйти. была обнаружена ошибка в валидации полей
+                needReturn = true; // need to abandon the send
             }
         }
         setTimeout(function () {

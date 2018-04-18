@@ -17,15 +17,15 @@
         <filename>emailalternatives.xml</filename>
         <filename>index.html</filename>
     </files>
-	<languages folder="language">
+    <languages folder="language">
         <language tag="en-GB">en-GB/en-GB.plg_system_radicalform.ini</language>
         <language tag="ru-RU">ru-RU/ru-RU.plg_system_radicalform.ini</language>
         <language tag="en-GB">en-GB/en-GB.plg_system_radicalform.sys.ini</language>
         <language tag="ru-RU">ru-RU/ru-RU.plg_system_radicalform.sys.ini</language>
     </languages>
     <media folder="media" destination="plg_system_radicalform">
-	<folder>js</folder>
-	<filename>index.html</filename>
+        <folder>js</folder>
+        <filename>index.html</filename>
     </media>
     <updateservers>
         <server type="extension" priority="1" name="Radical Form">
@@ -38,19 +38,19 @@
         <fields name="params" addfieldpath="/plugins/system/radicalform">
             <fieldset name="basic">
 
-				<field 
-						name="dangerclass"
-						type="text"
-						label="PLG_RADICALFORM_DANGER_CLASS"
+                <field
+                        name="dangerclass"
+                        type="text"
+                        label="PLG_RADICALFORM_DANGER_CLASS"
                         description="PLG_RADICALFORM_DANGER_CLASS_DESCRIPTION"
-						required="false"
+                        required="false"
                         default="uk-form-danger"
                         size="10"
                         class="input-xxlarge"
                         readonly="false"
                         disabled="false"
                         filter="">
-				</field>
+                </field>
                 <field
                         name="errorfile"
                         type="text"
@@ -64,7 +64,7 @@
                         disabled="false"
                         filter="">
                 </field>
-                <field type="spacer" name="myspacer" hr="true" />
+                <field type="spacer" name="myspacer" hr="true"/>
                 <field
                         name="rfCall_0"
                         type="textarea"
@@ -98,7 +98,7 @@
                         filter="raw"
                         class="input-xxlarge"
                 />
-                <field type="spacer" name="myspacer1" hr="true" />
+                <field type="spacer" name="myspacer1" hr="true"/>
                 <field
                         name="emailon"
                         type="radio"
@@ -119,7 +119,7 @@
                         class="input-xxlarge"
                         readonly="false"
                         showon="emailon:1"
-                        disabled="false" />
+                        disabled="false"/>
                 <field
                         name="emailcc"
                         type="email"
@@ -129,7 +129,7 @@
                         class="input-xxlarge"
                         readonly="false"
                         showon="emailon:1"
-                        disabled="false" />
+                        disabled="false"/>
                 <field name="emailalt" type="subform"
                        formsource="plugins/system/radicalform/emailalternatives.xml" multiple="true"
                        label="PLG_RADICALFORM_ALTERNATIVEEMAILS_LABEL"
@@ -139,7 +139,7 @@
                        showon="emailon:1"
                 />
 
-                <field type="spacer" name="myspacer11" hr="true" />
+                <field type="spacer" name="myspacer11" hr="true"/>
 
 
                 <field
@@ -254,7 +254,31 @@
                         value="PLG_RADICALFORM_TELEGRAMCHECK_LABEL"
                 />
 
-                <field name="offset" type="hidden" default="" />
+                <field
+                        name="dialog"
+                        type="radio"
+                        label="PLG_RADICALFORM_DIALOG_LABEL"
+                        description="PLG_RADICALFORM_DIALOG_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field
+                        name="dialogurl"
+                        type="textarea"
+                        label="PLG_RADICALFORM_DIALOG_URL"
+                        description="PLG_RADICALFORM_DIALOG_URL_DESCRIPTION"
+                        required="false"
+                        default=""
+                        size="20"
+                        class="input-xxlarge"
+                        readonly="false"
+                        disabled="false"
+                        showon="dialog:1"
+                        filter="raw">
+                </field>
             </fieldset>
             <fieldset name="list" label="PLG_RADICALFORM_HISTORY">
                 <field
@@ -267,7 +291,7 @@
                         class=""
                         default="500000"
                         readonly="false"
-                        disabled="false" />
+                        disabled="false"/>
 
                 <field
                         name="hiddeninfo"
@@ -280,7 +304,7 @@
                     <option value="1">JON</option>
                     <option value="0">JOFF</option>
                 </field>
-                <field type="spacer" name="myspacer3" hr="true" />
+                <field type="spacer" name="myspacer3" hr="true"/>
                 <field
                         name="historytable"
                         type="historyradicalform"

@@ -1,6 +1,14 @@
 <?php
 // No direct access
 defined( '_JEXEC' ) or die;
+/**
+ *
+ * @package       Joomla.Plugin
+ * @subpackage    System.Radicalform
+ * @since         3.5+
+ * @author        Progreccor
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
+ */
 
 class plgSystemRadicalformInstallerScript
 {

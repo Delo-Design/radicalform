@@ -1,10 +1,10 @@
 <?php
 /**
- * @package     ${NAMESPACE}
- * @subpackage
+ * @package     Joomla.Plugin
+ * @subpackage  System.Radicalform
  *
- * @copyright   A copyright
- * @license     A "Slug" license name e.g. GPL2
+ * @copyright   Copyright 2018 Progreccor
+ * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('_JEXEC') or die('Restricted access');
 
