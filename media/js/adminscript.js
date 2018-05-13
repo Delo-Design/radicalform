@@ -29,7 +29,7 @@ jQuery(document).ready(function () {
                 for(var i=0;i<output.length;i++) {
                     var found=false;
                     $("#attrib-advanced .adminlist.table tr td:first-child input").each(function () {
-                        
+
                         if($(this).val()==output[i].chatID) {
                             found=true;
                         }
