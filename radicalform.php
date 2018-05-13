@@ -72,8 +72,8 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = JFactory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-
-			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js\"></script>" . $lnEnd
+			$mtime=filemtime(JPATH_ROOT."/media/plg_system_radicalform/js/script.js");
+			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm={"
 				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
@@ -87,10 +87,22 @@ class plgSystemRadicalform extends JPlugin
 				. "AfterSend:'" . $this->params->get('aftersend') . "'"
 				. "};" ;
 
-			$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
-			$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
-			$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
-			$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			if(!empty($this->params->get('rfCall_0')))
+			{
+				$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			}
+			if(!empty($this->params->get('rfCall_1')))
+			{
+				$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			}
+			if(!empty($this->params->get('rfCall_2')))
+			{
+				$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			}
+			if(!empty($this->params->get('rfCall_3')))
+			{
+				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+			}
 			$js .= "var rfToken='" . JHtml::_('form.token') . "'; </script>" . $lnEnd;
 
 			$body = str_replace("</body>", $js . "</body>", $body);
@@ -377,11 +389,22 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+		$input = array_diff($input, array('')); // delete empty fields in input array
+
 		JLog::add(json_encode($input), JLog::NOTICE, 'plg_system_radicalform');
 
-		unset($input["url"]);
-		unset($input["reffer"]);
-		unset($input["resolution"]);
+		if(isset($input["url"]))
+		{
+			unset($input["url"]);
+		}
+		if(isset($input["reffer"]))
+		{
+			unset($input["reffer"]);
+		}
+		if(isset($input["resolution"]))
+		{
+			unset($input["resolution"]);
+		}
 
 
 		$mainbody="";
@@ -725,6 +748,11 @@ EOT;
 					$mailer->addCc($this->params->get('emailcc'));
 				}
 				$needToSendEmail=true;
+			}
+
+			if((!empty($this->params->get('replyto'))) && isset($input[$this->params->get('replyto')]))
+			{
+				$mailer->addReplyTo($input[$this->params->get('replyto')]);
 			}
 
 			if($needToSendEmail)

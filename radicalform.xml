@@ -6,7 +6,7 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.3.3</version>
+    <version>1.3.4</version>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -130,6 +130,18 @@
                         readonly="false"
                         showon="emailon:1"
                         disabled="false"/>
+                <field
+                        name="replyto"
+                        type="text"
+                        label="PLG_RADICALFORM_REPLY_TO"
+                        description="PLG_RADICALFORM_REPLY_TO_DESC"
+                        required="false"
+                        size="10"
+                        class="input-xxlarge"
+                        readonly="false"
+                        showon="emailon:1"
+                        default="email"
+                        disabled="false"/>
                 <field name="emailalt" type="subform"
                        formsource="plugins/system/radicalform/emailalternatives.xml" multiple="true"
                        label="PLG_RADICALFORM_ALTERNATIVEEMAILS_LABEL"
@@ -140,7 +152,6 @@
                 />
 
                 <field type="spacer" name="myspacer11" hr="true"/>
-
 
                 <field
                         name="rfSubject"
