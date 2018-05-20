@@ -31,4 +31,5 @@
 
 Скачать можно здесь https://github.com/progreccor/radicalform/releases
 
-Если есть проблемы со скачиванием с github - резервная ссылка для скачивания: http://hika.su/update/free/plg_radicalform.zip
+Если есть проблемы со скачиванием с github - резервная ссылка для скачивания:
+http://hika.su/update/free/plg_radicalform.zip
