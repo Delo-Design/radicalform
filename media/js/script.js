@@ -21,7 +21,6 @@ jQuery(document).ready(function () {
         jQuery(this).removeClass(RadicalForm.DangerClass);
     });
 
-
     // file upload
     jQuery("input[type='file'].rf-upload-button").on("change", function (e) {
             if(!jQuery(this).attr("name")) {console.log("RadicalForm: There is no 'name' attribute for rf-upload-button!"); return; }
@@ -37,7 +36,7 @@ jQuery(document).ready(function () {
                     .prop('disabled', true);
 
                 jQuery.ajax({
-                    url: 'index.php?option=com_ajax&plugin=radicalform&format=json&group=system&file=1&size=' + this.files[0].size,
+                    url: RadicalForm.Base+'/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&file=1&size=' + this.files[0].size,
                     type: 'post',
                     contentType: false,
                     processData: false,
@@ -116,7 +115,7 @@ jQuery(document).ready(function () {
             }
             jQuery.ajax({
                 type: "POST",
-                url: "index.php?option=com_ajax&plugin=radicalform&format=json&group=system",
+                url: RadicalForm.Base+"/index.php?option=com_ajax&plugin=radicalform&format=json&group=system",
                 dataType: "json",
                 data: jQuery(self).serialize(),
                 complete: function(data, status) {
@@ -137,7 +136,7 @@ jQuery(document).ready(function () {
                     }
 
 	                if(jQuery(self2).data("rfCall")===undefined) {
-	                    rfCall_2(message);
+	                    rfCall_2(message,self2);
 	                } else {
 	                    rfCall=String(jQuery(self2).data("rfCall"));
 	                    for (var i=0;i<rfCall.length;i++) {

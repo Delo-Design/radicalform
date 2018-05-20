@@ -84,6 +84,7 @@ class plgSystemRadicalform extends JPlugin
 				. "ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS') . "', "
 				. "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "', "
 				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, "
+				. "Base: '" . JUri::base(true) . "', "
 				. "AfterSend:'" . $this->params->get('aftersend') . "'"
 				. "};" ;
 
