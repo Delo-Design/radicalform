@@ -115,7 +115,11 @@ jQuery(document).ready(function () {
             if(jQuery(self2).data("rfCall")!==undefined) {
                 rfCall = String(jQuery(self2).data("rfCall"));
                 if(rfCall[0]==="0") {
-                    rfCall_0(self2);
+                    try {
+                        rfCall_0(self2);
+                    } catch (e) {
+                        console.error('Radical Form JS Code: ', e);
+                    }
                 }
             }
             jQuery.ajax({
