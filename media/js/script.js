@@ -76,6 +76,8 @@ jQuery(document).ready(function () {
     jQuery("form .rf-button-send").on("click", function (e) {
         var self = jQuery(this).closest('form'),
             needReturn,
+            field,
+            form = jQuery(this).closest('form').get(0),
             inputArray = jQuery(self).serializeArray();
         if(inputArray.length<6) {
             alert("there is no name attribute for input! Please add name to your input tag!");
@@ -83,16 +85,19 @@ jQuery(document).ready(function () {
         }
         RadicalForm.FormFields=[];
         jQuery(self).find("[name]").removeClass(RadicalForm.DangerClass);
-        // let's see the fields of form
-        for (var i = 0; i < inputArray.length; i++) {
-            // if field is empty
-            var currentField=jQuery(self).find("[name='" + inputArray[i].name + "']");
 
-            if ((currentField.hasClass('required') && jQuery.trim(inputArray[i].value) === "") || (!currentField.get(0).checkValidity())) {
-                RadicalForm.FormFields[i]=currentField.get(0);
-                needReturn = true; // need to abandon the send
+        // let's see the fields of form
+        for (var i = 0, len=form.elements.length;i<len; i++) {
+            field=form.elements[i];
+
+            if((jQuery(field).hasClass('required') && jQuery.trim(jQuery(field).val())==="") ||
+                (jQuery(field).hasClass('required') && (!field.checked) && (field.type==="checkbox")) ||
+                (!field.checkValidity()) ) {
+                RadicalForm.FormFields.push(field);
+                needReturn= true;
             }
         }
+
         setTimeout(function () {
             for (var i = 0; i < RadicalForm.FormFields.length; i++) {
                 jQuery(RadicalForm.FormFields[i]).addClass(RadicalForm.DangerClass);

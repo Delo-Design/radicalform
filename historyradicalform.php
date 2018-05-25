@@ -71,6 +71,10 @@ class JFormFieldHistoryradicalform extends JFormField {
 					unset($json["url"]);
 				}
 				foreach ($json as $key=>$record) {
+					if(is_array($record))
+					{
+						$record=implode($params->glue, $record);
+					}
 					$itog.=JText::_($key). ": <b>" . $record ."</b><br />";
 				}
 				$html.= '<tr class="row' . ($i % 2) . '">' .

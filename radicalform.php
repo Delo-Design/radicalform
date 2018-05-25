@@ -413,6 +413,19 @@ class plgSystemRadicalform extends JPlugin
 		$telegram="<b>".$subject."</b><br /><br />";
 		foreach ($input as $key => $record)
 		{
+			if(is_array($record))
+			{
+				if($this->params->get('glue')=="<br />" || $this->params->get('glue')=="<br>" )
+				{
+					array_unshift($record," ");
+					$record=implode($this->params->get('glue'), $record);
+				}
+				else
+				{
+					$record=implode($this->params->get('glue'), $record);
+				}
+
+			}
 			if($key=="phone")
 			{
 				$mainbody .= "<p>".JText::_($key) . ": <strong><a href='tel://". $record ."'>" . $record . "</a></strong></p>";

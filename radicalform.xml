@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.3.6</version>
-    <creationDate>2018-05-20</creationDate>
+    <version>1.4.0</version>
+    <creationDate>2018-05-25</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -214,6 +214,19 @@
                         default="Сообщение было отправлено"
                         size="10"
                         class="input-xxlarge"
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+                <field
+                        name="glue"
+                        type="text"
+                        label="PLG_RADICALFORM_GLUE"
+                        description="PLG_RADICALFORM_GLUE_DESCRIPTION"
+                        required="false"
+                        default="&lt;br /&gt;"
+                        size="10"
+                        class=""
                         readonly="false"
                         disabled="false"
                         filter="raw">
