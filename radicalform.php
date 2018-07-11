@@ -6,7 +6,7 @@ defined('_JEXEC') or die;
  *
  * @package       Joomla.Plugin
  * @subpackage    System.Radicalform
- * @since         3.5+
+ * @since         3.7+
  * @author        Progreccor
  * @copyright     Copyright 2018 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
@@ -36,7 +36,7 @@ class plgSystemRadicalform extends JPlugin
 				// Sets file name
 				'text_file' => 'plg_system_radicalform.php',
 				// Sets the format of each line
-				'text_entry_format' => "{TIME}\t{DATE}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"
+				'text_entry_format' => "{DATETIME}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"
 			),
 			// Sets all but DEBUG log level messages to be sent to the file
 			JLog::ALL & ~JLog::DEBUG,
@@ -68,12 +68,12 @@ class plgSystemRadicalform extends JPlugin
 			return false;
 		}
 
-		$body = $this->app->getBody();
+		$body  = $this->app->getBody();
 		$lnEnd = JFactory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			$mtime=filemtime(JPATH_ROOT."/media/plg_system_radicalform/js/script.js");
-			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
+			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.js");
+			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm={"
 				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
@@ -86,29 +86,38 @@ class plgSystemRadicalform extends JPlugin
 				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, "
 				. "Base: '" . JUri::base(true) . "', "
 				. "AfterSend:'" . $this->params->get('aftersend') . "'"
-				. "};" ;
+				. "};";
 
-			if(!empty($this->params->get('rfCall_0')))
+			if (!empty($this->params->get('rfCall_0')))
 			{
-				$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+				$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
-			if(!empty($this->params->get('rfCall_1')))
+			if (!empty($this->params->get('rfCall_1')))
 			{
-				$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+				$js .= "function rfCall_1(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
-			if(!empty($this->params->get('rfCall_2')))
+			if (!empty($this->params->get('rfCall_2')))
 			{
-				$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+				$js .= "function rfCall_2(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
-			if(!empty($this->params->get('rfCall_3')))
+			if (!empty($this->params->get('rfCall_3')))
 			{
-				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " ;
+				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
 			$js .= "var rfToken='" . JHtml::_('form.token') . "'; </script>" . $lnEnd;
 
 			$body = str_replace("</body>", $js . "</body>", $body);
 			$this->app->setBody($body);
 
+		}
+		else
+		{
+			$js    = "<script>"
+				. "var RadicalForm={"
+				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'} "
+				. "}; </script>";
+			$body = str_replace("</body>", $js . "</body>", $body);
+			$this->app->setBody($body);
 		}
 	}
 
@@ -343,7 +352,7 @@ class plgSystemRadicalform extends JPlugin
 
 		$mailer->setSubject($subject);
 
-
+		$needToSendFiles = false;
 		if (isset($input["needToSendFiles"]) && ($input["needToSendFiles"] == 1))
 		{
 			// просматриваем все подпапки нашей папки для выгрузки
@@ -364,6 +373,7 @@ class plgSystemRadicalform extends JPlugin
 						$input[$folder] = basename($file);
 					}
 					$mailer->addAttachment($file);
+					$needToSendFiles = true;
 				}
 
 			}
@@ -439,228 +449,28 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
-
-
-		$footer =  JText::_('PLG_RADICALFORM_IP_ADDRESS') . "<a href='http://whois.domaintools.com/" . $_SERVER['REMOTE_ADDR'] . "'><strong>" . $_SERVER['REMOTE_ADDR'] . "</strong></a><br>";
-		$footer.= JText::_('PLG_RADICALFORM_URL') .$url."<br>";
-		if($ref)
+		if($this->params->get('extendedinfo'))
 		{
-			$footer.= JText::_('PLG_RADICALFORM_REFFER') .$ref." <br>";
-		};
+			$footer =  JText::_('PLG_RADICALFORM_IP_ADDRESS') . "<a href='http://whois.domaintools.com/" . $_SERVER['REMOTE_ADDR'] . "'><strong>" . $_SERVER['REMOTE_ADDR'] . "</strong></a><br>";
+			$footer.= JText::_('PLG_RADICALFORM_URL') .$url."<br />";
+			if($ref)
+			{
+				$footer.= JText::_('PLG_RADICALFORM_REFFER') ."<a href='".$ref."'>". substr($ref, 0, 64) ." </a> <br />";
+			};
 
-		$footer.= JText::_('PLG_RADICALFORM_RESOLUTION') .$resolution;
-
-		$body = <<<EOT
-<!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
-<head>
-    <meta charset="utf-8"> <!-- utf-8 works for most cases -->
-    <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn't be necessary -->
-    <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- Use the latest (edge) version of IE rendering engine -->
-    <meta name="x-apple-disable-message-reformatting">  <!-- Disable auto-scale in iOS 10 Mail entirely -->
-    <title></title> <!-- The title tag shows in email notifications, like Android 4.4. -->
-
-    <!-- Web Font / @font-face : BEGIN -->
-
-    <!--[if mso]>
-        <style>
-            * {
-                font-family: sans-serif !important;
-            }
-        </style>
-    <![endif]-->
-
-    <style>
-
-        html,
-        body {
-            margin: 0 auto !important;
-            padding: 0 !important;
-            height: 100% !important;
-            width: 100% !important;
-        }
-
-        * {
-            -ms-text-size-adjust: 100%;
-            -webkit-text-size-adjust: 100%;
-        }
-
-        div[style*="margin: 16px 0"] {
-            margin: 0 !important;
-        }
-
-        table,
-        td {
-            mso-table-lspace: 0pt !important;
-            mso-table-rspace: 0pt !important;
-        }
-
-        table {
-            border-spacing: 0 !important;
-            border-collapse: collapse !important;
-            table-layout: fixed !important;
-            margin: 0 auto !important;
-        }
-        table table table {
-            table-layout: auto;
-        }
-
-        img {
-            -ms-interpolation-mode:bicubic;
-        }
-
-        *[x-apple-data-detectors],  /* iOS */
-        .x-gmail-data-detectors,    /* Gmail */
-        .x-gmail-data-detectors *,
-        .aBn {
-            border-bottom: 0 !important;
-            cursor: default !important;
-            color: inherit !important;
-            text-decoration: none !important;
-            font-size: inherit !important;
-            font-family: inherit !important;
-            font-weight: inherit !important;
-            line-height: inherit !important;
-        }
-
-        .a6S {
-            display: none !important;
-            opacity: 0.01 !important;
-        }
-        img.g-img + div {
-            display: none !important;
-        }
-
-        .button-link {
-            text-decoration: none !important;
-        }
-
-        @media only screen and (min-device-width: 375px) and (max-device-width: 413px) { /* iPhone 6 and 6+ */
-            .email-container {
-                min-width: 375px !important;
-            }
-        }
-
-	    @media screen and (max-width: 480px) {
-	        div > u ~ div .gmail {
-		        min-width: 100vw;
-	        }
+			$footer.= JText::_('PLG_RADICALFORM_RESOLUTION') .$resolution;
+		}
+		else
+		{
+			$footer = "";
 		}
 
-    </style>
-    <style>
+		$path = JPluginHelper::getLayoutPath('system', 'radicalform');
 
-    .button-td,
-    .button-a {
-        transition: all 100ms ease-in;
-    }
-    .button-td:hover,
-    .button-a:hover {
-        background: #555555 !important;
-        border-color: #555555 !important;
-    }
-
-    /* Media Queries */
-    @media screen and (max-width: 600px) {
-
-        .email-container p {
-            font-size: 17px !important;
-        }
-
-    }
-
-    </style>
-    <!--[if gte mso 9]>
-    <xml>
-        <o:OfficeDocumentSettings>
-            <o:AllowPNG/>
-            <o:PixelsPerInch>96</o:PixelsPerInch>
-        </o:OfficeDocumentSettings>
-    </xml>
-    <![endif]-->
-
-</head>
-<body width="100%" bgcolor="#fdfeff" style="margin: 0; mso-line-height-rule: exactly;">
-    <center style="width: 100%; background: #fdfeff; text-align: left;">
-
-        <div style="display: none; font-size: 1px; line-height: 1px; max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
-           $mainbody
-        </div>
-        <div style="max-width: 600px; margin: auto;" class="email-container">
-            <!--[if mso]>
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" align="center">
-            <tr>
-            <td>
-            <![endif]-->
-
-            <!-- Email Header : BEGIN -->
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px;">
-                <tr>
-                    <td style="padding: 20px 0; text-align: center">
-						<p>&nbsp;</p>
-                    </td>
-                </tr>
-            </table>
-            <!-- Email Header : END -->
-
-            <!-- Email Body : BEGIN -->
-            <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" width="100%" style="max-width: 600px;">
-
-
-                <!-- 1 Column Text + Button : BEGIN -->
-                <tr>
-                    <td bgcolor="#f0f0f0">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                            <tr>
-                                <td style="padding: 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555;">
-								$mainbody
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <!-- 1 Column Text + Button : END -->
-
-
-                <!-- Clear Spacer : BEGIN -->
-                <tr>
-                    <td aria-hidden="true" height="40" style="font-size: 0; line-height: 0;">
-                        &nbsp;
-                    </td>
-                </tr>
-                <!-- Clear Spacer : END -->
-
-                <!-- 1 Column Text : BEGIN -->
-                <tr>
-                    <td bgcolor="#f0f0f0">
-                        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
-                            <tr>
-                                <td style="padding: 40px; font-family: sans-serif; font-size: 15px; line-height: 140%; color: #555555;">
-                                    <p style="margin: 0;">
-										$footer
-									</p>
-                                </td>
-                            </tr>
-                        </table>
-                    </td>
-                </tr>
-                <!-- 1 Column Text : END -->
-
-            </table>
-            <!-- Email Body : END -->
-
-
-            <!--[if mso]>
-            </td>
-            </tr>
-            </table>
-            <![endif]-->
-        </div>
-<p>&nbsp;</p>
-    </center>
-</body>
-</html>
-EOT;
+		// Render the email
+		ob_start();
+		include $path;
+		$body = ob_get_clean();
 
 		if($this->params->get('telegram'))
 		{
@@ -789,7 +599,10 @@ EOT;
 				}
 				else
 				{
-					JFolder::delete($uploaddir);
+					if($needToSendFiles)
+					{
+						JFolder::delete($uploaddir);
+					}
 					return 'ok';
 				}
 			}
@@ -797,6 +610,10 @@ EOT;
 		}
 		else
 		{
+			if($needToSendFiles)
+			{
+				JFolder::delete($uploaddir);
+			}
 			return 'ok';
 		}
 

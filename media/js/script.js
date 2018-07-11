@@ -1,13 +1,18 @@
 if(!window.jQuery) {console.log("RadicalForm: There is no jQuery library!")}
 jQuery(document).ready(function () {
 
-    var uniq = (new Date).getTime() + Math.floor(Math.random()*100); // get uniq id for upload a file
+    var uniq = (new Date).getTime() + Math.floor(Math.random()*100); // get uniq id for upload a file.
 
     jQuery(".rf-button-send").after('<input type="hidden" name="uniq" value="'+uniq+'" />')
                              .after(rfToken)
                             .after('<input type="hidden" name="url" value="'+window.location.href+'" />')
                             .after('<input type="hidden" name="resolution" value="'+screen.width +'x' + screen.height+'" />')
                             .after('<input type="hidden" name="reffer" value="'+document.referrer+'" />');
+
+    if(jQuery(".rf-filenames-list").length!==jQuery("form .rf-filenames-list").length)
+    {
+        alert('ERROR!\r\nThere is \r\n.rf-filenames-list\r\n outside of form!\r\n Please move .rf-filenames-list inside the form. ');
+    }
 
     var temp=RadicalForm.DangerClass.split(" ");
     RadicalForm.DangerClasses=temp.join(".");
@@ -23,12 +28,14 @@ jQuery(document).ready(function () {
 
     // file upload
     jQuery("input[type='file'].rf-upload-button").on("change", function (e) {
-            if(!jQuery(this).attr("name")) {console.log("RadicalForm: There is no 'name' attribute for rf-upload-button!"); return; }
+            if(!jQuery(this).attr("name")) {alert("RadicalForm: There is no 'name' attribute for rf-upload-button!"); return; }
 
             var textForUploadButton = jQuery(this).siblings('.rf-upload-button-text')[0],
                 tmp = jQuery(textForUploadButton).html(),
-                formData = new FormData();
+                formData = new FormData(),
+                rf_filenames_list = jQuery(this).closest('form').find('.rf-filenames-list');
             formData.append(this.name, this.files[0]);
+
             if(this.files[0].size<RadicalForm.MaxSize) {
                 formData.append("uniq", uniq);
 
@@ -48,25 +55,25 @@ jQuery(document).ready(function () {
                             .prop('disabled', false);
 
                         if ("error" in json.responseJSON) {
-                            jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.error + "</div>"); // add the name of file
+                            rf_filenames_list.append("<div>" + json.responseJSON.error + "</div>"); // add the name of file
                         } else {
-                            jQuery('.rf-filenames-list').find("."+RadicalForm.ErrorFile).remove();
-                            if (jQuery.trim(jQuery('.rf-filenames-list').text()) == "") {
-                                jQuery('.rf-filenames-list').append("<div>" + RadicalForm.thisFilesWillBeSend + "</div>");
+                            rf_filenames_list.find("."+RadicalForm.ErrorFile).remove();
+                            if (jQuery.trim(rf_filenames_list.text()) == "") {
+                                rf_filenames_list.append("<div>" + RadicalForm.thisFilesWillBeSend + "</div>");
                                 jQuery("form").append('<input type="hidden" name="needToSendFiles" value="1" />');
                             }
                             if ("error" in json.responseJSON.data[0]) {
-                                jQuery('.rf-filenames-list').append("<div class='"+RadicalForm.ErrorFile+"'>" + json.responseJSON.data[0].error + "</div>"); // add error
+                                rf_filenames_list.append("<div class='"+RadicalForm.ErrorFile+"'>" + json.responseJSON.data[0].error + "</div>"); // add error
                             } else {
-                                jQuery('.rf-filenames-list').append("<div>" + json.responseJSON.data[0].name + "</div>"); // add name file
+                                rf_filenames_list.append("<div>" + json.responseJSON.data[0].name + "</div>"); // add name file
                             }
                         }
 
                     }
                 });
             } else {
-                jQuery('.rf-filenames-list').find("."+RadicalForm.ErrorFile).remove();
-                jQuery('.rf-filenames-list').append("<div class='"+RadicalForm.ErrorFile+"'>" + RadicalForm.ErrorMax + "</div>"); // size is more than limit
+                rf_filenames_list.find("."+RadicalForm.ErrorFile).remove();
+                rf_filenames_list.append("<div class='"+RadicalForm.ErrorFile+"'>" + RadicalForm.ErrorMax + "</div>"); // size is more than limit
             }
 
         }

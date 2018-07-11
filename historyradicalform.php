@@ -29,6 +29,9 @@ class JFormFieldHistoryradicalform extends JFormField {
 
 
 		$params=$this->form->getData()->get("params");
+		$config = JFactory::getConfig();
+
+		$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
 
 		$log_path = str_replace('\\', '/', JFactory::getConfig()->get('log_path'));
 
@@ -60,36 +63,83 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$html.= '</tr></thead><tbody>';
 			foreach ($data as $i => $item)
 			{
-				$json = json_decode($item[3],true);
-				$json_result = json_last_error() === JSON_ERROR_NONE;
 
-				$itog="";
-				if(!$params->hiddeninfo)
+				if(count($item)<5)
 				{
-					unset($json["reffer"]);
-					unset($json["resolution"]);
-					unset($json["url"]);
-				}
-				foreach ($json as $key=>$record) {
-					if(is_array($record))
+					// new format of log file
+					$json        = json_decode($item[2], true);
+					$json_result = json_last_error() === JSON_ERROR_NONE;
+
+					$itog = "";
+					if (!$params->hiddeninfo)
 					{
-						$record=implode($params->glue, $record);
+						unset($json["reffer"]);
+						unset($json["resolution"]);
+						unset($json["url"]);
 					}
-					$itog.=JText::_($key). ": <b>" . $record ."</b><br />";
-				}
-				$html.= '<tr class="row' . ($i % 2) . '">' .
-					'<td class="nowrap">' . $item[0] . '</td>' .
-					'<td>' . $item[1] . '</td>' .
-					'<td><a href="http://whois.domaintools.com/'. $item[2] .'" target="_blank">' . $item[2] . '</a></td>';
-				if(isset($item[4]) && $item[4]=="WARNING")
-				{
-					$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
-					'</tr>';
+					foreach ($json as $key => $record)
+					{
+						if (is_array($record))
+						{
+							$record = implode($params->glue, $record);
+						}
+						$itog .= JText::_($key) . ": <b>" . $record . "</b><br />";
+					}
+
+					$jdate=JFactory::getDate($item[0]);
+					$timezone = new DateTimeZone( $site_offset );
+					$jdate->setTimezone($timezone);
+
+					$html .= '<tr class="row' . ($i % 2) . '">' .
+						'<td class="nowrap">'. $jdate->format('H:i:s',true) . '</td>' .
+						'<td>' . $jdate->format('Y-m-d',true) . '</td>' .
+						'<td><a href="http://whois.domaintools.com/' . $item[1] . '" target="_blank">' . $item[1] . '</a></td>';
+					if (isset($item[3]) && $item[3] == "WARNING")
+					{
+						$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . '</td>' .
+							'</tr>';
+					}
+					else
+					{
+						$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . '</td>' .
+							'</tr>';
+					}
 				}
 				else
 				{
-					$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
-						'</tr>';
+					// old log file format
+					$json        = json_decode($item[3], true);
+					$json_result = json_last_error() === JSON_ERROR_NONE;
+
+					$itog = "";
+					if (!$params->hiddeninfo)
+					{
+						unset($json["reffer"]);
+						unset($json["resolution"]);
+						unset($json["url"]);
+					}
+					foreach ($json as $key => $record)
+					{
+						if (is_array($record))
+						{
+							$record = implode($params->glue, $record);
+						}
+						$itog .= JText::_($key) . ": <b>" . $record . "</b><br />";
+					}
+					$html .= '<tr class="row' . ($i % 2) . '">' .
+						'<td class="nowrap">' . $item[0] . '</td>' .
+						'<td>' . $item[1] . '</td>' .
+						'<td><a href="http://whois.domaintools.com/' . $item[2] . '" target="_blank">' . $item[2] . '</a></td>';
+					if (isset($item[4]) && $item[4] == "WARNING")
+					{
+						$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
+							'</tr>';
+					}
+					else
+					{
+						$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
+							'</tr>';
+					}
 				}
 
 			}
