@@ -1,8 +1,8 @@
 # RadicalForm
 Радикально новый подход к созданию форм обратной связи
 
-
-
+Минимальная версия Joomla 3.7
+Минимальная версия php 5.6
 
 1. Это бесплатный плагин, который таким и останется.
 1. Работает в любом месте сайта, нет никаких ограничений. (актуально для различных конструкторов сайтов, интернет магазинов и т.д.)
@@ -34,5 +34,42 @@
 Скачать можно здесь https://github.com/progreccor/radicalform/releases
 
 Если есть проблемы со скачиванием с github - резервная ссылка для скачивания:
+
+http://hika.su/update/free/plg_radicalform.zip
+
+---
+
+A radically new approach to creating feedback forms
+
+1. This is a free plug-in that will remain so.
+1. Works anywhere on the site, there are no restrictions. (relevant for various page builder, online stores, etc.)
+1. This is ajax plugin.
+1. Works great in pop-up windows. It is possible to close them after submitting the form.
+1. You can conveniently insert the yandex metrics in the plugin interface.
+1. The number of feedback forms on the page is unlimited! (convenient for landings)
+1. You can send photos and other files (there is control of attachments).
+1. There are several fields for sending attachments.
+1. Correctly works with Joomla caching.
+1. The CSRF token is checked.
+1. There is an integration with the messenger messaging.
+1. Using the built-in ability of Jumla to make multilingual forms (for each language its own)
+1. There is a function of logging sent forms
+1. There is a function for selecting a destination for each form
+1. It is possible to use the "One-Click Order" button in online stores and other selling pages
+1. There is integration with the messenger [Dialog] (https://dlg.im/en/download/)
+1. There is a possibility of inserting in the subject of a letter of any form field
+1. HTML5 validation of form fields is provided
+1. You can change the Reply To field.
+1. There is a possibility to redefine the template of sent messages
+1. Correctly works with fields with multiple values (checkbox, select multiple)
+
+
+
+
+You can read more [here] (https://hika.su/rasshireniya/radical-form)
+
+You can download here https://github.com/progreccor/radicalform/releases
+
+If there are problems with downloading from github - a backup link for download:
 
 http://hika.su/update/free/plg_radicalform.zip
