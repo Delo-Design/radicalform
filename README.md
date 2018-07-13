@@ -57,7 +57,7 @@ A radically new approach to creating feedback forms
 1. There is a function of logging sent forms
 1. There is a function for selecting a destination for each form
 1. It is possible to use the "One-Click Order" button in online stores and other selling pages
-1. There is integration with the messenger [Dialog] (https://dlg.im/en/download/)
+1. There is integration with the messenger [Dialog](https://dlg.im/en/download/)
 1. There is a possibility of inserting in the subject of a letter of any form field
 1. HTML5 validation of form fields is provided
 1. You can change the Reply To field.
@@ -67,7 +67,7 @@ A radically new approach to creating feedback forms
 
 
 
-You can read more [here] (https://hika.su/rasshireniya/radical-form)
+You can read more [here](https://hika.su/rasshireniya/radical-form)
 
 You can download here https://github.com/progreccor/radicalform/releases
 
