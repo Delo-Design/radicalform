@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.5.0</version>
-    <creationDate>2018-07-11</creationDate>
+    <version>1.6.0</version>
+    <creationDate>2018-08-06</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -313,6 +313,17 @@
                         disabled="false"
                         showon="dialog:1"
                         filter="raw">
+                </field>
+                <field
+                        name="jivosite"
+                        type="radio"
+                        label="PLG_RADICALFORM_JIVOSITE_LABEL"
+                        description="PLG_RADICALFORM_JIVOSITE_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
                 </field>
             </fieldset>
             <fieldset name="list" label="PLG_RADICALFORM_HISTORY">

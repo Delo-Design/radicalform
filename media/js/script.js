@@ -4,7 +4,7 @@ jQuery(document).ready(function () {
     var uniq = (new Date).getTime() + Math.floor(Math.random()*100); // get uniq id for upload a file.
 
     jQuery(".rf-button-send").after('<input type="hidden" name="uniq" value="'+uniq+'" />')
-                             .after(rfToken)
+                             .after(RadicalForm.Token)
                             .after('<input type="hidden" name="url" value="'+window.location.href+'" />')
                             .after('<input type="hidden" name="resolution" value="'+screen.width +'x' + screen.height+'" />')
                             .after('<input type="hidden" name="reffer" value="'+document.referrer+'" />');
@@ -129,6 +129,27 @@ jQuery(document).ready(function () {
                     }
                 }
             }
+            if(RadicalForm.Jivosite==="1") {
+                RadicalForm.Contacts={};
+
+                for(i=0;i<inputArray.length;++i){
+                    if(inputArray[i].name==="phone") {
+                     RadicalForm.Contacts.phone=inputArray[i].value;
+                    }
+                    if(inputArray[i].name==="name") {
+                        RadicalForm.Contacts.name=inputArray[i].value;
+                    }
+                    if(inputArray[i].name==="email") {
+                        RadicalForm.Contacts.email=inputArray[i].value;
+                    }
+
+                }
+                try {
+                    jivo_api.setContactInfo(RadicalForm.Contacts);
+                } catch (e) { console.error('Radical Form JS Code: ', e); }
+
+            }
+
             jQuery.ajax({
                 type: "POST",
                 url: RadicalForm.Base+"/index.php?option=com_ajax&plugin=radicalform&format=json&group=system",
@@ -138,11 +159,25 @@ jQuery(document).ready(function () {
 	                var message,rfCall;
 	                jQuery(self2).html(tmp);
 	                jQuery(self2).prop('disabled', false);
-
 	                if(data.responseJSON===undefined) {
                         message=data.responseText;
                     } else {
-                        if (data.responseJSON.data[0] === "ok") {
+                        if (data.responseJSON.data[0][0] === "ok") {
+
+                            if(RadicalForm.Jivosite==="1") {
+                                try {
+                                var result=jivo_api.sendOfflineMessage({
+                                    "message": data.responseJSON.data[0][1]
+                                });
+                                } catch (e) { console.error('Radical Form JS Code: ', e); }
+                                if (result.result==="fail") {
+                                    var a={};
+                                    try {
+                                    jivo_api.sendMessage(a,data.responseJSON.data[0][1]);
+                                    } catch (e) { console.error('Radical Form JS Code: ', e); }
+                                }
+                            }
+
                             message=RadicalForm.AfterSend;
                             jQuery(self2).closest("form").find(".rf-filenames-list").empty();
                             jQuery(self2).closest("form").trigger("reset");

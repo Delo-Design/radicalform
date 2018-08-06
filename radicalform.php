@@ -85,7 +85,10 @@ class plgSystemRadicalform extends JPlugin
 				. "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "', "
 				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, "
 				. "Base: '" . JUri::base(true) . "', "
-				. "AfterSend:'" . $this->params->get('aftersend') . "'"
+				. "AfterSend:'" . $this->params->get('aftersend') . "',"
+				. "Jivosite:'" . $this->params->get('jivosite') . "',"
+				. "Subject:'" . $this->params->get('rfSubject') . "',"
+				. "Token:'" . JHtml::_('form.token') . "'"
 				. "};";
 
 			if (!empty($this->params->get('rfCall_0')))
@@ -104,7 +107,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
-			$js .= "var rfToken='" . JHtml::_('form.token') . "'; </script>" . $lnEnd;
+			$js .= " </script>" . $lnEnd;
 
 			$body = str_replace("</body>", $js . "</body>", $body);
 			$this->app->setBody($body);
@@ -544,6 +547,8 @@ class plgSystemRadicalform extends JPlugin
 			curl_exec($ch);
 		}
 
+		$textOutput=str_replace("<br />"," \r\n",$telegram);
+		$textOutput=str_replace(["<b>","</b>"],"",$textOutput);
 		if($this->params->get('emailon'))
 		{
 			// if we need to send email
@@ -603,7 +608,7 @@ class plgSystemRadicalform extends JPlugin
 					{
 						JFolder::delete($uploaddir);
 					}
-					return 'ok';
+					return ['ok',$textOutput];
 				}
 			}
 
@@ -614,7 +619,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				JFolder::delete($uploaddir);
 			}
-			return 'ok';
+			return ['ok',$textOutput];
 		}
 
 	}
