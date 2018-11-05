@@ -63,11 +63,10 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$html.= '</tr></thead><tbody>';
 			foreach ($data as $i => $item)
 			{
-
-				if(count($item)<5)
+				$json = json_decode($item[2], true);
+				if(is_array($json))
 				{
 					// new format of log file
-					$json        = json_decode($item[2], true);
 					$json_result = json_last_error() === JSON_ERROR_NONE;
 
 					$itog = "";
