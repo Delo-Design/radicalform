@@ -35,7 +35,7 @@ jQuery(document).ready(function () {
                         }
                     });
                     if(!found) {
-                        $("#attrib-advanced th .group-add").trigger("click");
+                        $("#attrib-advanced th a").trigger("click");
                         $("#attrib-advanced .adminlist.table tr:last-child input:eq(1)").val(output[i].name);
                         $("#attrib-advanced .adminlist.table tr:last-child input:first").val(output[i].chatID);
                     }
