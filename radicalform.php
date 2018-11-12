@@ -141,6 +141,12 @@ class plgSystemRadicalform extends JPlugin
 				$qv="https://api.telegram.org/bot".$this->params->get('telegramtoken')."/getUpdates";
 				$ch = curl_init();
 
+				if($this->params->get('proxy'))
+				{
+					$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
+					curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+					curl_setopt($ch, CURLOPT_PROXY, $proxy);
+				}
 
 				curl_setopt($ch, CURLOPT_URL, $qv);
 				curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
@@ -157,8 +163,6 @@ class plgSystemRadicalform extends JPlugin
 				// проверяем все сообщения присланные боту и вытаскиваем оттуда chat_id
 				foreach ($output as $chat)
 				{
-					if(!in_array($chat["message"]["chat"]["id"],$chatIDs["chat_id"]))
-					{
 						$chatID=$chat["message"]["chat"]["id"];
 						$name="";
 						if(isset($chat["message"]["chat"]["username"])) {
@@ -178,7 +182,6 @@ class plgSystemRadicalform extends JPlugin
 							$name.=")";
 						}
 						array_push($chatIDs,["name"=>$name,"chatID"=>$chatID]);
-					}
 				}
 
 
@@ -495,6 +498,13 @@ class plgSystemRadicalform extends JPlugin
 							]);
 
 						$ch = curl_init();
+						if($this->params->get('proxy'))
+						{
+							$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
+							curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+							curl_setopt($ch, CURLOPT_PROXY, $proxy);
+						}
+
 						curl_setopt($ch, CURLOPT_URL, "$url");
 						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 						curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
@@ -516,6 +526,13 @@ class plgSystemRadicalform extends JPlugin
 						]);
 
 					$ch = curl_init();
+					if($this->params->get('proxy'))
+					{
+						$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
+						curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+						curl_setopt($ch, CURLOPT_PROXY, $proxy);
+					}
+
 					curl_setopt($ch, CURLOPT_URL, "$url");
 					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
 					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);

@@ -270,6 +270,55 @@
                         showon="telegram:1"
                         filter="raw">
                 </field>
+                <field
+                        name="proxy"
+                        type="radio"
+                        label="PLG_RADICALFORM_PROXY_LABEL"
+                        description="PLG_RADICALFORM_PROXY_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                        showon="telegram:1"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field
+                        name="proxylogin"
+                        type="text"
+                        label="PLG_RADICALFORM_PROXYLOGIN_LABEL"
+                        description="PLG_RADICALFORM_PROXYLOGIN_DESCRIPTION"
+                        required="false"
+                        default=""
+                        class="input-xlarge"
+                        readonly="false"
+                        disabled="false"
+                        showon="telegram:1[AND]proxy:1"
+                        filter="">
+                </field>
+                <field name="proxypassword"
+                       type="password"
+                       default=""
+                       label="PLG_RADICALFORM_PROXYPASSWORD_LABEL"
+                       description="PLG_RADICALFORM_PROXYPASSWORD_DESCRIPTION"
+                       class="input-xlarge"
+                       showon="telegram:1[AND]proxy:1"
+                       />
+                <field name="proxyaddress"
+                       type="text"
+                       default=""
+                       label="PLG_RADICALFORM_PROXYADDRESS_LABEL"
+                       description="PLG_RADICALFORM_PROXYADDRESS_DESCRIPTION"
+                       class="input-xlarge"
+                       showon="telegram:1[AND]proxy:1"
+                />
+                <field name="proxyport"
+                       type="text"
+                       default="1080"
+                       label="PLG_RADICALFORM_PROXYPORT_LABEL"
+                       description="PLG_RADICALFORM_PROXYPORT_DESCRIPTION"
+                       class="input-small"
+                       showon="telegram:1[AND]proxy:1"
+                />
 
                 <field name="chatids" type="subform"
                        formsource="plugins/system/radicalform/telegramchatids.xml" multiple="true"
