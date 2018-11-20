@@ -15,16 +15,31 @@ class plgSystemRadicalformInstallerScript
 	function postflight( $type, $parent )
 	{
 		if ((version_compare(PHP_VERSION, '5.6.0') >= 0)) {
-			$db = JFactory::getDbo();
-			$query = $db->getQuery( true );
-			$query->update( '#__extensions' )->set( 'enabled=1' )->where( 'type=' . $db->q( 'plugin' ) )->where( 'element=' . $db->q( 'radicalform' ) );
-			$db->setQuery( $query )->execute();
 
-			JFactory::getApplication()->enqueueMessage(JText::_('PLG_RADICALFORM_WELCOME_MESSAGE'), 'notice');
+			jimport('joomla.version');
+			$version = new JVersion();
+			// and now we check Joomla version
+			if (version_compare($version->getShortVersion(), '3.7', '>=')) {
+				$db = JFactory::getDbo();
+				$query = $db->getQuery( true );
+				$query->update( '#__extensions' )->set( 'enabled=1' )->where( 'type=' . $db->q( 'plugin' ) )->where( 'element=' . $db->q( 'radicalform' ) );
+				$db->setQuery( $query )->execute();
+
+				JFactory::getApplication()->enqueueMessage(JText::_('PLG_RADICALFORM_WELCOME_MESSAGE'), 'notice');
+			}
+			else
+			{
+				JFactory::getApplication()->enqueueMessage(JText::_('PLG_RADICALFORM_WRONG_JOOMLA'), 'error');
+			}
+
+
+
+
 		}
 		else
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_RADICALFORM_WRONG_PHP'), 'error');
 		}
+
 	}
 }
