@@ -26,6 +26,7 @@ class plgSystemRadicalformInstallerScript
 		if (!$jversion->isCompatible('3.7'))
 		{
 			JFactory::getApplication()->enqueueMessage(JText::_('PLG_RADICALFORM_WRONG_JOOMLA'), 'error');
+			return false;
 		}
 	}
 	function postflight( $type, $parent )
