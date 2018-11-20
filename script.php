@@ -17,9 +17,11 @@ class plgSystemRadicalformInstallerScript
 		if ((version_compare(PHP_VERSION, '5.6.0') >= 0)) {
 
 			jimport('joomla.version');
-			$version = new JVersion();
 			// and now we check Joomla version
-			if (version_compare($version->getShortVersion(), '3.7', '>=')) {
+			$jversion = new JVersion();
+
+			if ($jversion->isCompatible('3.7'))
+			{
 				$db = JFactory::getDbo();
 				$query = $db->getQuery( true );
 				$query->update( '#__extensions' )->set( 'enabled=1' )->where( 'type=' . $db->q( 'plugin' ) )->where( 'element=' . $db->q( 'radicalform' ) );
