@@ -15,11 +15,6 @@ jQuery(document).ready(function () {
                                 .replace(/'/g, "&#039;")+'" />')
                             .after('<input type="hidden" name="reffer" value="'+document.referrer+'" />');
 
-    console.log((document.title).replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;"));
     if(jQuery(".rf-filenames-list").length!==jQuery("form .rf-filenames-list").length)
     {
         alert('ERROR!\r\nThere is \r\n.rf-filenames-list\r\n outside of form!\r\n Please move .rf-filenames-list inside the form. ');
