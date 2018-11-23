@@ -3,12 +3,23 @@ jQuery(document).ready(function () {
 
     var uniq = (new Date).getTime() + Math.floor(Math.random()*100); // get uniq id for upload a file.
 
+
     jQuery(".rf-button-send").after('<input type="hidden" name="uniq" value="'+uniq+'" />')
                              .after(RadicalForm.Token)
                             .after('<input type="hidden" name="url" value="'+window.location.href+'" />')
                             .after('<input type="hidden" name="resolution" value="'+screen.width +'x' + screen.height+'" />')
+                            .after('<input type="hidden" name="pagetitle" value="'+document.title.replace(/&/g, "&amp;")
+                                .replace(/</g, "&lt;")
+                                .replace(/>/g, "&gt;")
+                                .replace(/"/g, "&quot;")
+                                .replace(/'/g, "&#039;")+'" />')
                             .after('<input type="hidden" name="reffer" value="'+document.referrer+'" />');
 
+    console.log((document.title).replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;"));
     if(jQuery(".rf-filenames-list").length!==jQuery("form .rf-filenames-list").length)
     {
         alert('ERROR!\r\nThere is \r\n.rf-filenames-list\r\n outside of form!\r\n Please move .rf-filenames-list inside the form. ');
@@ -86,7 +97,7 @@ jQuery(document).ready(function () {
             field,
             form = jQuery(this).closest('form').get(0),
             inputArray = jQuery(self).serializeArray();
-        if(inputArray.length<6) {
+        if(inputArray.length<7) {
             alert("there is no name attribute for input! Please add name to your input tag!");
             needReturn=true;
         }

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field name="layout" type="text" label="Layout" />
+    <field name="description" type="text" label="Description" />
+    <field name="target" type="text" label="Target ID" />
+</form>

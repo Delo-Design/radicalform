@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.6.2</version>
-    <creationDate>2018-11-20</creationDate>
+    <version>1.7.0</version>
+    <creationDate>2018-11-23</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -374,6 +374,26 @@
                     <option value="1">JON</option>
                     <option value="0">JOFF</option>
                 </field>
+                <field
+                        name="customcodeon"
+                        type="radio"
+                        label="PLG_RADICALFORM_CUSTOMCODEON_LABEL"
+                        description="PLG_RADICALFORM_CUSTOMCODEON_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field name="customcodes" type="subform"
+                       formsource="plugins/system/radicalform/customcode.xml" multiple="true"
+                       label="PLG_RADICALFORM_CUSTOMCODE_LABEL"
+                       description="PLG_RADICALFORM_CUSTOMCODE_DESC"
+                       layout="joomla.form.field.subform.repeatable-table"
+                       showon="customcodeon:1"
+                />
+
+
             </fieldset>
             <fieldset name="list" label="PLG_RADICALFORM_HISTORY">
                 <field

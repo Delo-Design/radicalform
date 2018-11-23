@@ -75,6 +75,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 						unset($json["reffer"]);
 						unset($json["resolution"]);
 						unset($json["url"]);
+						unset($json["pagetitle"]);
 					}
 					foreach ($json as $key => $record)
 					{

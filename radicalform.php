@@ -130,6 +130,7 @@ class plgSystemRadicalform extends JPlugin
 		$input = $r->post->getArray();
 		$get   = $r->get->getArray();
 		$files = $r->files->getArray();
+		$source = $input;
 
 
 		if (isset($get['admin']) && $get['admin'] == 1 )
@@ -144,6 +145,7 @@ class plgSystemRadicalform extends JPlugin
 				if($this->params->get('proxy'))
 				{
 					$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
+
 					curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
 					curl_setopt($ch, CURLOPT_PROXY, $proxy);
 				}
@@ -390,6 +392,10 @@ class plgSystemRadicalform extends JPlugin
 			$target=$input["rfTarget"];
 			unset($input["rfTarget"]);
 		}
+		else
+		{
+			$target=false;
+		}
 
 		unset($input["uniq"]);
 		unset($input["needToSendFiles"]);
@@ -397,6 +403,7 @@ class plgSystemRadicalform extends JPlugin
 		$url=$input["url"];
 		$resolution=$input["resolution"];
 		$ref=$input["reffer"];
+		$pagetitle=$input["pagetitle"];
 
 		if(file_exists($this->logPath))
 		{
@@ -406,7 +413,7 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
-		$input = array_diff($input, array('')); // delete empty fields in input array
+		$input = array_filter($input, function($value) { return $value !== ''; }); // delete empty fields in input array
 
 		JLog::add(json_encode($input), JLog::NOTICE, 'plg_system_radicalform');
 
@@ -421,6 +428,10 @@ class plgSystemRadicalform extends JPlugin
 		if(isset($input["resolution"]))
 		{
 			unset($input["resolution"]);
+		}
+		if(isset($input["pagetitle"]))
+		{
+			unset($input["pagetitle"]);
 		}
 
 
@@ -464,6 +475,7 @@ class plgSystemRadicalform extends JPlugin
 				$footer.= JText::_('PLG_RADICALFORM_REFFER') ."<a href='".$ref."'>". substr($ref, 0, 64) ." </a> <br />";
 			};
 
+			$footer.= JText::_('PLG_RADICALFORM_PAGETITLE') ."<strong>".htmlentities($pagetitle)."</strong> <br />";
 			$footer.= JText::_('PLG_RADICALFORM_RESOLUTION') .$resolution;
 		}
 		else
@@ -478,6 +490,28 @@ class plgSystemRadicalform extends JPlugin
 		include $path;
 		$body = ob_get_clean();
 
+		//execute custom code if we'll find it
+		if($this->params->get('customcodeon'))
+		{
+			$customcodes = (array) $this->params->get('customcodes');
+			foreach ($customcodes as $customcode)
+			{
+
+				if ( (( $target !== false ) && ( $customcode->target == $target )) or
+					( empty(trim($customcode->target)) && ($target ===  false) )
+				    )
+				{
+						$template = \JFactory::getApplication()->getTemplate();
+						$tPath = JPATH_THEMES . '/' . $template . '/html/plg_system_radicalform/' . $customcode->layout;
+
+						if (file_exists($tPath) and is_file($tPath))
+						{
+							include $tPath;
+						}
+				}
+			}
+		}
+
 		if($this->params->get('telegram'))
 		{
 
@@ -485,10 +519,12 @@ class plgSystemRadicalform extends JPlugin
 			foreach ($chatIDs as $chatID)
 			{
 
-				if(isset($target)&& (!empty($target)))
+				if(
+					(( $target !== false ) && ( $chatID->target == $target )) or
+					( empty(trim($chatID->target)) && ($target ===  false) )
+				)
 				{
-					if($chatID->target == $target)
-					{
+
 						$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
 							.http_build_query([
 								'disable_web_page_preview' => true,
@@ -513,36 +549,7 @@ class plgSystemRadicalform extends JPlugin
 						curl_exec($ch);
 						curl_close($ch);
 
-					}
 				}
-				else
-				{
-					$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
-						.http_build_query([
-							'disable_web_page_preview' => true,
-							'chat_id' => $chatID->chat_id,
-							'parse_mode' => 'HTML',
-							'text' => str_replace("<br />","\r\n",$telegram)
-						]);
-
-					$ch = curl_init();
-					if($this->params->get('proxy'))
-					{
-						$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
-						curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-						curl_setopt($ch, CURLOPT_PROXY, $proxy);
-					}
-
-					curl_setopt($ch, CURLOPT_URL, "$url");
-					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-					curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-					curl_setopt($ch, CURLOPT_HEADER, 0);
-					curl_exec($ch);
-					curl_close($ch);
-				}
-
-
 			}
 
 		}
