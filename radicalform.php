@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
  * @copyright     Copyright 2018 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
+use Joomla\CMS\Factory;
+use Joomla\CMS\Document\Renderer\Html\HeadRenderer;
 use Joomla\String\StringHelper;
 class plgSystemRadicalform extends JPlugin
 {
@@ -69,13 +71,10 @@ class plgSystemRadicalform extends JPlugin
 		}
 
 		$body  = $this->app->getBody();
-		$lnEnd = JFactory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.js");
-			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
-				. "<script>"
-				. "var RadicalForm={"
+			JHTML::_('script', 'plg_system_radicalform/script.js', array('version' => 'auto', 'relative' => true));
+			$js    = "var RadicalForm={"
 				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
 				. "ErrorFile:'" . $this->params->get('errorfile') . "', "
 				. "thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND') . "', "
@@ -107,9 +106,13 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
-			$js .= " </script>" . $lnEnd;
 
-			$body = str_replace("</body>", $js . "</body>", $body);
+			$doc = Factory::getDocument();
+			$doc->addScriptDeclaration($js);
+			$headRender = new HeadRenderer($doc);
+			$newHead    = '<head>' . PHP_EOL . $headRender->render('') . PHP_EOL . '</head>';
+			$body = preg_replace('|<head>(.*)</head>|si', $newHead, $body);
+
 			$this->app->setBody($body);
 
 		}
