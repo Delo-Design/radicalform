@@ -75,7 +75,6 @@ class plgSystemRadicalform extends JPlugin
 		if (strpos($body, 'rf-button-send') !== false)
 		{
 			JHTML::_('script', 'plg_system_radicalform/script.js', array('version' => 'auto', 'relative' => true));
-			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
 			$js    = "var RadicalForm={"
 				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
 				. "ErrorFile:'" . $this->params->get('errorfile') . "', "
