@@ -186,7 +186,6 @@ class plgSystemRadicalform extends JPlugin
 						array_push($chatIDs,["name"=>$name,"chatID"=>$chatID]);
 				}
 
-
 				return $chatIDs;
 			} else
 			{
