@@ -11,6 +11,8 @@ defined('_JEXEC') or die;
  * @copyright     Copyright 2018 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
+use Joomla\CMS\Factory;
+use Joomla\CMS\Document\Renderer\Html\HeadRenderer;
 use Joomla\String\StringHelper;
 class plgSystemRadicalform extends JPlugin
 {
