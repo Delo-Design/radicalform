@@ -266,7 +266,10 @@ ready(function () {
                 if (this.readyState === 4 && this.status === 200) {
                     buttonPressed.innerHTML=prevousButtonText;
                     buttonPressed.disabled=false;
-                    form.querySelector(".rf-filenames-list").innerHTML="";
+                    if (form.querySelector(".rf-filenames-list")) {
+                        form.querySelector(".rf-filenames-list").innerHTML="";
+                    }
+
                     //clear all fields of the form
                     form.reset();
 
