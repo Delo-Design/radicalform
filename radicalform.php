@@ -11,8 +11,6 @@ defined('_JEXEC') or die;
  * @copyright     Copyright 2018 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
-use Joomla\CMS\Factory;
-use Joomla\CMS\Document\Renderer\Html\HeadRenderer;
 use Joomla\String\StringHelper;
 class plgSystemRadicalform extends JPlugin
 {
@@ -45,7 +43,7 @@ class plgSystemRadicalform extends JPlugin
 			array('plg_system_radicalform')
 		);
 
-    }
+	}
 
 	private function return_bytes($size_str)
 	{
@@ -71,11 +69,13 @@ class plgSystemRadicalform extends JPlugin
 		}
 
 		$body  = $this->app->getBody();
-
+		$lnEnd = JFactory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			JHTML::_('script', 'plg_system_radicalform/script.js', array('version' => 'auto', 'relative' => true));
-			$js    = "var RadicalForm={"
+			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.js");
+			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
+				. "<script>"
+				. "var RadicalForm={"
 				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
 				. "ErrorFile:'" . $this->params->get('errorfile') . "', "
 				. "thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND') . "', "
@@ -107,11 +107,9 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
-			$doc = Factory::getDocument();
-			$doc->addScriptDeclaration($js);
-			$headRender = new HeadRenderer($doc);
-			$newHead    = '<head>' . PHP_EOL . $headRender->render('') . PHP_EOL . '</head>';
-			$body = preg_replace('|<head>(.*)</head>|si', $newHead, $body);
+			$js .= " </script>" . $lnEnd;
+
+			$body = str_replace("</body>", $js . "</body>", $body);
 			$this->app->setBody($body);
 
 		}
@@ -167,26 +165,27 @@ class plgSystemRadicalform extends JPlugin
 				// проверяем все сообщения присланные боту и вытаскиваем оттуда chat_id
 				foreach ($output as $chat)
 				{
-						$chatID=$chat["message"]["chat"]["id"];
-						$name="";
-						if(isset($chat["message"]["chat"]["username"])) {
-							$name.=$chat["message"]["chat"]["username"];
-						}
-						if(isset($chat["message"]["chat"]["first_name"]) || isset($chat["message"]["chat"]["last_name"])) {
-							$name.=" (";
-						}
-						if(isset($chat["message"]["chat"]["first_name"])) {
-							$name.=$chat["message"]["chat"]["first_name"];
-						}
+					$chatID=$chat["message"]["chat"]["id"];
+					$name="";
+					if(isset($chat["message"]["chat"]["username"])) {
+						$name.=$chat["message"]["chat"]["username"];
+					}
+					if(isset($chat["message"]["chat"]["first_name"]) || isset($chat["message"]["chat"]["last_name"])) {
+						$name.=" (";
+					}
+					if(isset($chat["message"]["chat"]["first_name"])) {
+						$name.=$chat["message"]["chat"]["first_name"];
+					}
 
-						if(isset($chat["message"]["chat"]["last_name"])) {
-							$name.=" ".$chat["message"]["chat"]["last_name"];
-						}
-						if(isset($chat["message"]["chat"]["first_name"]) || isset($chat["message"]["chat"]["last_name"])) {
-							$name.=")";
-						}
-						array_push($chatIDs,["name"=>$name,"chatID"=>$chatID]);
+					if(isset($chat["message"]["chat"]["last_name"])) {
+						$name.=" ".$chat["message"]["chat"]["last_name"];
+					}
+					if(isset($chat["message"]["chat"]["first_name"]) || isset($chat["message"]["chat"]["last_name"])) {
+						$name.=")";
+					}
+					array_push($chatIDs,["name"=>$name,"chatID"=>$chatID]);
 				}
+
 
 				return $chatIDs;
 			} else
@@ -314,7 +313,8 @@ class plgSystemRadicalform extends JPlugin
 			return $output;
 		}
 
-		if (!JFactory::getSession()->checkToken())
+
+		if (JFactory::getSession()->isNew() || !JFactory::getSession()->checkToken())
 		{
 			return JText::_('PLG_RADICALFORM_INVALID_TOKEN');
 		};
@@ -500,15 +500,15 @@ class plgSystemRadicalform extends JPlugin
 
 				if ( (( $target !== false ) && ( $customcode->target == $target )) or
 					( empty(trim($customcode->target)) && ($target ===  false) )
-				    )
+				)
 				{
-						$template = \JFactory::getApplication()->getTemplate();
-						$tPath = JPATH_THEMES . '/' . $template . '/html/plg_system_radicalform/' . $customcode->layout;
+					$template = \JFactory::getApplication()->getTemplate();
+					$tPath = JPATH_THEMES . '/' . $template . '/html/plg_system_radicalform/' . $customcode->layout;
 
-						if (file_exists($tPath) and is_file($tPath))
-						{
-							include $tPath;
-						}
+					if (file_exists($tPath) and is_file($tPath))
+					{
+						include $tPath;
+					}
 				}
 			}
 		}
@@ -526,29 +526,29 @@ class plgSystemRadicalform extends JPlugin
 				)
 				{
 
-						$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
-							.http_build_query([
-								'disable_web_page_preview' => true,
-								'chat_id' => $chatID->chat_id,
-								'parse_mode' => 'HTML',
-								'text' => str_replace("<br />","\r\n",$telegram)
-							]);
+					$url = "https://api.telegram.org/bot".$this->params->get('telegramtoken')."/sendMessage?"
+						.http_build_query([
+							'disable_web_page_preview' => true,
+							'chat_id' => $chatID->chat_id,
+							'parse_mode' => 'HTML',
+							'text' => str_replace("<br />","\r\n",$telegram)
+						]);
 
-						$ch = curl_init();
-						if($this->params->get('proxy'))
-						{
-							$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
-							curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
-							curl_setopt($ch, CURLOPT_PROXY, $proxy);
-						}
+					$ch = curl_init();
+					if($this->params->get('proxy'))
+					{
+						$proxy = $this->params->get('proxylogin').":".$this->params->get('proxypassword')."@".$this->params->get('proxyaddress').":".$this->params->get('proxyport');
+						curl_setopt($ch, CURLOPT_PROXYTYPE, CURLPROXY_SOCKS5);
+						curl_setopt($ch, CURLOPT_PROXY, $proxy);
+					}
 
-						curl_setopt($ch, CURLOPT_URL, "$url");
-						curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
-						curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
-						curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
-						curl_setopt($ch, CURLOPT_HEADER, 0);
-						curl_exec($ch);
-						curl_close($ch);
+					curl_setopt($ch, CURLOPT_URL, "$url");
+					curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
+					curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+					curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
+					curl_setopt($ch, CURLOPT_HEADER, 0);
+					curl_exec($ch);
+					curl_close($ch);
 
 				}
 			}
@@ -595,7 +595,7 @@ class plgSystemRadicalform extends JPlugin
 			}
 			else
 			{
-			//traditional send
+				//traditional send
 				$mailer->addRecipient($this->params->get('email'));
 				if (!empty($this->params->get('emailcc')))
 				{
