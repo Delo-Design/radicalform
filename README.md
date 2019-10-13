@@ -8,6 +8,7 @@
 Минимальная версия php 5.6
 
 1. Это бесплатный плагин, который таким и останется.
+1. Не требует для своей работы jQuery!
 1. Работает в любом месте сайта, нет никаких ограничений. (актуально для различных конструкторов сайтов, интернет магазинов и т.д.)
 1. Это аякс плагин.
 1. Прекрасно работает во всплывающих окнах. Есть возможность их закрывать после отправки формы.
@@ -47,6 +48,7 @@ http://hika.su/update/free/plg_radicalform.zip
 A radically new approach to creating feedback forms
 
 1. This is a free plug-in that will remain so.
+1. You don't need jQuery for this plugin!
 1. Works anywhere on the site, there are no restrictions. (relevant for various page builder, online stores, etc.)
 1. This is ajax plugin.
 1. Works great in pop-up windows. It is possible to close them after submitting the form.
