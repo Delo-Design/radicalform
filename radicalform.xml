@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2018 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>1.7.1</version>
-    <creationDate>2018-11-23</creationDate>
+    <version>2.0.0</version>
+    <creationDate>2019-11-13</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -133,6 +133,16 @@
                         showon="emailon:1"
                         disabled="false"/>
                 <field
+                        name="emailbcc"
+                        type="email"
+                        label="PLG_RADICALFORM_EMAIL_BCC"
+                        required="false"
+                        size="10"
+                        class="input-xxlarge"
+                        readonly="false"
+                        showon="emailon:1"
+                        disabled="false"/>
+                <field
                         name="replyto"
                         type="text"
                         label="PLG_RADICALFORM_REPLY_TO"
@@ -219,7 +229,7 @@
                 </field>
                 <field
                         name="aftersend"
-                        type="text"
+                        type="textarea"
                         label="PLG_RADICALFORM_AFTERSEND"
                         description="PLG_RADICALFORM_AFTERSEND_DESCRIPTION"
                         required="false"
@@ -243,6 +253,18 @@
                         disabled="false"
                         filter="raw">
                 </field>
+                <field type="spacer" name="myspacer12" hr="true"/>
+                <field
+                        name="keepalive"
+                        type="radio"
+                        label="PLG_RADICALFORM_KEEPALIVE"
+                        description="PLG_RADICALFORM_KEEPALIVE_DESC"
+                        class="btn-group btn-group-yesno"
+                        default="1">
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field type="spacer"  name="myspacer13" hr="true"/>
             </fieldset>
             <fieldset name="advanced" label="PLG_RADICALFORM_ADVANCEDPARAMS">
                 <field

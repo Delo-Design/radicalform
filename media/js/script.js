@@ -182,7 +182,7 @@ ready(function () {
         [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
             if(el.dataset.name) {
                 el.setAttribute('name', el.dataset.name);
-            };
+            }
             el.removeAttribute("data-name");
         });
 

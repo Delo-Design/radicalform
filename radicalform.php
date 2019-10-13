@@ -12,6 +12,7 @@ defined('_JEXEC') or die;
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
 use Joomla\String\StringHelper;
+use \Joomla\CMS\HTML\HTMLHelper;
 class plgSystemRadicalform extends JPlugin
 {
 	private $logPath;
@@ -57,6 +58,14 @@ class plgSystemRadicalform extends JPlugin
 				return (int) $size_str * 1024;
 			default:
 				return $size_str;
+		}
+	}
+
+	public function onBeforeCompileHead()
+	{
+		if($this->params->get('keepalive'))
+		{
+			HTMLHelper::_('behavior.keepalive');
 		}
 	}
 
@@ -601,6 +610,10 @@ class plgSystemRadicalform extends JPlugin
 				{
 					$mailer->addCc($this->params->get('emailcc'));
 				}
+				if (!empty($this->params->get('emailbcc')))
+				{
+					$mailer->addBcc($this->params->get('emailbcc'));
+				}
 				$needToSendEmail=true;
 			}
 
@@ -636,7 +649,7 @@ class plgSystemRadicalform extends JPlugin
 					return ['ok',$textOutput];
 				}
 			}
-
+			return ['ok', $textOutput];
 		}
 		else
 		{
