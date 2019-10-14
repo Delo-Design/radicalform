@@ -168,24 +168,9 @@ ready(function () {
             field,
             form = closest(this,'form');
 
-        // we need only input that not file input. So we remove name from input of type file.
-        [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
-            if(el.getAttribute('name')) {
-                el.dataset.name=el.getAttribute('name');
-            };
-            el.removeAttribute("name");
-        });
-        var numberOfInputsWithNames=form.querySelectorAll('input[name]').length;
-        var AjaxFormData = new FormData(form); //form data without the file inputs
 
-        // here we return the previous state of the inputs of file type
-        [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
-            if(el.dataset.name) {
-                el.setAttribute('name', el.dataset.name);
-            }
-            el.removeAttribute("data-name");
-        });
 
+        var numberOfInputsWithNames=form.querySelectorAll("input[name]").length - form.querySelectorAll('input[type="file"]').length;
         if (numberOfInputsWithNames < 7) {
             alert("There is no input tags in your form with 'name' attribute!\r\n Please add 'name' attribute to your input tags!");
             needReturn = true;
@@ -228,12 +213,31 @@ ready(function () {
                 rfCall = String(this.dataset.rfCall);
                 if (rfCall[0] === "0") {
                     try {
-                        rfCall_0(self2);
+                        rfCall_0(this);
                     } catch (e) {
                         console.error('Radical Form JS Code: ', e);
                     }
                 }
             }
+
+            // we need only input tags that not file input tags. So we remove name from input of type file.
+            [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
+                if(el.getAttribute('name')) {
+                    el.dataset.name=el.getAttribute('name');
+                }
+                el.removeAttribute("name");
+            });
+
+            var AjaxFormData = new FormData(form); //form data without the file inputs
+
+            // here we return the previous state of the inputs of file type
+            [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
+                if(el.dataset.name) {
+                    el.setAttribute('name', el.dataset.name);
+                }
+                el.removeAttribute("data-name");
+            });
+
             if (RadicalForm.Jivosite === "1") {
                 RadicalForm.Contacts = {};
 
