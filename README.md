@@ -61,7 +61,7 @@ A radically new approach to creating feedback forms
 1. Correctly works with Joomla caching.
 1. The CSRF token is checked.
 1. There is an integration with the messenger messaging.
-1. Using the built-in ability of Jumla to make multilingual forms (for each language its own)
+1. Using the built-in ability of Joomla to make multilingual forms (for each language its own)
 1. There is a function of logging sent forms
 1. There is a function for selecting a destination for each form
 1. It is possible to use the "One-Click Order" button in online stores and other selling pages
