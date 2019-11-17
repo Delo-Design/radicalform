@@ -77,6 +77,12 @@ class plgSystemRadicalform extends JPlugin
 			return false;
 		}
 
+		$data = Factory::getApplication()->input->getArray();
+		if(isset($data['tmpl']) && $data['tmpl'] === 'component')
+		{
+			return false;
+		}
+		
 		$body  = $this->app->getBody();
 		$lnEnd = JFactory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
