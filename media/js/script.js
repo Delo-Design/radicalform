@@ -71,7 +71,7 @@ RadicalFormClass = function () {
             el.addEventListener('change', selfClass.fileSend);
         });
 
-    }
+    };
 
     /**
      * Send form
@@ -279,7 +279,7 @@ RadicalFormClass = function () {
             };
         }
         e.preventDefault();
-    }
+    };
 
     /**
      * Send file to server for save
@@ -370,7 +370,7 @@ RadicalFormClass = function () {
             rf_filenames_list.insertAdjacentHTML('beforeend',"<div class='" + RadicalForm.ErrorFile + "'>" + RadicalForm.ErrorMax + "</div>"); // size is more than limit
         }
 
-    }
+    };
 
     this.on = function (el, selector, event, cb) {
         el.addEventListener(event, function (e) {
@@ -397,4 +397,4 @@ RadicalFormClass = function () {
         return null;
     }
 
-}
+};
