@@ -102,7 +102,7 @@ class plgSystemRadicalform extends JPlugin
 
 			if (!empty($this->params->get('rfCall_0')))
 			{
-				$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				$js .= "function rfCall_0(here, needReturn) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
 			if (!empty($this->params->get('rfCall_1')))
 			{

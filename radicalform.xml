@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2019 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>2.0.1</version>
-    <creationDate>2019-11-14</creationDate>
+    <version>2.2.1</version>
+    <creationDate>2019-12-08</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -69,36 +69,40 @@
                 <field type="spacer" name="myspacer" hr="true"/>
                 <field
                         name="rfCall_0"
-                        type="textarea"
                         label="PLG_RADICALFORM_RF_CALL_0"
                         description="PLG_RADICALFORM_RF_CALL_0_DESCRIPTION"
                         filter="raw"
+                        editor="codemirror|none"
+                        type="editor"
                         class="input-xxlarge"
                 />
                 <field
                         name="rfCall_1"
-                        type="textarea"
+                        type="editor"
                         label="PLG_RADICALFORM_RF_CALL_1"
                         description="PLG_RADICALFORM_RF_CALL_1_DESCRIPTION"
+                        editor="codemirror|none"
+                        syntax="js"
+                        buttons="false"
                         filter="raw"
-                        class="input-xxlarge"
                 />
                 <field
                         name="rfCall_2"
-                        type="textarea"
+                        editor="codemirror|none"
+                        type="editor"
                         label="PLG_RADICALFORM_RF_CALL_2"
                         description="PLG_RADICALFORM_RF_CALL_2_DESCRIPTION"
-                        class="input-xxlarge"
-                        filter="raw"
+                         filter="raw"
                         default="alert(rfMessage);"
                 />
                 <field
                         name="rfCall_3"
-                        type="textarea"
+                        editor="codemirror|none"
+                        type="editor"
                         label="PLG_RADICALFORM_RF_CALL_3"
                         description="PLG_RADICALFORM_RF_CALL_3_DESCRIPTION"
                         filter="raw"
-                        class="input-xxlarge"
+
                 />
                 <field type="spacer" name="myspacer1" hr="true"/>
                 <field

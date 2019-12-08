@@ -113,24 +113,28 @@ RadicalFormClass = function () {
             }
         }, 70);
 
+        if (this.dataset.rfCall !== undefined) {
+            var rfCall = String(this.dataset.rfCall);
+            if (rfCall[0] === "0") {
+                try {
+                   var returnOfpreCall = rfCall_0(this, needReturn);
+                   if ( (returnOfpreCall !== undefined) && (returnOfpreCall === false) ) {
+                       needReturn = true;
+                   }
+                } catch (e) {
+                    console.error('Radical Form JS Code: ', e);
+                }
+            }
+        }
+
         if (!needReturn) {
+
             var prevousButtonText = this.innerHTML,
                 buttonPressed = this;
 
             this.disabled = true;
             this.innerHTML = RadicalForm.WaitMessage;
 
-
-            if (this.dataset.rfCall !== undefined) {
-                rfCall = String(this.dataset.rfCall);
-                if (rfCall[0] === "0") {
-                    try {
-                        rfCall_0(this);
-                    } catch (e) {
-                        console.error('Radical Form JS Code: ', e);
-                    }
-                }
-            }
 
             // we need only input tags that not file input tags. So we remove name from input of type file.
             [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
