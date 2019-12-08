@@ -35,9 +35,13 @@ RadicalFormClass = function () {
      * @param container
      */
     this.init = function(container) {
-
-        if(container === null || container === undefined) {
-            container = document.querySelector('body')
+       
+        if(typeof container === 'string') {
+            container = document.querySelector(container);
+        } else {
+            if(container === null || container === undefined) {
+                container = document.querySelector('body')
+            }
         }
 
         [].forEach.call(container.querySelectorAll('.rf-button-send'), function (el) {
