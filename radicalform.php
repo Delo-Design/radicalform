@@ -520,7 +520,7 @@ class plgSystemRadicalform extends JPlugin
 					( empty(trim($customcode->target)) && ($target ===  false) )
 				)
 				{
-					$template = \Factory::getApplication()->getTemplate();
+					$template = Factory::getApplication()->getTemplate();
 					$tPath = JPATH_THEMES . '/' . $template . '/html/plg_system_radicalform/' . $customcode->layout;
 
 					if (file_exists($tPath) and is_file($tPath))
