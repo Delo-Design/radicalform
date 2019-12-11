@@ -14,7 +14,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\String\StringHelper;
-use \Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\HTML\HTMLHelper;
 
 class plgSystemRadicalform extends JPlugin
 {

@@ -303,7 +303,7 @@ RadicalFormClass = function () {
             previousTextForUploadButton = textForUploadButton ? textForUploadButton.innerHTML : "",
             formData = new FormData(),
             form = selfClass.closest(this, 'form'),
-            rf_filenames_list = form.querySelector('.rf-filenames-list');
+            rf_filenames_list = form.querySelector('.rf-filenames-list') || document.createElement('div');
 
         formData.append(this.name, this.files[0]);
 
