@@ -11,8 +11,11 @@ defined('_JEXEC') or die;
  * @copyright     Copyright 2018 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
+
+use Joomla\CMS\Factory;
 use Joomla\String\StringHelper;
-use \Joomla\CMS\HTML\HTMLHelper;
+use Joomla\CMS\HTML\HTMLHelper;
+
 class plgSystemRadicalform extends JPlugin
 {
 	private $logPath;
@@ -30,7 +33,7 @@ class plgSystemRadicalform extends JPlugin
 		JLoader::register('JFolder', JPATH_LIBRARIES . '/joomla/filesystem/folder.php');
 		$this->maxDirSize = $this->params->get('maxfile');
 
-		$this->logPath = str_replace('\\', '/', JFactory::getConfig()->get('log_path')).'/plg_system_radicalform.php';
+		$this->logPath = str_replace('\\', '/', Factory::getConfig()->get('log_path')).'/plg_system_radicalform.php';
 
 		JLog::addLogger(
 			array(
@@ -77,8 +80,14 @@ class plgSystemRadicalform extends JPlugin
 			return false;
 		}
 
+		$data = $this->app->input->getArray();
+		if(isset($data['tmpl']) && $data['tmpl'] === 'component')
+		{
+			return false;
+		}
+
 		$body  = $this->app->getBody();
-		$lnEnd = JFactory::getDocument()->_getLineEnd();
+		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
 			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.js");
@@ -257,7 +266,7 @@ class plgSystemRadicalform extends JPlugin
 					}
 				}
 
-				$lang = JFactory::getLanguage();
+				$lang = Factory::getLanguage();
 
 				foreach ($files as $key => $file)
 				{
@@ -323,13 +332,13 @@ class plgSystemRadicalform extends JPlugin
 		}
 
 
-		if (JFactory::getSession()->isNew() || !JFactory::getSession()->checkToken())
+		if (Factory::getSession()->isNew() || !Factory::getSession()->checkToken())
 		{
 			return JText::_('PLG_RADICALFORM_INVALID_TOKEN');
 		};
 
-		$mailer = JFactory::getMailer();
-		$config = JFactory::getConfig();
+		$mailer = Factory::getMailer();
+		$config = Factory::getConfig();
 		$sender = array(
 			$config->get('mailfrom'),
 			$config->get('fromname')
@@ -511,7 +520,7 @@ class plgSystemRadicalform extends JPlugin
 					( empty(trim($customcode->target)) && ($target ===  false) )
 				)
 				{
-					$template = \JFactory::getApplication()->getTemplate();
+					$template = Factory::getApplication()->getTemplate();
 					$tPath = JPATH_THEMES . '/' . $template . '/html/plg_system_radicalform/' . $customcode->layout;
 
 					if (file_exists($tPath) and is_file($tPath))
