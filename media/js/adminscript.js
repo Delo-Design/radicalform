@@ -21,7 +21,7 @@ jQuery(document).ready(function () {
 
         $(".CodeMirror ").css("height","100px");
         $(".CodeMirror ").css("min-height","100px");
-        $(".CodeMirror ").css("width","700px");
+        $(".CodeMirror ").css("width","760px");
 
         $("#radicalformcheck").on("click", function (event) {
             var temp=$("#radicalformcheck").html();
