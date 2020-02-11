@@ -63,6 +63,12 @@ RadicalFormClass = function () {
             });
         });
 
+        this.on(container, "form ." + selfClass.danger_сlasses.join('.'), 'change', function (target, e) {
+            selfClass.danger_сlasses.forEach(function (item) {
+                target.target.classList.remove(item);
+            });
+        });
+
         if (container.querySelectorAll(".rf-filenames-list").length !== container.querySelectorAll("form .rf-filenames-list").length) {
             alert('ERROR!\r\nThere is \r\n.rf-filenames-list\r\n outside of form!\r\n Please move .rf-filenames-list inside the form. ');
         }
@@ -203,7 +209,7 @@ RadicalFormClass = function () {
                     } catch (e) {
                         response = false;
                         try {
-                            rfCall_2((request.status + ' ' + e.message),buttonPressed);
+                            rfCall_2(('Response code: ' + request.status + '\n' + e.message + '\n' + this.response), buttonPressed);
                         } catch (e) {
                             console.error('Radical Form JS Code: ', e);
                         }
