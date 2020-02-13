@@ -6,13 +6,6 @@ function ready(fn) {
     }
 }
 
-
-ready(function () {
-    RadicalForm.RadicalFormClass = new RadicalFormClass;
-    RadicalForm.RadicalFormClass.init();
-});
-
-
 RadicalFormClass = function () {
 
     var selfClass = this;
@@ -412,3 +405,8 @@ RadicalFormClass = function () {
     }
 
 };
+
+ready(function () {
+    RadicalForm.RadicalFormClass = new RadicalFormClass;
+    RadicalForm.RadicalFormClass.init();
+});
