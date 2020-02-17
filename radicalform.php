@@ -91,7 +91,7 @@ class plgSystemRadicalform extends JPlugin
 		if (strpos($body, 'rf-button-send') !== false)
 		{
 			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.js");
-			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.js?$mtime\"></script>" . $lnEnd
+			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.min.js?$mtime\" async></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm={"
 				. "DangerClass:'" . $this->params->get('dangerclass') . "', "

@@ -6,13 +6,6 @@ function ready(fn) {
     }
 }
 
-
-ready(function () {
-    RadicalForm.RadicalFormClass = new RadicalFormClass;
-    RadicalForm.RadicalFormClass.init();
-});
-
-
 RadicalFormClass = function () {
 
     var selfClass = this;
@@ -58,6 +51,12 @@ RadicalFormClass = function () {
         });
 
         this.on(container, "form ." + selfClass.danger_сlasses.join('.'), 'keypress', function (target, e) {
+            selfClass.danger_сlasses.forEach(function (item) {
+                target.target.classList.remove(item);
+            });
+        });
+
+        this.on(container, "form ." + selfClass.danger_сlasses.join('.'), 'change', function (target, e) {
             selfClass.danger_сlasses.forEach(function (item) {
                 target.target.classList.remove(item);
             });
@@ -203,7 +202,7 @@ RadicalFormClass = function () {
                     } catch (e) {
                         response = false;
                         try {
-                            rfCall_2((request.status + ' ' + e.message),buttonPressed);
+                            rfCall_2(('Response code: ' + request.status + '\n' + e.message + '\n' + this.response), buttonPressed);
                         } catch (e) {
                             console.error('Radical Form JS Code: ', e);
                         }
@@ -330,8 +329,8 @@ RadicalFormClass = function () {
                     try {
                         response = JSON.parse(this.response);
                     } catch (e) {
+                        console.error(request.status + ' ' + e.message + ' ' + this.response);
                         response = false;
-                        console.error(request.status + ' ' + e.message);
                         return;
                     }
                     if (response.success) {
@@ -406,3 +405,8 @@ RadicalFormClass = function () {
     }
 
 };
+
+ready(function () {
+    RadicalForm.RadicalFormClass = new RadicalFormClass;
+    RadicalForm.RadicalFormClass.init();
+});
