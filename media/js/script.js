@@ -329,8 +329,8 @@ RadicalFormClass = function () {
                     try {
                         response = JSON.parse(this.response);
                     } catch (e) {
+                        console.error(request.status + ' ' + e.message + ' ' + this.response);
                         response = false;
-                        console.error(request.status + ' ' + e.message);
                         return;
                     }
                     if (response.success) {
