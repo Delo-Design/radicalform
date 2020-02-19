@@ -1,13 +1,16 @@
 # RadicalForm
-Радикально новый подход к созданию форм обратной связи
+Радикально новый подход к созданию форм обратной связи на основе чистого Javascript
 
 ![radicalform3](https://user-images.githubusercontent.com/3103677/43738282-b08d2e3e-99cc-11e8-9e70-ce565f0a0e79.png)
 
-Минимальная версия Joomla 3.7
+Минимальная версия **Joomla 3.7**
 
-Минимальная версия php 5.6
+Минимальная версия **php 5.6**
+
+Поддерживаются браузеры: **Internet Explorer 11** и все современные версии браузеров (включая Safari).
 
 1. Это бесплатный плагин, который таким и останется.
+1. Не требует для своей работы jQuery!
 1. Работает в любом месте сайта, нет никаких ограничений. (актуально для различных конструкторов сайтов, интернет магазинов и т.д.)
 1. Это аякс плагин.
 1. Прекрасно работает во всплывающих окнах. Есть возможность их закрывать после отправки формы.
@@ -47,6 +50,7 @@ http://hika.su/update/free/plg_radicalform.zip
 A radically new approach to creating feedback forms
 
 1. This is a free plug-in that will remain so.
+1. You don't need jQuery for this plugin!
 1. Works anywhere on the site, there are no restrictions. (relevant for various page builder, online stores, etc.)
 1. This is ajax plugin.
 1. Works great in pop-up windows. It is possible to close them after submitting the form.
@@ -57,7 +61,7 @@ A radically new approach to creating feedback forms
 1. Correctly works with Joomla caching.
 1. The CSRF token is checked.
 1. There is an integration with the messenger messaging.
-1. Using the built-in ability of Jumla to make multilingual forms (for each language its own)
+1. Using the built-in ability of Joomla to make multilingual forms (for each language its own)
 1. There is a function of logging sent forms
 1. There is a function for selecting a destination for each form
 1. It is possible to use the "One-Click Order" button in online stores and other selling pages
