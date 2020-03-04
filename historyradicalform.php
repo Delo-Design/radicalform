@@ -57,10 +57,10 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$html.="<br><br>";
 			$html.= '<table class="table table-striped table-bordered adminlist" style="max-width: 960px"><thead><tr>';
 			$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TIME') . '</th>';
-			if ($params->showtarget) {
+			if (isset($params->showtarget) && $params->showtarget) {
 				$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TARGET') . '</th>';
 			}
-			if ($params->showformid) {
+			if (isset($params->showformid) && $params->showformid) {
 				$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_FORMID') . '</th>';
 			}
 			$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_IP') . '</th>';
@@ -122,7 +122,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 						unset($json["rfUserAgent"]);
 					}
 
-					if ($params->showtarget) {
+					if (isset($params->showtarget) && $params->showtarget) {
 						if (isset($json["rfTarget"]) && (!empty($json["rfTarget"])))
 						{
 							$target="<td>".JText::_($json["rfTarget"])."</td>";
@@ -138,7 +138,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 						$target="";
 					}
 
-					if ($params->showformid) {
+					if (isset($params->showformid) && $params->showformid) {
 						if (isset($json["rfFormID"]) && (!empty($json["rfFormID"])))
 						{
 							$formid="<td>".JText::_($json["rfFormID"])."</td>";
