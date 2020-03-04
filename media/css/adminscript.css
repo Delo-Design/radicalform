@@ -1,0 +1,31 @@
+#general .adminlist.table {
+    max-width: 760px;
+}
+#general .adminlist.table th:nth-child(2),
+#attrib-advanced .adminlist.table th:first-child,
+#attrib-advanced .adminlist.table th:nth-child(3) {
+    width: 16%;
+}
+#attrib-list .adminlist.table td a {
+    text-decoration: underline;
+}
+#attrib-advanced .adminlist.table {
+    max-width: 960px;
+}
+
+#general .CodeMirror.CodeMirror-fullscreen {
+    width: 100%;
+}
+#general .CodeMirror {
+    height: 100px;
+    min-height: auto;
+    width: 760px;
+}
+
+.rfMarginTop {
+    margin-top: 8px;
+}
+
+.historytable {
+    max-width: 1040px;
+}

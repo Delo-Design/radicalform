@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2020 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>2.2.4</version>
-    <creationDate>2020-02-19</creationDate>
+    <version>2.3.0</version>
+    <creationDate>2020-03-04</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -28,6 +28,7 @@
     </languages>
     <media folder="media" destination="plg_system_radicalform">
         <folder>js</folder>
+        <folder>css</folder>
         <filename>index.html</filename>
     </media>
     <updateservers>
@@ -257,6 +258,16 @@
                         disabled="false"
                         filter="raw">
                 </field>
+                <field
+                        name="insertformid"
+                        type="radio"
+                        label="PLG_RADICALFORM_INSERTFORMID"
+                        description="PLG_RADICALFORM_INSERTFORMID_DESC"
+                        class="btn-group btn-group-yesno"
+                        default="0">
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
                 <field type="spacer" name="myspacer12" hr="true"/>
                 <field
                         name="keepalive"
@@ -402,6 +413,17 @@
                     <option value="0">JOFF</option>
                 </field>
                 <field
+                        name="verbox"
+                        type="radio"
+                        label="PLG_RADICALFORM_VERBOX_LABEL"
+                        description="PLG_RADICALFORM_VERBOX_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field
                         name="customcodeon"
                         type="radio"
                         label="PLG_RADICALFORM_CUSTOMCODEON_LABEL"
@@ -446,6 +468,29 @@
                     <option value="1">JON</option>
                     <option value="0">JOFF</option>
                 </field>
+                <field
+                        name="showtarget"
+                        type="radio"
+                        label="PLG_RADICALFORM_SHOWTARGET"
+                        description="PLG_RADICALFORM_SHOWTARGET_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field
+                        name="showformid"
+                        type="radio"
+                        label="PLG_RADICALFORM_SHOWFORMID"
+                        description="PLG_RADICALFORM_SHOWFORMID_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field name="note22" type="note" class="alert alert-info input-xxlarge hidden" close="true" label="PLG_RADICALFORM_SHOWTARGET_DONTFORGET" description="PLG_RADICALFORM_SHOWTARGET_DONTFORGET_DESCRIPTION" />
                 <field type="spacer" name="myspacer3" hr="true"/>
                 <field
                         name="historytable"

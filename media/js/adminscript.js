@@ -1,13 +1,6 @@
 jQuery(document).ready(function () {
     jQuery(function ($) {
 
-        $("#general .adminlist.table").css("max-width",760);
-        $("#general .adminlist.table th:nth-child(2)").css("width","16%");
-
-        $("#attrib-advanced .adminlist.table").css("max-width",960);
-        $("#attrib-advanced .adminlist.table th:first-child").css("width","16%");
-        $("#attrib-advanced .adminlist.table th:nth-child(3)").css("width","16%");
-
 
         $("#historyclear").on("click", function (event) {
             $("#historyclear").html("Wait...")
@@ -18,10 +11,26 @@ jQuery(document).ready(function () {
 
             event.preventDefault();
         });
+        $("#numberclear").on("click", function (event) {
+            $("#numberclear").html("Wait...")
+                .prop('disabled', true);
+            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=3", function (data) {
+                location.reload();
+            });
 
-        $(".CodeMirror ").css("height","100px");
-        $(".CodeMirror ").css("min-height","100px");
-        $(".CodeMirror ").css("width","760px");
+            event.preventDefault();
+        });
+
+
+
+//show the info about need to save parameters
+        [].forEach.call(document.querySelectorAll('#attrib-list label.btn'), function (el) {
+            el.addEventListener('click',function (e) {
+                if(!document.querySelector("#attrib-list .alert.alert-info.hidden")) return;
+                document.querySelector("#attrib-list .alert.alert-info.hidden").classList.remove("hidden");
+            });
+        });
+
 
         $("#radicalformcheck").on("click", function (event) {
             var temp=$("#radicalformcheck").html();

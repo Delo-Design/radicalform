@@ -64,6 +64,21 @@ class plgSystemRadicalform extends JPlugin
 		}
 	}
 
+	private function getCSV($file, $delimiter = ';')
+	{
+		$a = [];
+
+		if (file_exists($file) && ($handle = fopen($file, 'r')) !== false)
+		{
+			while (($data = fgetcsv($handle, 200000, $delimiter)) !== false)
+			{
+				$a[] = $data;
+			}
+			fclose($handle);
+		}
+		return $a;
+	}
+
 	public function onBeforeCompileHead()
 	{
 		if($this->params->get('keepalive'))
@@ -90,7 +105,7 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.js");
+			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.min.js");
 			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.min.js?$mtime\" async></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm={"
@@ -105,6 +120,7 @@ class plgSystemRadicalform extends JPlugin
 				. "Base: '" . JUri::base(true) . "', "
 				. "AfterSend:'" . $this->params->get('aftersend') . "',"
 				. "Jivosite:'" . $this->params->get('jivosite') . "',"
+				. "Verbox:'" . $this->params->get('verbox') . "',"
 				. "Subject:'" . $this->params->get('rfSubject') . "',"
 				. "Token:'" . JHtml::_('form.token') . "'"
 				. "};";
@@ -212,9 +228,50 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+		$config = Factory::getConfig();
+
+		// here we try to load current logfile
+		$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
+
+		$log_path = str_replace('\\', '/', Factory::getConfig()->get('log_path'));
+
+		$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
+		if(count($data)>0)
+		{
+			for ($i = 0; $i < 6; $i++)
+			{
+				if (count($data[$i]) < 4 || $data[$i][0][0] == '#')
+				{
+					unset($data[$i]);
+				}
+			}
+		}
+
+		// here we get latest serial number from log file
+		$latestNumber=1;
+		$data = array_reverse($data);
+		$json = json_decode($data[0][2], true);
+		if(is_array($json))
+		{
+			if(isset($json['rfLatestNumber'])) {
+				$latestNumber=$json['rfLatestNumber'] + 1;
+			}
+		}
+
+
+
 		if (isset($get['admin']) && $get['admin'] == 2 )
 		{
 			unlink($this->logPath);
+			$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
+			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+			return "ok";
+		}
+
+		if (isset($get['admin']) && $get['admin'] == 3 )
+		{
+			$entry= ['rfLatestNumber' => 0, 'message' => JText::_('PLG_RADICALFORM_RESET_NUMBER') ];
+			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
 			return "ok";
 		}
 
@@ -338,7 +395,7 @@ class plgSystemRadicalform extends JPlugin
 		};
 
 		$mailer = Factory::getMailer();
-		$config = Factory::getConfig();
+
 		$sender = array(
 			$config->get('mailfrom'),
 			$config->get('fromname')
@@ -406,6 +463,34 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+
+		unset($input["uniq"]);
+		unset($input["needToSendFiles"]);
+		unset($input[JSession::getFormToken()]);
+		$url=$input["url"];
+		$resolution=$input["resolution"];
+		$ref=$input["reffer"];
+		$pagetitle=$input["pagetitle"];
+		$useragent=$input["rfUserAgent"];
+		$formID=JText::_($input["rfFormID"]);
+
+
+		if(file_exists($this->logPath))
+		{
+			if($this->params->get('maxlogfile')<filesize($this->logPath))
+			{
+				unlink($this->logPath);
+				$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY_BY_MAX_LOG') ];
+				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+				$latestNumber++;
+			}
+		}
+
+		$input['rfLatestNumber'] = $latestNumber;
+		$input = array_filter($input, function($value) { return $value !== ''; }); // delete empty fields in input array
+
+		JLog::add(json_encode($input), JLog::NOTICE, 'plg_system_radicalform');
+
 		if (isset($input["rfTarget"]) && (!empty($input["rfTarget"])))
 		{
 			$target=$input["rfTarget"];
@@ -416,25 +501,6 @@ class plgSystemRadicalform extends JPlugin
 			$target=false;
 		}
 
-		unset($input["uniq"]);
-		unset($input["needToSendFiles"]);
-		unset($input[JSession::getFormToken()]);
-		$url=$input["url"];
-		$resolution=$input["resolution"];
-		$ref=$input["reffer"];
-		$pagetitle=$input["pagetitle"];
-
-		if(file_exists($this->logPath))
-		{
-			if($this->params->get('maxlogfile')<filesize($this->logPath))
-			{
-				unlink($this->logPath);
-			}
-		}
-
-		$input = array_filter($input, function($value) { return $value !== ''; }); // delete empty fields in input array
-
-		JLog::add(json_encode($input), JLog::NOTICE, 'plg_system_radicalform');
 
 		if(isset($input["url"]))
 		{
@@ -452,11 +518,31 @@ class plgSystemRadicalform extends JPlugin
 		{
 			unset($input["pagetitle"]);
 		}
-
+		if(isset($input["rfUserAgent"]))
+		{
+			unset($input["rfUserAgent"]);
+		}
+		if(isset($input["rfFormID"]))
+		{
+			unset($input["rfFormID"]);
+		}
+		if(isset($input["rfLatestNumber"]))
+		{
+			unset($input["rfLatestNumber"]);
+		}
 
 		$mainbody="";
 		$subject=StringHelper::strtoupper($subject);
-		$telegram="<b>".$subject."</b><br /><br />";
+
+		if($this->params->get('insertformid'))
+		{
+			$telegram="<b>".$formID."</b><br /><br />";
+		}
+		else
+		{
+			$telegram="<b>".$subject."</b><br /><br />";
+		}
+
 		foreach ($input as $key => $record)
 		{
 			if(is_array($record))
@@ -485,16 +571,28 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+		$header="";
+		if($this->params->get('insertformid'))
+		{
+			$header="<h2>".$formID."<h2>";
+		}
+
 		if($this->params->get('extendedinfo'))
 		{
-			$footer =  JText::_('PLG_RADICALFORM_IP_ADDRESS') . "<a href='http://whois.domaintools.com/" . $_SERVER['REMOTE_ADDR'] . "'><strong>" . $_SERVER['REMOTE_ADDR'] . "</strong></a><br>";
-			$footer.= JText::_('PLG_RADICALFORM_URL') .$url."<br />";
+			$footer = "# <strong>".$latestNumber."</strong><br>";
+			if($formID) {
+				$footer .=  JText::_('PLG_RADICALFORM_FORMID')."<strong>".JText::_($formID)."</strong><br>";
+			}
+
+			$footer .=  JText::_('PLG_RADICALFORM_IP_ADDRESS') . "<a href='http://whois.domaintools.com/" . $_SERVER['REMOTE_ADDR'] . "'><strong>" . $_SERVER['REMOTE_ADDR'] . "</strong></a><br>";
+			$footer .= JText::_('PLG_RADICALFORM_URL') .$url."<br />";
 			if($ref)
 			{
 				$footer.= JText::_('PLG_RADICALFORM_REFFER') ."<a href='".$ref."'>". substr($ref, 0, 64) ." </a> <br />";
 			};
 
 			$footer.= JText::_('PLG_RADICALFORM_PAGETITLE') ."<strong>".htmlentities($pagetitle)."</strong> <br />";
+			$footer.= JText::_('PLG_RADICALFORM_USERAGENT') ."<strong>".htmlentities($useragent)."</strong> <br />";
 			$footer.= JText::_('PLG_RADICALFORM_RESOLUTION') .$resolution;
 		}
 		else

@@ -53,12 +53,18 @@ class JFormFieldHistoryradicalform extends JFormField {
 		if ($cnt)
 		{
 			$html= "<p>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<span style='color: green; font-weight: bold'>".filesize($log_path . '/plg_system_radicalform.php')."</span> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE')."</p>";
-			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button></p>";
+			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button> <button class='btn' id='numberclear'>".JText::_('PLG_RADICALFORM_HISTORY_NUMBER_CLEAR')."</button></p>";
 			$html.="<br><br>";
-			$html.= '<table class="table table-striped table-bordered adminlist" style="max-width: 900px"><thead><tr>';
-			$html.= '<th width="5%">' . JText::_('PLG_RADICALFORM_HISTORY_TIME') . '</th>';
-			$html.= '<th width="5%">' . JText::_('PLG_RADICALFORM_HISTORY_DATE') . '</th>';
-			$html.= '<th width="5%">' . JText::_('PLG_RADICALFORM_HISTORY_IP') . '</th>';
+			$html.= '<table class="table table-striped table-bordered adminlist historytable" ><thead><tr>';
+			$html .= "<th>#</th>";
+			$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TIME') . '</th>';
+			if (isset($params->showtarget) && $params->showtarget) {
+				$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TARGET') . '</th>';
+			}
+			if (isset($params->showformid) && $params->showformid) {
+				$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_FORMID') . '</th>';
+			}
+			$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_IP') . '</th>';
 			$html.= '<th>' . JText::_('PLG_RADICALFORM_HISTORY_MESSAGE') . '</th>';
 			$html.= '</tr></thead><tbody>';
 			foreach ($data as $i => $item)
@@ -70,13 +76,98 @@ class JFormFieldHistoryradicalform extends JFormField {
 					$json_result = json_last_error() === JSON_ERROR_NONE;
 
 					$itog = "";
-					if (!$params->hiddeninfo)
+					$extrainfo="<div class='rfMarginTop muted small'>";
+					if ($params->hiddeninfo)
+					{
+						if(isset($json["url"]))
+						{
+							$extrainfo.=JText::_('PLG_RADICALFORM_URL').'<b>'.$json["url"]."</b><br>";
+						}
+						if(isset($json["reffer"]))
+						{
+							$extrainfo.=JText::_('PLG_RADICALFORM_REFFER').'<b>'.$json["reffer"]."</b><br>";
+						}
+						if(isset($json["resolution"]))
+						{
+							$extrainfo.=JText::_('PLG_RADICALFORM_RESOLUTION').'<b>'.$json["resolution"]."</b><br>";
+						}
+						if(isset($json["pagetitle"]))
+						{
+							$extrainfo.=JText::_('PLG_RADICALFORM_PAGETITLE').'<b>'.$json["pagetitle"]."</b><br>";
+						}
+						if(isset($json["rfUserAgent"]))
+						{
+							$extrainfo.=JText::_('PLG_RADICALFORM_USERAGENT').'<b>'.$json["rfUserAgent"]."</b><br>";
+						}
+
+					}
+					$extrainfo.="</div>";
+					if(isset($json["url"]))
+					{
+						unset($json["url"]);
+					}
+					if(isset($json["reffer"]))
 					{
 						unset($json["reffer"]);
+					}
+					if(isset($json["resolution"]))
+					{
 						unset($json["resolution"]);
-						unset($json["url"]);
+					}
+					if(isset($json["pagetitle"]))
+					{
 						unset($json["pagetitle"]);
 					}
+					if(isset($json["rfUserAgent"]))
+					{
+						unset($json["rfUserAgent"]);
+					}
+					$latestNumber="";
+					if(isset($json["rfLatestNumber"]))
+					{
+						$latestNumber=$json["rfLatestNumber"];
+						unset($json["rfLatestNumber"]);
+					}
+
+
+					if (isset($params->showtarget) && $params->showtarget) {
+						if (isset($json["rfTarget"]) && (!empty($json["rfTarget"])))
+						{
+							$target="<td>".JText::_($json["rfTarget"])."</td>";
+							unset($json["rfTarget"]);
+						}
+						else
+						{
+							$target="<td></td>";
+						}
+					}
+					else
+					{
+						$target="";
+					}
+
+					if (isset($params->showformid) && $params->showformid) {
+						if (isset($json["rfFormID"]) && (!empty($json["rfFormID"])))
+						{
+							$formid="<td>".JText::_($json["rfFormID"])."</td>";
+							unset($json["rfFormID"]);
+						}
+						else
+						{
+							$formid="<td></td>";
+						}
+					}
+					else
+					{
+						$formid="";
+					}
+
+					if(isset($json[""]))
+					{
+						$extrainfo.=JText::_('PLG_RADICALFORM_USERAGENT').'<b>'.$json["rfUserAgent"]."</b><br>";
+					}
+
+
 					foreach ($json as $key => $record)
 					{
 						if (is_array($record))
@@ -91,8 +182,10 @@ class JFormFieldHistoryradicalform extends JFormField {
 					$jdate->setTimezone($timezone);
 
 					$html .= '<tr class="row' . ($i % 2) . '">' .
-						'<td class="nowrap">'. $jdate->format('H:i:s',true) . '</td>' .
-						'<td>' . $jdate->format('Y-m-d',true) . '</td>' .
+						'<td>'.$latestNumber.'</td>'.
+						'<td class="nowrap">'. $jdate->format('H:i:s',true) . '<br><span class="muted">' . $jdate->format('d.m.Y',true) .'</span></td>' .
+						$target .
+						$formid.
 						'<td><a href="http://whois.domaintools.com/' . $item[1] . '" target="_blank">' . $item[1] . '</a></td>';
 					if (isset($item[3]) && $item[3] == "WARNING")
 					{
@@ -101,7 +194,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 					}
 					else
 					{
-						$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . '</td>' .
+						$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . $extrainfo.'</td>' .
 							'</tr>';
 					}
 				}
