@@ -25,3 +25,7 @@
 .rfMarginTop {
     margin-top: 8px;
 }
+
+.historytable {
+    max-width: 1040px;
+}
