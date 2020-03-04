@@ -53,7 +53,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 		if ($cnt)
 		{
 			$html= "<p>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<span style='color: green; font-weight: bold'>".filesize($log_path . '/plg_system_radicalform.php')."</span> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE')."</p>";
-			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button></p>";
+			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button> <button class='btn btn-danger' id='numberclear'>".JText::_('PLG_RADICALFORM_HISTORY_NUMBER_CLEAR')."</button></p>";
 			$html.="<br><br>";
 			$html.= '<table class="table table-striped table-bordered adminlist" style="max-width: 960px"><thead><tr>';
 			$html .= "<th>#</th>";
@@ -183,7 +183,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 
 					$html .= '<tr class="row' . ($i % 2) . '">' .
 						'<td>'.$latestNumber.'</td>'.
-						'<td class="nowrap">'. $jdate->format('H:i:s',true) . '<br><br>' . $jdate->format('d.m.Y',true) .'</td>' .
+						'<td class="nowrap">'. $jdate->format('H:i:s',true) . '<br><span class="muted">' . $jdate->format('d.m.Y',true) .'</span></td>' .
 						$target .
 						$formid.
 						'<td><a href="http://whois.domaintools.com/' . $item[1] . '" target="_blank">' . $item[1] . '</a></td>';

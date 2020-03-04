@@ -11,6 +11,18 @@ jQuery(document).ready(function () {
 
             event.preventDefault();
         });
+        $("#numberclear").on("click", function (event) {
+            $("#numberclear").html("Wait...")
+                .prop('disabled', true);
+            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=3", function (data) {
+                location.reload();
+            });
+
+            event.preventDefault();
+        });
+
+
+
 //show the info about need to save parameters
         [].forEach.call(document.querySelectorAll('#attrib-list label.btn'), function (el) {
             el.addEventListener('click',function (e) {

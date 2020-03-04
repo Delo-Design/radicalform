@@ -228,9 +228,50 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+		$config = Factory::getConfig();
+
+		// here we try to load current logfile
+		$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
+
+		$log_path = str_replace('\\', '/', Factory::getConfig()->get('log_path'));
+
+		$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
+		if(count($data)>0)
+		{
+			for ($i = 0; $i < 6; $i++)
+			{
+				if (count($data[$i]) < 4 || $data[$i][0][0] == '#')
+				{
+					unset($data[$i]);
+				}
+			}
+		}
+
+		// here we get latest serial number from log file
+		$latestNumber=1;
+		$data = array_reverse($data);
+		$json = json_decode($data[0][2], true);
+		if(is_array($json))
+		{
+			if(isset($json['rfLatestNumber'])) {
+				$latestNumber=$json['rfLatestNumber'] + 1;
+			}
+		}
+
+
+
 		if (isset($get['admin']) && $get['admin'] == 2 )
 		{
 			unlink($this->logPath);
+			$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
+			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+			return "ok";
+		}
+
+		if (isset($get['admin']) && $get['admin'] == 3 )
+		{
+			$entry= ['rfLatestNumber' => 0, 'message' => JText::_('PLG_RADICALFORM_RESET_NUMBER') ];
+			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
 			return "ok";
 		}
 
@@ -354,7 +395,7 @@ class plgSystemRadicalform extends JPlugin
 		};
 
 		$mailer = Factory::getMailer();
-		$config = Factory::getConfig();
+
 		$sender = array(
 			$config->get('mailfrom'),
 			$config->get('fromname')
@@ -434,44 +475,14 @@ class plgSystemRadicalform extends JPlugin
 		$formID=JText::_($input["rfFormID"]);
 
 
-
-
-		// here we try to load current logfile
-		$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
-
-		$log_path = str_replace('\\', '/', Factory::getConfig()->get('log_path'));
-
-		$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
-		if(count($data)>0)
-		{
-			for ($i = 0; $i < 6; $i++)
-			{
-				if (count($data[$i]) < 4 || $data[$i][0][0] == '#')
-				{
-					unset($data[$i]);
-				}
-			}
-		}
-
-		$latestNumber=0;
-		$cnt = count($data);
-		$data = array_reverse($data);
-		$json = json_decode($data[0][2], true);
-		if(is_array($json))
-		{
-			if(isset($json['rfLatestNumber'])) {
-				$latestNumber=$json['rfLatestNumber'] + 1;
-			}
-		}
-
-
-
-
 		if(file_exists($this->logPath))
 		{
 			if($this->params->get('maxlogfile')<filesize($this->logPath))
 			{
 				unlink($this->logPath);
+				$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY_BY_MAX_LOG') ];
+				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+				$latestNumber++;
 			}
 		}
 
@@ -515,7 +526,10 @@ class plgSystemRadicalform extends JPlugin
 		{
 			unset($input["rfFormID"]);
 		}
-
+		if(isset($input["rfLatestNumber"]))
+		{
+			unset($input["rfLatestNumber"]);
+		}
 
 		$mainbody="";
 		$subject=StringHelper::strtoupper($subject);
@@ -562,15 +576,14 @@ class plgSystemRadicalform extends JPlugin
 		{
 			$header="<h2>".$formID."<h2>";
 		}
+
 		if($this->params->get('extendedinfo'))
 		{
+			$footer = "# <strong>".$latestNumber."</strong><br>";
 			if($formID) {
-				$footer =  JText::_('PLG_RADICALFORM_FORMID')."<strong>".JText::_($formID)."</strong><br>";
+				$footer .=  JText::_('PLG_RADICALFORM_FORMID')."<strong>".JText::_($formID)."</strong><br>";
 			}
-			else
-			{
-				$footer = "";
-			}
+
 			$footer .=  JText::_('PLG_RADICALFORM_IP_ADDRESS') . "<a href='http://whois.domaintools.com/" . $_SERVER['REMOTE_ADDR'] . "'><strong>" . $_SERVER['REMOTE_ADDR'] . "</strong></a><br>";
 			$footer .= JText::_('PLG_RADICALFORM_URL') .$url."<br />";
 			if($ref)
