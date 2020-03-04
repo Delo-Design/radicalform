@@ -1,7 +1,8 @@
 # RadicalForm
 Радикально новый подход к созданию форм обратной связи на основе чистого Javascript
 
-![logoss](https://user-images.githubusercontent.com/3103677/75912128-c3522280-5e61-11ea-96b1-c3a756299bda.png)
+![logoss](https://user-images.githubusercontent.com/3103677/75912280-fe545600-5e61-11ea-85aa-ce45ccaf227f.png)
+
 
 Минимальная версия **Joomla 3.7**
 
