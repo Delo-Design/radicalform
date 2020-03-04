@@ -455,7 +455,8 @@ class plgSystemRadicalform extends JPlugin
 
 		$latestNumber=0;
 		$cnt = count($data);
-		$json = json_decode($data[$cnt-1][2], true);
+		$data = array_reverse($data);
+		$json = json_decode($data[0][2], true);
 		if(is_array($json))
 		{
 			if(isset($json['rfLatestNumber'])) {
