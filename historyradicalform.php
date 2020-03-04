@@ -56,6 +56,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button></p>";
 			$html.="<br><br>";
 			$html.= '<table class="table table-striped table-bordered adminlist" style="max-width: 960px"><thead><tr>';
+			$html .= "<th>#</th>";
 			$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TIME') . '</th>';
 			if (isset($params->showtarget) && $params->showtarget) {
 				$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TARGET') . '</th>';
@@ -121,6 +122,13 @@ class JFormFieldHistoryradicalform extends JFormField {
 					{
 						unset($json["rfUserAgent"]);
 					}
+					$latestNumber="";
+					if(isset($json["rfLatestNumber"]))
+					{
+						$latestNumber=$json["rfLatestNumber"];
+						unset($json["rfLatestNumber"]);
+					}
+
 
 					if (isset($params->showtarget) && $params->showtarget) {
 						if (isset($json["rfTarget"]) && (!empty($json["rfTarget"])))
@@ -174,6 +182,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 					$jdate->setTimezone($timezone);
 
 					$html .= '<tr class="row' . ($i % 2) . '">' .
+						'<td>'.$latestNumber.'</td>'.
 						'<td class="nowrap">'. $jdate->format('H:i:s',true) . '<br><br>' . $jdate->format('d.m.Y',true) .'</td>' .
 						$target .
 						$formid.
