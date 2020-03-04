@@ -148,6 +148,10 @@ RadicalFormClass = function () {
             });
 
             var AjaxFormData = new FormData(form); //form data without the file inputs
+            AjaxFormData.append('rfUserAgent', window.navigator.userAgent);
+            if(form.getAttribute('id') !== null) {
+                AjaxFormData.append('rfFormID', form.getAttribute('id'));
+            }
 
             // here we return the previous state of the inputs of file type
             [].forEach.call(form.querySelectorAll('input[type="file"]'), function (el) {
@@ -174,6 +178,32 @@ RadicalFormClass = function () {
                 }
                 try {
                     jivo_api.setContactInfo(RadicalForm.Contacts);
+                } catch (e) {
+                    console.error('Radical Form JS Code: ', e);
+                }
+
+            }
+
+            if (RadicalForm.Verbox === "1") {
+                RadicalForm.Contacts = {};
+
+                for (i = 0; i < form.elements.length; ++i) {
+                    if (form.elements[i].name === "phone") {
+                        RadicalForm.Contacts.phone = form.elements[i].value;
+                    }
+                    if (form.elements.name === "name") {
+                        RadicalForm.Contacts.name = form.elements[i].value;
+                    }
+                    if (form.elements.name === "email") {
+                        RadicalForm.Contacts.email = form.elements[i].value;
+                    }
+                    if (form.elements.name === "rfSubject") {
+                        RadicalForm.Contacts.questionCategory = form.elements[i].value;
+                    }
+
+                }
+                try {
+                    Verbox("setClientInfo",RadicalForm.Contacts);
                 } catch (e) {
                     console.error('Radical Form JS Code: ', e);
                 }
@@ -227,6 +257,14 @@ RadicalFormClass = function () {
                                     }
                                 }
                             }
+                            if (RadicalForm.Verbox === "1") {
+                                try {
+                                    Verbox("sendMessage", response.data[0][1]);
+                                } catch (e) {
+                                    console.error('Radical Form JS Code: ', e);
+                                }
+                             }
+
                             message = RadicalForm.AfterSend;
                         } else {
                             message = 'Error! ' + response.data[0];
