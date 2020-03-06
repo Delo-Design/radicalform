@@ -139,11 +139,19 @@ class JFormFieldHistoryradicalform extends JFormField {
 						else
 						{
 							$target="<td></td>";
+							if (isset($json["rfTarget"]))
+							{
+								unset($json["rfTarget"]);
+							}
 						}
 					}
 					else
 					{
 						$target="";
+						if (isset($json["rfTarget"]))
+						{
+							unset($json["rfTarget"]);
+						}
 					}
 
 					if (isset($params->showformid) && $params->showformid) {
