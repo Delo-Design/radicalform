@@ -472,8 +472,7 @@ class plgSystemRadicalform extends JPlugin
 		$ref=$input["reffer"];
 		$pagetitle=$input["pagetitle"];
 		$useragent=$input["rfUserAgent"];
-		$formID=JText::_($input["rfFormID"]);
-
+		$formID= isset($input["rfFormID"]) ? JText::_($input["rfFormID"]) : '';
 
 		if(file_exists($this->logPath))
 		{
