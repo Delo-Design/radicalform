@@ -249,15 +249,18 @@ class plgSystemRadicalform extends JPlugin
 
 		// here we get latest serial number from log file
 		$latestNumber=1;
-		$data = array_reverse($data);
-		$json = json_decode($data[0][2], true);
-		if(is_array($json))
+		if(count($data)>0)
 		{
-			if(isset($json['rfLatestNumber'])) {
-				$latestNumber=$json['rfLatestNumber'] + 1;
+			$data = array_reverse($data);
+			$json = json_decode($data[0][2], true);
+			if (is_array($json))
+			{
+				if (isset($json['rfLatestNumber']))
+				{
+					$latestNumber = $json['rfLatestNumber'] + 1;
+				}
 			}
 		}
-
 
 
 		if (isset($get['admin']) && $get['admin'] == 2 )
