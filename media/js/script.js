@@ -245,17 +245,20 @@ RadicalFormClass = function () {
                                     var result = jivo_api.sendOfflineMessage({
                                         "message": response.data[0][1]
                                     });
+
+                                    if (result.result === "fail") {
+                                        var a = {};
+                                        try {
+                                            jivo_api.sendMessage(a, response.data[0][1]);
+                                        } catch (e) {
+                                            console.error('Radical Form JS Code: ', e);
+                                        }
+                                    }
+
                                 } catch (e) {
                                     console.error('Radical Form JS Code: ', e);
                                 }
-                                if (result.result === "fail") {
-                                    var a = {};
-                                    try {
-                                        jivo_api.sendMessage(a, response.data[0][1]);
-                                    } catch (e) {
-                                        console.error('Radical Form JS Code: ', e);
-                                    }
-                                }
+
                             }
                             if (RadicalForm.Verbox === "1") {
                                 try {
