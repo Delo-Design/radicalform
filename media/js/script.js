@@ -20,8 +20,7 @@ RadicalFormClass = function () {
      *
      * @type {array}
      */
-    this.danger_сlasses = RadicalForm.DangerClass.split(" ");
-
+    this.danger_classes = RadicalForm.DangerClass.split(" ");
 
     /**
      * Init for DOM element
@@ -50,14 +49,14 @@ RadicalFormClass = function () {
             el.insertAdjacentHTML('afterend', '<input type="hidden" name="reffer" value="' + document.referrer + '" />');
         });
 
-        this.on(container, "form ." + selfClass.danger_сlasses.join('.'), 'keypress', function (target, e) {
-            selfClass.danger_сlasses.forEach(function (item) {
+        this.on(container, "form ." + selfClass.danger_classes.join('.'), 'keypress', function (target, e) {
+            selfClass.danger_classes.forEach(function (item) {
                 target.target.classList.remove(item);
             });
         });
 
-        this.on(container, "form ." + selfClass.danger_сlasses.join('.'), 'change', function (target, e) {
-            selfClass.danger_сlasses.forEach(function (item) {
+        this.on(container, "form ." + selfClass.danger_classes.join('.'), 'change', function (target, e) {
+            selfClass.danger_classes.forEach(function (item) {
                 target.target.classList.remove(item);
             });
         });
@@ -92,7 +91,7 @@ RadicalFormClass = function () {
         }
         RadicalForm.FormFields = [];
         [].forEach.call(form.querySelectorAll("[name]"), function (el) {
-            selfClass.danger_сlasses.forEach(function (item) {
+            selfClass.danger_classes.forEach(function (item) {
                 el.classList.remove(item);
             });
         });
@@ -110,7 +109,7 @@ RadicalFormClass = function () {
 
         setTimeout(function () {
             for (var i = 0; i < RadicalForm.FormFields.length; i++) {
-                selfClass.danger_сlasses.forEach(function (item) {
+                selfClass.danger_classes.forEach(function (item) {
                     RadicalForm.FormFields[i].classList.add(item);
                 })
             }
