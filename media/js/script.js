@@ -342,7 +342,8 @@ RadicalFormClass = function () {
             previousTextForUploadButton = textForUploadButton ? textForUploadButton.innerHTML : "",
             formData = new FormData(),
             form = selfClass.closest(this, 'form'),
-            rf_filenames_list = form.querySelector('.rf-filenames-list') || document.createElement('div');
+            rf_filenames_list = form.querySelector('.rf-filenames-list') || document.createElement('div'),
+            buttonPressed = this;
 
         formData.append(this.name, this.files[0]);
 
@@ -384,6 +385,8 @@ RadicalFormClass = function () {
                         } else {
                             if (rf_filenames_list.textContent.trim() === "") {
                                 rf_filenames_list.insertAdjacentHTML('beforeend', "<div>" + RadicalForm.thisFilesWillBeSend + "</div>");
+                            }
+                            if(!form.querySelector("input[name=needToSendFiles]")) {
                                 form.insertAdjacentHTML('beforeend', '<input type="hidden" name="needToSendFiles" value="1" />');
                             }
                             rf_filenames_list.insertAdjacentHTML('beforeend', "<div>" + response.data[0].name + "</div>");
