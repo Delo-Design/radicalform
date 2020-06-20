@@ -115,9 +115,14 @@ class plgSystemRadicalform extends JPlugin
 				. "waitingForUpload:'" . $this->params->get('waitingupload') . "', "
 				. "WaitMessage:'" . $this->params->get('rfWaitMessage') . "', "
 				. "ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS') . "', "
-				. "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "', "
-				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, "
-				. "Base: '" . JUri::base(true) . "', "
+				. "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "', ";
+
+			if( $this->params->get('insertip')  )
+			{
+				$js .= "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, ";
+			}
+
+			$js .= "Base: '" . JUri::base(true) . "', "
 				. "AfterSend:'" . $this->params->get('aftersend') . "',"
 				. "Jivosite:'" . $this->params->get('jivosite') . "',"
 				. "Verbox:'" . $this->params->get('verbox') . "',"
