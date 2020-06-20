@@ -149,12 +149,16 @@ class plgSystemRadicalform extends JPlugin
 		}
 		else
 		{
-			$js    = "<script>"
-				. "var RadicalForm={"
-				. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'} "
-				. "}; </script>";
-			$body = str_replace("</body>", $js . "</body>", $body);
-			$this->app->setBody($body);
+			if( $this->params->get('insertip')  )
+			{
+				$js    = "<script>"
+					. "var RadicalForm={"
+					. "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'} "
+					. "}; </script>";
+				$body = str_replace("</body>", $js . "</body>", $body);
+				$this->app->setBody($body);
+			}
+
 		}
 	}
 

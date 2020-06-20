@@ -279,6 +279,16 @@
                     <option value="1">JON</option>
                     <option value="0">JOFF</option>
                 </field>
+                <field
+                        name="insertip"
+                        type="radio"
+                        label="PLG_RADICALFORM_INSERTIP"
+                        description="PLG_RADICALFORM_INSERTIP_DESC"
+                        class="btn-group btn-group-yesno"
+                        default="0">
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
                 <field type="spacer"  name="myspacer13" hr="true"/>
             </fieldset>
             <fieldset name="advanced" label="PLG_RADICALFORM_ADVANCEDPARAMS">
