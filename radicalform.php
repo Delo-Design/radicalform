@@ -8,7 +8,7 @@ defined('_JEXEC') or die;
  * @subpackage    System.Radicalform
  * @since         3.7+
  * @author        Progreccor
- * @copyright     Copyright 2018 Progreccor
+ * @copyright     Copyright 2020 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
 
