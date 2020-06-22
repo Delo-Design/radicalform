@@ -329,7 +329,7 @@ RadicalFormClass = function () {
     };
 
     /**
-     * Send file to server for save
+     * Send file to server
      * @param e
      */
     this.fileSend = function(e) {

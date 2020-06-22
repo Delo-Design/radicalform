@@ -1,8 +1,7 @@
 jQuery(document).ready(function () {
     jQuery(function ($) {
 
-
-        $("#historyclear").on("click", function (event) {
+        document.querySelector("#historyclear").addEventListener('click', function (event) {
             $("#historyclear").html("Wait...")
                 .prop('disabled', true);
             $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2", function (data) {
@@ -11,14 +10,34 @@ jQuery(document).ready(function () {
 
             event.preventDefault();
         });
-        $("#numberclear").on("click", function (event) {
+
+        document.querySelector("#numberclear").addEventListener('click', function (event) {
             $("#numberclear").html("Wait...")
                 .prop('disabled', true);
             $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=3", function (data) {
                 location.reload();
             });
-
             event.preventDefault();
+        });
+
+        document.querySelector("#exportcsv").addEventListener('click', function (event) {
+            var t=document.querySelector("#exportcsv");
+            var temp=t.outerHTML;
+            t.outerHTML="<button class='btn' id='exportcsv' disabled>Wait...</button>";
+
+            setTimeout(function () {
+                document.querySelector("#exportcsv").outerHTML=temp;
+            }, 3000)
+        });
+
+        document.querySelector("#exportcsvfields").addEventListener('click', function (event) {
+            var t=document.querySelector("#exportcsvfields");
+            var temp=t.outerHTML;
+            t.outerHTML="<button class='btn' id='exportcsvfields' disabled>Wait...</button>";
+
+            setTimeout(function () {
+                document.querySelector("#exportcsvfields").outerHTML=temp;
+            }, 3000)
         });
 
 

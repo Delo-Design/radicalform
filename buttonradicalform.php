@@ -3,7 +3,7 @@
  * @package     Joomla.Plugin
  * @subpackage  System.Radicalform
  *
- * @copyright   Copyright 2018 Progreccor
+ * @copyright   Copyright 2020 Progreccor
  * @license     GNU General Public License version 2 or later; see LICENSE.txt
  */
 defined('_JEXEC') or die('Restricted access');
