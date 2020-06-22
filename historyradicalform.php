@@ -53,7 +53,10 @@ class JFormFieldHistoryradicalform extends JFormField {
 		if ($cnt)
 		{
 			$html= "<p>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<span style='color: green; font-weight: bold'>".filesize($log_path . '/plg_system_radicalform.php')."</span> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE')."</p>";
-			$html.="<p><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR')."</button> <button class='btn' id='numberclear'>".JText::_('PLG_RADICALFORM_HISTORY_NUMBER_CLEAR')."</button></p>";
+			$html.="<p class='historytable'><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR').
+				"</button> <button class='btn' id='numberclear'>".JText::_('PLG_RADICALFORM_HISTORY_NUMBER_CLEAR').
+				"</button> <span class='pull-right'><a href='index.php?option=com_ajax&plugin=radicalform&format=raw&group=system&admin=4' class='btn ' id='exportcsv'>".JText::_('PLG_RADICALFORM_EXPORT_CSV').
+				"</a><span></p>";
 			$html.="<br><br>";
 			$html.= '<table class="table table-striped table-bordered adminlist historytable" ><thead><tr>';
 			$html .= "<th>#</th>";
@@ -168,11 +171,6 @@ class JFormFieldHistoryradicalform extends JFormField {
 					else
 					{
 						$formid="";
-					}
-
-					if(isset($json[""]))
-					{
-						$extrainfo.=JText::_('PLG_RADICALFORM_USERAGENT').'<b>'.$json["rfUserAgent"]."</b><br>";
 					}
 
 

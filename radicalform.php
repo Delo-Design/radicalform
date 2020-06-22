@@ -8,7 +8,7 @@ defined('_JEXEC') or die;
  * @subpackage    System.Radicalform
  * @since         3.7+
  * @author        Progreccor
- * @copyright     Copyright 2018 Progreccor
+ * @copyright     Copyright 2020 Progreccor
  * @license       GNU General Public License version 2 or later; see LICENSE.txt
  */
 
@@ -174,7 +174,191 @@ class plgSystemRadicalform extends JPlugin
 		$get   = $r->get->getArray();
 		$files = $r->files->getArray();
 		$source = $input;
+		if (isset($get['admin']) && ( $get['admin'] == 4 || $get['admin'] == 5 ))
+		{
+			// это экспорт csv
+			if ($this->app->isClient('administrator'))
+			{
+				header("Content-disposition: attachment; filename=test.csv");
+				header("Content-Type: text/csv");
+				header('Expires: 0');
+				header('Cache-Control: no-cache');
+				$BOM = "\xEF\xBB\xBF";
+				echo $BOM;
+				$csv = "#;";
+				$csv.= JText::_('PLG_RADICALFORM_HISTORY_TIME') . ';';
+				if ($this->params->get('showtarget')) {
+					$csv.= JText::_('PLG_RADICALFORM_HISTORY_TARGET') . ';';
+				}
+				if ($this->params->get('showformid')) {
+					$csv.= JText::_('PLG_RADICALFORM_HISTORY_FORMID') . ';';
+				}
+				$csv.=  JText::_('PLG_RADICALFORM_HISTORY_IP') . ';';
+				$csv.= JText::_('PLG_RADICALFORM_HISTORY_MESSAGE') . ';';
+				if ($this->params->get('hiddeninfo'))
+				{
+					$csv.= JText::_('PLG_RADICALFORM_HISTORY_EXTRA') . ';';
+				}
+				$csv.="\r\n";
 
+
+				$config = Factory::getConfig();
+				$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
+
+				$log_path = str_replace('\\', '/', JFactory::getConfig()->get('log_path'));
+
+				$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
+				if(count($data)>0)
+				{
+					for ($i = 0; $i < 6; $i++)
+					{
+						if (count($data[$i]) < 4 || $data[$i][0][0] == '#')
+						{
+							unset($data[$i]);
+						}
+					}
+				}
+				$data = array_reverse($data);
+
+				$cnt = count($data);
+				if($cnt>0)
+				{
+					foreach ($data as $i => $item)
+					{
+						$json = json_decode($item[2], true);
+						$jdate=JFactory::getDate($item[0]);
+						$timezone = new DateTimeZone( $site_offset );
+						$jdate->setTimezone($timezone);
+
+						$latestNumber="";
+						if(isset($json["rfLatestNumber"]))
+						{
+							$latestNumber=$json["rfLatestNumber"];
+							unset($json["rfLatestNumber"]);
+						}
+
+						if ($this->params->get('showtarget') )
+						{
+							if (isset($json["rfTarget"]) && (!empty($json["rfTarget"])))
+							{
+								$target="\"".JText::_($json["rfTarget"])."\";";
+								unset($json["rfTarget"]);
+							}
+							else
+							{
+								$target=";";
+								if (isset($json["rfTarget"]))
+								{
+									unset($json["rfTarget"]);
+								}
+							}
+						}
+						else
+						{
+							$target="";
+							if (isset($json["rfTarget"]))
+							{
+								unset($json["rfTarget"]);
+							}
+						}
+
+						if ($this->params->get('showformid'))
+						{
+							if (isset($json["rfFormID"]) && (!empty($json["rfFormID"])))
+							{
+								$formid="\"".JText::_($json["rfFormID"])."\";";
+								unset($json["rfFormID"]);
+							}
+							else
+							{
+								$formid=";";
+							}
+						}
+						else
+						{
+							$formid="";
+						}
+
+						$extrainfo="";
+						if ($this->params->get('hiddeninfo'))
+						{
+							$extrainfo="\"";
+							if(isset($json["url"]))
+							{
+								$extrainfo.=JText::_('PLG_RADICALFORM_URL').$json["url"]."\n";
+							}
+							if(isset($json["reffer"]))
+							{
+								$extrainfo.=JText::_('PLG_RADICALFORM_REFFER').$json["reffer"]."\n";
+							}
+							if(isset($json["resolution"]))
+							{
+								$extrainfo.=JText::_('PLG_RADICALFORM_RESOLUTION').$json["resolution"]."\n";
+							}
+							if(isset($json["pagetitle"]))
+							{
+								$extrainfo.=JText::_('PLG_RADICALFORM_PAGETITLE').$json["pagetitle"]."\n";
+							}
+							if(isset($json["rfUserAgent"]))
+							{
+								$extrainfo.=JText::_('PLG_RADICALFORM_USERAGENT').$json["rfUserAgent"]."\n";
+							}
+							$extrainfo.="\"";
+						}
+
+						if(isset($json["url"]))
+						{
+							unset($json["url"]);
+						}
+						if(isset($json["reffer"]))
+						{
+							unset($json["reffer"]);
+						}
+						if(isset($json["resolution"]))
+						{
+							unset($json["resolution"]);
+						}
+						if(isset($json["pagetitle"]))
+						{
+							unset($json["pagetitle"]);
+						}
+						if(isset($json["rfUserAgent"]))
+						{
+							unset($json["rfUserAgent"]);
+						}
+
+						$csv.="${latestNumber};\"".$jdate->format('H:i:s',true)."\n".$jdate->format('d.m.Y',true)."\";${target}${formid}${item[1]};";
+						$csv.="\"";
+						if (is_array($json))
+						{
+							$delimiter="";
+							foreach ($json as $key => $record)
+							{
+								if (is_array($record))
+								{
+									$record = implode(", ", $record);
+								}
+								$csv .= $delimiter.JText::_($key) . ": " . $record ;
+								$delimiter= "\n";
+							}
+
+						}
+						if ($this->params->get('hiddeninfo'))
+						{
+							$csv.="\";${extrainfo};\r\n";
+						}
+						else
+						{
+							$csv.="\";\r\n";
+						}
+					}
+
+				}
+
+
+				return  $csv;
+			}
+		}
 
 		if (isset($get['admin']) && $get['admin'] == 1 )
 		{
