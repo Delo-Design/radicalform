@@ -30,16 +30,6 @@ jQuery(document).ready(function () {
             }, 3000)
         });
 
-        document.querySelector("#exportcsvfields").addEventListener('click', function (event) {
-            var t=document.querySelector("#exportcsvfields");
-            var temp=t.outerHTML;
-            t.outerHTML="<button class='btn' id='exportcsvfields' disabled>Wait...</button>";
-
-            setTimeout(function () {
-                document.querySelector("#exportcsvfields").outerHTML=temp;
-            }, 3000)
-        });
-
 
 
 //show the info about need to save parameters
