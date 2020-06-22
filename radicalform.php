@@ -179,7 +179,15 @@ class plgSystemRadicalform extends JPlugin
 			// это экспорт csv
 			if ($this->app->isClient('administrator'))
 			{
-				header("Content-disposition: attachment; filename=test.csv");
+				$config = Factory::getConfig();
+				$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
+
+				$jdate=JFactory::getDate('now');
+				$timezone = new DateTimeZone( $site_offset );
+				$jdate->setTimezone($timezone);
+				$filename="rfexport_".$jdate->format('d-m-Y_H-i_s',true).".csv";
+
+				header("Content-disposition: attachment; filename=${filename}");
 				header("Content-Type: text/csv");
 				header('Expires: 0');
 				header('Cache-Control: no-cache');
@@ -201,9 +209,6 @@ class plgSystemRadicalform extends JPlugin
 				}
 				$csv.="\r\n";
 
-
-				$config = Factory::getConfig();
-				$site_offset = $config->get('offset'); //get offset of joomla time like asia/kolkata
 
 				$log_path = str_replace('\\', '/', JFactory::getConfig()->get('log_path'));
 
