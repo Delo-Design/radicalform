@@ -106,29 +106,29 @@ class plgSystemRadicalform extends JPlugin
 		if (strpos($body, 'rf-button-send') !== false)
 		{
 			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.min.js");
-			$js    = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.min.js?$mtime\" async></script>" . $lnEnd
-				. "<script>"
-				. "var RadicalForm={"
-				. "DangerClass:'" . $this->params->get('dangerclass') . "', "
-				. "ErrorFile:'" . $this->params->get('errorfile') . "', "
-				. "thisFilesWillBeSend:'" . JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND') . "', "
-				. "waitingForUpload:'" . $this->params->get('waitingupload') . "', "
-				. "WaitMessage:'" . $this->params->get('rfWaitMessage') . "', "
-				. "ErrorMax:'" . JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS') . "', "
-				. "MaxSize:'" . min($this->return_bytes(ini_get('post_max_size')), $this->return_bytes(ini_get("upload_max_filesize"))) . "', ";
-
-			if( $this->params->get('insertip')  )
+			$jsParams = array(
+				'DangerClass'         => $this->params->get('dangerclass'),
+				'ErrorFile'           => $this->params->get('errorfile'),
+				'thisFilesWillBeSend' => JText::_('PLG_RADICALFORM_THIS_FILES_WILL_BE_SEND'),
+				'waitingForUpload'    => $this->params->get('waitingupload'),
+				'WaitMessage'         => $this->params->get('rfWaitMessage'),
+				'ErrorMax'            => JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS'),
+				'MaxSize'             => min($this->return_bytes(ini_get('post_max_size')),
+					$this->return_bytes(ini_get("upload_max_filesize"))),
+				'Base'                => JUri::base(true),
+				'AfterSend'           => $this->params->get('aftersend'),
+				'Jivosite'            => $this->params->get('jivosite'),
+				'Verbox'              => $this->params->get('verbox'),
+				'Subject'             => $this->params->get('rfSubject'),
+				'Token'               => JHtml::_('form.token'),
+			);
+			if ($this->params->get('insertip'))
 			{
-				$js .= "IP:{ip: '" . $_SERVER['REMOTE_ADDR'] . "'}, ";
+				$jsParams['IP'] = json_encode(array('ip' => $_SERVER['REMOTE_ADDR']));
 			}
-
-			$js .= "Base: '" . JUri::base(true) . "', "
-				. "AfterSend:'" . $this->params->get('aftersend') . "',"
-				. "Jivosite:'" . $this->params->get('jivosite') . "',"
-				. "Verbox:'" . $this->params->get('verbox') . "',"
-				. "Subject:'" . $this->params->get('rfSubject') . "',"
-				. "Token:'" . JHtml::_('form.token') . "'"
-				. "};";
+			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.min.js?$mtime\" async></script>" . $lnEnd
+				. "<script>"
+				. "var RadicalForm=" . json_encode($jsParams) . ";";
 
 			if (!empty($this->params->get('rfCall_0')))
 			{
