@@ -34,6 +34,7 @@
 1. Корректно работает с полями со множественными значениями (checkbox, select multiple)
 1. Есть интеграция с сервисом Jivosite
 1. Есть возможность расширения за счет своего кода
+1. Есть возможность экспортировать историю отправленных форм в CSV
 
 
 
@@ -74,6 +75,7 @@ A radically new approach to creating feedback forms
 1. Correctly works with fields with multiple values (checkbox, select multiple)
 1. Added integration with the Jivosite service.
 1. You can add your custom code
+1. Export to CSV file
 
 
 
