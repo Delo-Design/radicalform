@@ -1,10 +1,34 @@
+
 jQuery(document).ready(function () {
     jQuery(function ($) {
+
+        function getUrlParams(url){
+            var regex = /[?&]([^=#]+)=([^&#]*)/g,
+                params = {},
+                match;
+            while(match = regex.exec(url)) {
+                params[match[1]] = match[2];
+            }
+            return params;
+        }
+
+        var currentGetParams,
+            page;
+        currentGetParams = getUrlParams(location.search);
 
         document.querySelector("#historyclear").addEventListener('click', function (event) {
             $("#historyclear").html("Wait...")
                 .prop('disabled', true);
-            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2", function (data) {
+            if ('page' in currentGetParams )
+            {
+                page=currentGetParams.page;
+            }
+            else
+            {
+                page="0";
+            }
+
+            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2&page="+page, function (data) {
                 location.reload();
             });
 

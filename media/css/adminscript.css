@@ -29,3 +29,7 @@
 .historytable {
     max-width: 1040px;
 }
+
+.firstEntry strong {
+    color: green;
+}

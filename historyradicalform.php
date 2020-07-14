@@ -8,6 +8,11 @@
  */
 defined('_JEXEC') or die('Restricted access');
 
+use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
+use Joomla\Registry\Registry;
+
 class JFormFieldHistoryradicalform extends JFormField {
 
 	private function getCSV($file, $delimiter = ';')
@@ -27,6 +32,20 @@ class JFormFieldHistoryradicalform extends JFormField {
 
 	function getInput() {
 
+		$r = Factory::getApplication();
+		$r     = $r->input;
+		$get   = $r->get->getArray();
+
+		$l=Uri::getInstance();
+
+		$http = parse_url($l->toString());
+		parse_str($http['query'], $output);
+		if(isset($output['page'])) {
+			unset($output['page']);
+		}
+		$currentURL = $http["path"] . '?' . http_build_query($output);
+
+
 
 		$params=$this->form->getData()->get("params");
 		$config = JFactory::getConfig();
@@ -35,7 +54,45 @@ class JFormFieldHistoryradicalform extends JFormField {
 
 		$log_path = str_replace('\\', '/', JFactory::getConfig()->get('log_path'));
 
-		$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
+		$page = '';
+		if(isset($get['page']))
+		{
+			if ($get['page'] == "0")
+			{
+				$page = '';
+			}
+			else
+			{
+				$page = $get['page'].".";
+			}
+		}
+
+		$logFiles=JTEXT::_("PLG_RADICALFORM_FILE_LOGS");
+
+		if($page)
+		{
+			$logFiles .= "<a href='{$currentURL}&page=0#attrib-list' class='btn' >plg_system_radicalform.php</a> ";
+		}
+		else
+		{
+			$logFiles .= "<button  class='btn btn-primary' disabled >plg_system_radicalform.php</button> ";
+		}
+
+		foreach (glob($log_path . "/*.plg_system_radicalform.php") as $filename)
+		{
+			$currentNumber =  strstr ( pathinfo($filename, PATHINFO_BASENAME) , ".", true );
+			if($currentNumber == $page)
+			{
+				$logFiles .= "<button class='btn btn-primary' disabled >".pathinfo($filename, PATHINFO_BASENAME)."</button> ";
+			}
+			else
+			{
+				$logFiles .= "<a href='{$currentURL}&page=${currentNumber}#attrib-list' class='btn' >".pathinfo($filename, PATHINFO_BASENAME)."</a> ";
+			}
+		}
+
+
+		$data = $this->getCSV($log_path . '/'.$page.'plg_system_radicalform.php', "\t");
 		if(count($data)>0)
 		{
 			for ($i = 0; $i < 6; $i++)
@@ -50,14 +107,31 @@ class JFormFieldHistoryradicalform extends JFormField {
 
 		$cnt = count($data);
 
+		$plugin   = PluginHelper::getPlugin('system', 'logrotation');
+		$warningAboutRotation="";
+		if($plugin)
+		{
+			$pars   = new Registry($plugin->params);
+			$cache_timeout = (int) $pars->get('cachetimeout', 30);
+			$cache_timeout = 24 * 3600 * $cache_timeout;
+			$now  = time();
+			$last = (int) $pars->get('lastrun', 0);
+
+			$warningAboutRotation = JText::sprintf("PLG_RADICALFORM_WARNING_ABOUT_ROTATION",(abs($cache_timeout - ($now - $last))/(3600*24)));
+		}
+
+
 		if ($cnt)
 		{
-			$html= "<p>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<span style='color: green; font-weight: bold'>".filesize($log_path . '/plg_system_radicalform.php')."</span> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE')."</p>";
-			$html.="<p class='historytable'><button class='btn btn-danger' id='historyclear'>".JText::_('PLG_RADICALFORM_HISTORY_CLEAR').
+			$html= "<p>${logFiles}</p>"."<p class='firstEntry'>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<strong>".filesize($log_path .'/'.$page . 'plg_system_radicalform.php')."</strong> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE').$warningAboutRotation."</p>";
+			$html.="<p class='historytable'><button class='btn btn-danger' id='historyclear'>".JText::sprintf('PLG_RADICALFORM_HISTORY_CLEAR', $page."plg_system_radicalform.php").
 				"</button> <button class='btn' id='numberclear'>".JText::_('PLG_RADICALFORM_HISTORY_NUMBER_CLEAR').
-				"</button> <span class='pull-right'><a href='index.php?option=com_ajax&plugin=radicalform&format=raw&group=system&admin=4' class='btn ' id='exportcsv'>".JText::_('PLG_RADICALFORM_EXPORT_CSV').
-				"</a><span></p>";
+				"</button> <span class='pull-right'><a href='index.php?option=com_ajax&plugin=radicalform&format=raw&group=system&admin=4&page=".(($page == "")?"0":strstr($page,".",true))."' class='btn ' id='exportcsv'>".JText::_('PLG_RADICALFORM_EXPORT_CSV').
+				"</a></span></p>";
 			$html.="<br><br>";
+
+
+
 			$html.= '<table class="table table-striped table-bordered adminlist historytable" ><thead><tr>';
 			$html .= "<th>#</th>";
 			$html.= '<th width="">' . JText::_('PLG_RADICALFORM_HISTORY_TIME') . '</th>';
@@ -246,10 +320,8 @@ class JFormFieldHistoryradicalform extends JFormField {
 		}
 		else
 		{
-			$html = '<div class="alert">' . JText::_('PLG_RADICALFORM_HISTORY_EMPTY') . '</div>';
+			$html = "${logFiles}<p class='firstEntry'>${warningAboutRotation}</p>".'<div class="alert">' . JText::sprintf('PLG_RADICALFORM_HISTORY_EMPTY',$page."plg_system_radicalform.php") . '</div>';
 		}
-
-
 
 		return $html;
 	}
