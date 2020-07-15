@@ -174,8 +174,23 @@ class plgSystemRadicalform extends JPlugin
 		$get   = $r->get->getArray();
 		$files = $r->files->getArray();
 		$source = $input;
+
+		$page = '';
+		if(isset($get['page']))
+		{
+			if ($get['page'] == "0")
+			{
+				$page = '';
+			}
+			else
+			{
+				$page = $get['page'].".";
+			}
+		}
+
 		if (isset($get['admin']) && ( $get['admin'] == 4 || $get['admin'] == 5 ))
 		{
+			// 5 зарезервировано для другого вида экспорта
 			// это экспорт csv
 			if ($this->app->isClient('administrator'))
 			{
@@ -212,7 +227,7 @@ class plgSystemRadicalform extends JPlugin
 
 				$log_path = str_replace('\\', '/', JFactory::getConfig()->get('log_path'));
 
-				$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
+				$data = $this->getCSV($log_path . '/'.$page . 'plg_system_radicalform.php', "\t");
 				if(count($data)>0)
 				{
 					for ($i = 0; $i < 6; $i++)
@@ -463,9 +478,16 @@ class plgSystemRadicalform extends JPlugin
 
 		if (isset($get['admin']) && $get['admin'] == 2 )
 		{
-			unlink($this->logPath);
-			$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
-			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+			if($page)
+			{
+				unlink($log_path . '/'.$page.'plg_system_radicalform.php');
+			}
+			else
+			{
+				unlink($this->logPath);
+				$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
+				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+			}
 			return "ok";
 		}
 
