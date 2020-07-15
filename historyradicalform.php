@@ -126,7 +126,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$html= "<p>${logFiles}</p>"."<p class='firstEntry'>".JText::_('PLG_RADICALFORM_HISTORY_SIZE')."<strong>".filesize($log_path .'/'.$page . 'plg_system_radicalform.php')."</strong> ".JText::_('PLG_RADICALFORM_HISTORY_BYTE').$warningAboutRotation."</p>";
 			$html.="<p class='historytable'><button class='btn btn-danger' id='historyclear'>".JText::sprintf('PLG_RADICALFORM_HISTORY_CLEAR', $page."plg_system_radicalform.php").
 				"</button> <button class='btn' id='numberclear'>".JText::_('PLG_RADICALFORM_HISTORY_NUMBER_CLEAR').
-				"</button> <span class='pull-right'><a href='index.php?option=com_ajax&plugin=radicalform&format=raw&group=system&admin=4&page=".(($page == "")?"0":strstr($page,".",true))."' class='btn ' id='exportcsv'>".JText::_('PLG_RADICALFORM_EXPORT_CSV').
+				"</button> <span class='pull-right'><a href='index.php?option=com_ajax&plugin=radicalform&format=raw&group=system&admin=4&page=".(($page == "")?"0":strstr($page,".",true))."' class='btn ' id='exportcsv'>".JText::sprintf('PLG_RADICALFORM_EXPORT_CSV',$page."plg_system_radicalform.php").
 				"</a></span></p>";
 			$html.="<br><br>";
 
