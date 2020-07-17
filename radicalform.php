@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
  */
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\String\StringHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
@@ -626,6 +627,9 @@ class plgSystemRadicalform extends JPlugin
 
 		$mailer->setSender($sender);
 
+		PluginHelper::importPlugin('radicalform');
+		$params = $this->params;
+		$this->app->triggerEvent('onBeforeSendRadicalForm', array($params, &$input));
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
