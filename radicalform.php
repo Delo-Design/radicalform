@@ -80,6 +80,69 @@ class plgSystemRadicalform extends JPlugin
 		return $a;
 	}
 
+	/**
+	 * clear input array from extra info about user (like resolution and other info)
+	 *
+	 * @param array $input
+	 *
+	 * cleared input array - only values from  the form
+	 * @return array
+	 *
+	 * @since version
+	 */
+	private function clearInput(array $input)
+	{
+
+		if (isset($input["rfTarget"]) )
+		{
+			unset($input["rfTarget"]);
+		}
+
+		if(isset($input["url"]))
+		{
+			unset($input["url"]);
+		}
+		if(isset($input["reffer"]))
+		{
+			unset($input["reffer"]);
+		}
+		if(isset($input["resolution"]))
+		{
+			unset($input["resolution"]);
+		}
+		if(isset($input["pagetitle"]))
+		{
+			unset($input["pagetitle"]);
+		}
+		if(isset($input["rfUserAgent"]))
+		{
+			unset($input["rfUserAgent"]);
+		}
+		if(isset($input["rfFormID"]))
+		{
+			unset($input["rfFormID"]);
+		}
+		if(isset($input["rfLatestNumber"]))
+		{
+			unset($input["rfLatestNumber"]);
+		}
+		if(isset($input["uniq"]))
+		{
+			unset($input["uniq"]);
+		}
+		if(isset($input["needToSendFiles"]))
+		{
+			unset($input["needToSendFiles"]);
+		}
+		if(isset($input[JSession::getFormToken()]))
+		{
+			unset($input[JSession::getFormToken()]);
+		}
+
+		return $input;
+	}
+
+
 	public function onBeforeCompileHead()
 	{
 		if($this->params->get('keepalive'))
@@ -629,7 +692,7 @@ class plgSystemRadicalform extends JPlugin
 
 		PluginHelper::importPlugin('radicalform');
 		$params = $this->params;
-		$this->app->triggerEvent('onBeforeSendRadicalForm', array($params, &$input));
+		$this->app->triggerEvent('onBeforeSendRadicalForm', array($params, $this->clearInput($input), &$input, $uploaddir));
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
@@ -720,42 +783,14 @@ class plgSystemRadicalform extends JPlugin
 		if (isset($input["rfTarget"]) && (!empty($input["rfTarget"])))
 		{
 			$target=$input["rfTarget"];
-			unset($input["rfTarget"]);
 		}
 		else
 		{
 			$target=false;
 		}
 
+		$input = $this->clearInput($input);
 
-		if(isset($input["url"]))
-		{
-			unset($input["url"]);
-		}
-		if(isset($input["reffer"]))
-		{
-			unset($input["reffer"]);
-		}
-		if(isset($input["resolution"]))
-		{
-			unset($input["resolution"]);
-		}
-		if(isset($input["pagetitle"]))
-		{
-			unset($input["pagetitle"]);
-		}
-		if(isset($input["rfUserAgent"]))
-		{
-			unset($input["rfUserAgent"]);
-		}
-		if(isset($input["rfFormID"]))
-		{
-			unset($input["rfFormID"]);
-		}
-		if(isset($input["rfLatestNumber"]))
-		{
-			unset($input["rfLatestNumber"]);
-		}
 
 		$mainbody="";
 		$subject=StringHelper::strtoupper($subject);
