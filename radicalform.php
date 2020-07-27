@@ -692,7 +692,9 @@ class plgSystemRadicalform extends JPlugin
 
 		PluginHelper::importPlugin('radicalform');
 		$params = $this->params;
-		$this->app->triggerEvent('onBeforeSendRadicalForm', array($params, $this->clearInput($input), &$input, $uploaddir));
+		$params->set('uploaddir', $uploaddir);
+		$params->set('rfLatestNumber',$latestNumber);
+		$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
