@@ -231,7 +231,7 @@ RadicalFormClass = function () {
                     } catch (e) {
                         response = false;
                         try {
-                            rfCall_2(('Response code: ' + request.status + '\n' + e.message + '\n' + this.response), buttonPressed);
+                            rfCall_9(('Response code: ' + request.status + '\n' + e.message + '\n' + this.response), buttonPressed);
                         } catch (e) {
                             console.error('Radical Form JS Code: ', e);
                         }
@@ -268,48 +268,53 @@ RadicalFormClass = function () {
                              }
 
                             message = RadicalForm.AfterSend;
+                            if (buttonPressed.dataset.rfCall === undefined) {
+                                try {
+                                    rfCall_2(message, buttonPressed);
+                                } catch (e) {
+                                    console.error('Radical Form JS Code: ', e);
+                                }
+                            } else {
+                                rfCall = String(buttonPressed.dataset.rfCall);
+                                for (var i = 0; i < rfCall.length; i++) {
+                                    switch (rfCall[i]) {
+                                        case "1":
+                                            try {
+                                                rfCall_1(message, buttonPressed);
+                                            } catch (e) {
+                                                console.error('Radical Form JS Code: ', e);
+                                            }
+                                            break;
+                                        case "2":
+                                            try {
+                                                rfCall_2(message, buttonPressed);
+                                            } catch (e) {
+                                                console.error('Radical Form JS Code: ', e);
+                                            }
+                                            break;
+                                        case "3":
+                                            try {
+                                                rfCall_3(message, buttonPressed);
+                                            } catch (e) {
+                                                console.error('Radical Form JS Code: ', e);
+                                            }
+                                    }
+
+                                }
+                            }
+
                         } else {
                             message = 'Error! ' + response.data[0];
-                        }
-
-
-                        if (buttonPressed.dataset.rfCall === undefined) {
                             try {
-                                rfCall_2(message, buttonPressed);
+                                rfCall_9(message, buttonPressed);
                             } catch (e) {
                                 console.error('Radical Form JS Code: ', e);
                             }
-                        } else {
-                            rfCall = String(buttonPressed.dataset.rfCall);
-                            for (var i = 0; i < rfCall.length; i++) {
-                                switch (rfCall[i]) {
-                                    case "1":
-                                        try {
-                                            rfCall_1(message, buttonPressed);
-                                        } catch (e) {
-                                            console.error('Radical Form JS Code: ', e);
-                                        }
-                                        break;
-                                    case "2":
-                                        try {
-                                            rfCall_2(message, buttonPressed);
-                                        } catch (e) {
-                                            console.error('Radical Form JS Code: ', e);
-                                        }
-                                        break;
-                                    case "3":
-                                        try {
-                                            rfCall_3(message, buttonPressed);
-                                        } catch (e) {
-                                            console.error('Radical Form JS Code: ', e);
-                                        }
-                                }
-
-                            }
                         }
+
                     } else {
                         try {
-                            rfCall_2((response.message),buttonPressed);
+                            rfCall_9((response.message),buttonPressed);
                         } catch (e) {
                             console.error('Radical Form JS Code: ', e);
                         }
@@ -318,7 +323,7 @@ RadicalFormClass = function () {
                     buttonPressed.innerHTML=prevousButtonText;
                     buttonPressed.disabled=false;
                     try {
-                        rfCall_2((request.status + ' ' + request.message), buttonPressed);
+                        rfCall_9((request.status + ' ' + request.message), buttonPressed);
                     } catch (e) {
                         console.error('Radical Form JS Code: ', e);
                     }
@@ -402,7 +407,7 @@ RadicalFormClass = function () {
                     }
 
                     try {
-                        rfCall_2((request.status + ' ' + request.message), buttonPressed);
+                        rfCall_9((request.status + ' ' + request.message), buttonPressed);
                     } catch (e) {
                         console.error('Radical Form JS Code: ', e);
                     }

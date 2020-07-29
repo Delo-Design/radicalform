@@ -210,6 +210,31 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
+			if (!empty($this->params->get('rfCall_9on')))
+			{
+				// here we have individual code for rfCall_9
+				$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_9') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+			}
+			else
+			{
+				// here we set standard output
+				if (!empty($this->params->get('rfCall_2')))
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+				elseif (!empty($this->params->get('rfCall_1')))
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+				elseif (!empty($this->params->get('rfCall_3')))
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+				else
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { alert(rfMessage); } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+			}
 			$js .= " </script>" . $lnEnd;
 
 			$body = str_replace("</body>", $js . "</body>", $body);

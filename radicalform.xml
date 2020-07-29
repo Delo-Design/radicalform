@@ -105,6 +105,28 @@
                         filter="raw"
 
                 />
+                <field
+                        name="rfCall_9on"
+                        type="radio"
+                        label="PLG_RADICALFORM_RF_CALL_9ON"
+                        description="PLG_RADICALFORM_RF_CALL_9ON_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JON</option>
+                    <option value="0">JOFF</option>
+                </field>
+                <field
+                        name="rfCall_9"
+                        editor="codemirror|none"
+                        type="editor"
+                        label="PLG_RADICALFORM_RF_CALL_9"
+                        description="PLG_RADICALFORM_RF_CALL_9_DESCRIPTION"
+                        filter="raw"
+                        default="alert(rfMessage);"
+                        showon="rfCall_9on:1"
+
+                />
                 <field type="spacer" name="myspacer1" hr="true"/>
                 <field
                         name="emailon"
