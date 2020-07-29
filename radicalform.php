@@ -13,6 +13,7 @@ defined('_JEXEC') or die;
  */
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\String\StringHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
@@ -78,6 +79,69 @@ class plgSystemRadicalform extends JPlugin
 		}
 		return $a;
 	}
+
+	/**
+	 * clear input array from extra info about user (like resolution and other info)
+	 *
+	 * @param array $input
+	 *
+	 * cleared input array - only values from  the form
+	 * @return array
+	 *
+	 * @since version
+	 */
+	private function clearInput(array $input)
+	{
+
+		if (isset($input["rfTarget"]) )
+		{
+			unset($input["rfTarget"]);
+		}
+
+		if(isset($input["url"]))
+		{
+			unset($input["url"]);
+		}
+		if(isset($input["reffer"]))
+		{
+			unset($input["reffer"]);
+		}
+		if(isset($input["resolution"]))
+		{
+			unset($input["resolution"]);
+		}
+		if(isset($input["pagetitle"]))
+		{
+			unset($input["pagetitle"]);
+		}
+		if(isset($input["rfUserAgent"]))
+		{
+			unset($input["rfUserAgent"]);
+		}
+		if(isset($input["rfFormID"]))
+		{
+			unset($input["rfFormID"]);
+		}
+		if(isset($input["rfLatestNumber"]))
+		{
+			unset($input["rfLatestNumber"]);
+		}
+		if(isset($input["uniq"]))
+		{
+			unset($input["uniq"]);
+		}
+		if(isset($input["needToSendFiles"]))
+		{
+			unset($input["needToSendFiles"]);
+		}
+		if(isset($input[JSession::getFormToken()]))
+		{
+			unset($input[JSession::getFormToken()]);
+		}
+
+		return $input;
+	}
+
 
 	public function onBeforeCompileHead()
 	{
@@ -145,6 +209,31 @@ class plgSystemRadicalform extends JPlugin
 			if (!empty($this->params->get('rfCall_3')))
 			{
 				$js .= "function rfCall_3(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+			}
+			if (!empty($this->params->get('rfCall_9on')))
+			{
+				// here we have individual code for rfCall_9
+				$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_9') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+			}
+			else
+			{
+				// here we set standard output
+				if (!empty($this->params->get('rfCall_2')))
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_2') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+				elseif (!empty($this->params->get('rfCall_1')))
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_1') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+				elseif (!empty($this->params->get('rfCall_3')))
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_3') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
+				else
+				{
+					$js .= "function rfCall_9(rfMessage, here) { try { alert(rfMessage); } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				}
 			}
 			$js .= " </script>" . $lnEnd;
 
@@ -626,6 +715,11 @@ class plgSystemRadicalform extends JPlugin
 
 		$mailer->setSender($sender);
 
+		PluginHelper::importPlugin('radicalform');
+		$params = $this->params;
+		$params->set('uploaddir', $uploaddir);
+		$params->set('rfLatestNumber',$latestNumber);
+		$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
@@ -716,42 +810,14 @@ class plgSystemRadicalform extends JPlugin
 		if (isset($input["rfTarget"]) && (!empty($input["rfTarget"])))
 		{
 			$target=$input["rfTarget"];
-			unset($input["rfTarget"]);
 		}
 		else
 		{
 			$target=false;
 		}
 
+		$input = $this->clearInput($input);
 
-		if(isset($input["url"]))
-		{
-			unset($input["url"]);
-		}
-		if(isset($input["reffer"]))
-		{
-			unset($input["reffer"]);
-		}
-		if(isset($input["resolution"]))
-		{
-			unset($input["resolution"]);
-		}
-		if(isset($input["pagetitle"]))
-		{
-			unset($input["pagetitle"]);
-		}
-		if(isset($input["rfUserAgent"]))
-		{
-			unset($input["rfUserAgent"]);
-		}
-		if(isset($input["rfFormID"]))
-		{
-			unset($input["rfFormID"]);
-		}
-		if(isset($input["rfLatestNumber"]))
-		{
-			unset($input["rfLatestNumber"]);
-		}
 
 		$mainbody="";
 		$subject=StringHelper::strtoupper($subject);
