@@ -159,6 +159,7 @@ class plgSystemRadicalform extends JPlugin
 			return false;
 		}
 
+		// для всяких модальных окон, очищенных от постороннего мусора. себя мы тоже не выводим
 		$data = $this->app->input->getArray();
 		if(isset($data['tmpl']) && $data['tmpl'] === 'component')
 		{
@@ -256,6 +257,22 @@ class plgSystemRadicalform extends JPlugin
 		}
 	}
 
+	/**
+	 * @param $name
+	 *
+	 *
+	 * @since version
+	 */
+	private function showImage($name)
+	{
+		header("Content-disposition: attachment; filename=${name}");
+		header("Content-Type: image/jpeg");
+		header('Expires: 0');
+		header('Cache-Control: no-cache');
+		header("Content-Length: " .(string)(filesize("/var/www/html/zoloto-pokupka.test/images/test.jpg")) );
+		return  file_get_contents("/var/www/html/zoloto-pokupka.test/images/test.jpg");
+	}
+
 	public function onAjaxRadicalform()
 	{
 		$r     = $this->app->input;
@@ -275,6 +292,11 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$page = $get['page'].".";
 			}
+		}
+
+		if(isset($get['img']))
+		{
+			return $this->showImage("test.jpg");
 		}
 
 		if (isset($get['admin']) && ( $get['admin'] == 4 || $get['admin'] == 5 ))
