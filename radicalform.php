@@ -380,6 +380,10 @@ class plgSystemRadicalform extends JPlugin
 
 		$uploaddir = $this->params->get('uploadstorage') . '/rf-' . $uniq;
 
+		if(!file_exists($this->params->get('uploadstorage')))
+		{
+			mkdir($this->params->get('uploadstorage'));
+		}
 		// вначале проверим есть ли папки,подлежащие удалению по старости
 		$folders = JFolder::folders($this->params->get('uploadstorage') , "rf-*", false, true);
 
