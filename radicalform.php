@@ -14,6 +14,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Uri\Uri;
 use Joomla\String\StringHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
@@ -24,7 +25,9 @@ class plgSystemRadicalform extends JPlugin
 	protected $autoloadLanguage = true;
 	protected $db;
 	protected $app;
-	protected $maxDirSize;
+	protected $maxDirSize; // максимальный размер передаваемых файлов по почте
+	protected $maxStorageTime;
+	protected $maxStorageSize; // размер хранилища файлов
 
 	public function __construct(& $subject, $config)
 	{
@@ -32,7 +35,8 @@ class plgSystemRadicalform extends JPlugin
 
 		JLoader::register('JFile', JPATH_LIBRARIES . '/joomla/filesystem/file.php');
 		JLoader::register('JFolder', JPATH_LIBRARIES . '/joomla/filesystem/folder.php');
-		$this->maxDirSize = $this->params->get('maxfile');
+		$this->maxDirSize = $this->params->get('maxfile',20)*1048576;
+		$this->maxStorageSize = $this->params->get('maxstorage',1000)*1048576;
 
 		$this->logPath = str_replace('\\', '/', Factory::getConfig()->get('log_path')).'/plg_system_radicalform.php';
 
@@ -48,7 +52,83 @@ class plgSystemRadicalform extends JPlugin
 			array('plg_system_radicalform')
 		);
 
+		$this->maxStorageTime = $this->params->get('maxtime',30);
+		if(empty($this->params->get('uploadstorage')))
+		{
+			try
+			{
+				// Get the params for the radicalform plugin
+				$params = $this->db->setQuery(
+					$this->db->getQuery(true)
+						->select($this->db->quoteName('params'))
+						->from($this->db->quoteName('#__extensions'))
+						->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+						->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'))
+						->where($this->db->quoteName('element') . ' = ' . $this->db->quote('radicalform'))
+				)->loadResult();
+			}
+			catch (Exception $e)
+			{
+				echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()) . '<br />';
+
+				return;
+			}
+
+			$params = json_decode($params, true);
+
+			// set the directory to safe place
+
+			$params['uploadstorage'] = JPATH_ROOT. '/images/'.$this->uniqidReal();
+			mkdir($params['uploadstorage']);
+
+			$params = json_encode($params);
+
+			$query = $this->db->getQuery(true)
+				->update($this->db->quoteName('#__extensions'))
+				->set($this->db->quoteName('params') . ' = ' . $this->db->quote($params))
+				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
+				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'))
+				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('radicalform'));
+
+			try
+			{
+				$this->db->setQuery($query)->execute();
+			}
+			catch (Exception $e)
+			{
+				echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()) . '<br />';
+
+				return;
+			}
+		}
+
+
 	}
+
+	function uniqidReal($lenght = 23) {
+		if (function_exists("random_bytes")) {
+			$bytes = random_bytes(ceil($lenght / 2));
+		} elseif (function_exists("openssl_random_pseudo_bytes")) {
+			$bytes = openssl_random_pseudo_bytes(ceil($lenght / 2));
+		} else {
+			throw new Exception("no cryptographically secure random function available");
+		}
+		return substr(bin2hex($bytes), 0, $lenght);
+	}
+
+
+
+	public function makeSafe($file)
+	{
+		// Remove any trailing dots, as those aren't ever valid file names.
+		$file = rtrim($file, '.');
+
+		$regex = array('#(\.){2,}#', '#[^A-Za-z0-9\.\_\-]#', '#^\.#');
+
+		return trim(preg_replace($regex, '', $file));
+	}
+
+
 
 	private function return_bytes($size_str)
 	{
@@ -258,23 +338,210 @@ class plgSystemRadicalform extends JPlugin
 	}
 
 	/**
+	 * @param $path
+	 *
+	 * Directory size
+	 *
+	 * @return int total directory size
+	 *
+	 * @since version
+	 */
+	function getDirectorySize($path)
+	{
+		$fileSize = 0;
+		$dir = scandir($path);
+
+		foreach($dir as $file)
+		{
+			if (($file!='.') && ($file!='..'))
+				if(is_dir($path . '/' . $file))
+					$fileSize += $this->getDirectorySize($path.'/'.$file);
+				else
+					$fileSize += filesize($path . '/' . $file);
+		}
+
+		return $fileSize;
+	}
+
+
+	/**
+	 *  here we process uploaded files
+	 *
+	 * @param $files - uploaded file
+	 *
+	 * @param $uniq - uniq mark for this form
+	 *
+	 * @return array
+	 *
+	 * @since version 2.6
+	 */
+	private function processUploadedFiles($files, $uniq)
+	{
+
+		$uploaddir = $this->params->get('uploadstorage') . '/rf-' . $uniq;
+
+		// вначале проверим есть ли папки,подлежащие удалению по старости
+		$folders = JFolder::folders($this->params->get('uploadstorage') , "rf-*", false, true);
+
+		$maxtime = $this->params->get('maxtime',30) * 86400;
+
+		foreach ($folders as $folder)
+		{
+			$dtime = intval(time() - filectime($folder));
+			if ($dtime > ( $maxtime)) // все что старше указанного срока - под нож!
+			{
+				JFolder::delete($folder);
+			}
+		}
+
+		$output = [];
+		if (!empty($files))
+		{
+
+			if (!file_exists($uploaddir))
+			{
+				mkdir($uploaddir); // создаем папку если ее нет для файлов
+			}
+
+			// надо посчитать вначале размер всех файлов в папке
+			$totalsize = $this->getDirectorySize($this->params->get('uploadstorage'));
+
+
+			$lang = Factory::getLanguage();
+
+			foreach ($files as $key => $file)
+			{
+				if ($file['error'] == 4) // ERROR NO FILE
+					continue;
+
+				if ($file['error'])
+				{
+					switch ($file['error'])
+					{
+						case 1:
+							$output["error"] = JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS');
+							break;
+
+						case 2:
+							$output["error"] = JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_HTML_FORM_ALLOWS');
+							break;
+
+						case 3:
+							$output["error"] = JText::_('PLG_RADICALFORM_ERROR_PARTIAL_UPLOAD');
+					}
+				}
+				else
+				{
+
+					if (($file['size'] + $totalsize) < $this->maxStorageSize)
+					{
+						if (!$file['name'])
+						{
+							$output['error'] = JText::_('PLG_RADICALFORM_ERROR_WRONG_TYPE');
+						}
+						else
+						{
+
+							if (!file_exists($uploaddir . "/" . $key))
+							{
+								mkdir($uploaddir . "/" . $key); // создаем папку если ее нет для файлов
+							}
+							$uploadedFileName = $this->makeSafe($lang->transliterate($file['name']));
+							if (JFile::upload($file['tmp_name'], $uploaddir . "/" . $key . "/" . $uploadedFileName))
+							{
+								$output["name"] = $uploadedFileName;
+							}
+							else
+							{
+								$output["error"] = JText::_('PLG_RADICALFORM_ERROR_UPLOAD');
+							}
+						}
+					}
+					else
+					{
+
+						$output["error"] = JText::_('PLG_RADICALFORM_TOO_MANY_UPLOADS');
+					}
+
+				}
+
+			}
+
+		}
+
+		return $output;
+	}
+
+	/** Обрабатываем пути для выкачки файлов
+	 *
+	 * @since
+	 */
+	public function onAfterInitialise()
+	{
+			$uri    = Uri::getInstance();
+			$path   = $uri->getPath();
+			$root   = Uri::root(true);
+			$entry  = $root . "/".$this->params->get('downloadpath') ;
+			$folder = basename(dirname($path));
+			$uniq =  basename(dirname(dirname($path)));
+
+
+			if (preg_match('#^' . $entry . '#', $path))
+			{
+				$filename=basename($path);
+				$uri->setPath($root);
+				$uri->setVar('option', 'com_ajax');
+				$uri->setVar('plugin', 'radicalform');
+				$uri->setVar('group', 'system');
+				$uri->setVar('format', 'raw');
+				$uri->setVar('img', $filename);
+				$uri->setVar('uniq', $uniq);
+				$uri->setVar('folder', $folder);
+			}
+
+	}
+
+	/**
+	 * Show image
 	 * @param $name
 	 *
 	 *
 	 * @since version
 	 */
-	private function showImage($name)
+	private function showImage($uniq,$folder,$name)
 	{
-		header("Content-disposition: attachment; filename=${name}");
-		header("Content-Type: image/jpeg");
-		header('Expires: 0');
-		header('Cache-Control: no-cache');
-		header("Content-Length: " .(string)(filesize("/var/www/html/zoloto-pokupka.test/images/test.jpg")) );
-		return  file_get_contents("/var/www/html/zoloto-pokupka.test/images/test.jpg");
+		$filepath=$this->params->get('uploadstorage').DIRECTORY_SEPARATOR."rf-".$uniq.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.$name;
+		if(file_exists($filepath))
+		{
+			if (function_exists('finfo_open'))
+			{
+				$finfo    = finfo_open(FILEINFO_MIME_TYPE);
+				$mimetype = finfo_file($finfo, $filepath);
+				finfo_close($finfo);
+			}
+			else
+			{
+				$mimetype = mime_content_type($filepath);
+			}
+			header("Content-Type: ${mimetype}");
+
+			header('Expires: 0');
+			header('Cache-Control: no-cache');
+			header("Content-Length: " .(string)(filesize($filepath)) );
+			echo  file_get_contents($filepath);
+		}
+		else
+		{
+			header('HTTP/1.1 404 Not Found');
+		}
+
+		$this->app->close(200);
 	}
 
 	public function onAjaxRadicalform()
 	{
+		$uri    = Uri::getInstance();
+
 		$r     = $this->app->input;
 		$input = $r->post->getArray();
 		$get   = $r->get->getArray();
@@ -294,9 +561,10 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
-		if(isset($get['img']))
+		$name = $uri->getVar('img');
+		if(!empty($name))
 		{
-			return $this->showImage("test.jpg");
+			return $this->showImage($uri->getVar('uniq'), $uri->getVar('folder'), $name);
 		}
 
 		if (isset($get['admin']) && ( $get['admin'] == 4 || $get['admin'] == 5 ))
@@ -513,7 +781,13 @@ class plgSystemRadicalform extends JPlugin
 				curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
 				curl_setopt($ch,CURLOPT_RETURNTRANSFER,true);
 				curl_setopt($ch, CURLOPT_HEADER, 0);
-				$output=json_decode(curl_exec($ch),true);
+				$result=curl_exec($ch);
+				$output=json_decode($result,true);
+				if (curl_getinfo($ch, CURLINFO_RESPONSE_CODE)!='200')
+				{
+
+					return $output;
+				}
 				curl_close($ch);
 				$output=$output["result"];
 
@@ -545,7 +819,7 @@ class plgSystemRadicalform extends JPlugin
 				}
 
 
-				return $chatIDs;
+				return ["ok"=>true,"chatids"=>$chatIDs];
 			} else
 			{
 				return false;
@@ -589,6 +863,7 @@ class plgSystemRadicalform extends JPlugin
 
 		if (isset($get['admin']) && $get['admin'] == 2 )
 		{
+			// очищаем текущий файл или удаляем, если он архивный (1-plg_system_radicalform.php и т.д.)
 			if($page)
 			{
 				unlink($log_path . '/'.$page.'plg_system_radicalform.php');
@@ -604,6 +879,7 @@ class plgSystemRadicalform extends JPlugin
 
 		if (isset($get['admin']) && $get['admin'] == 3 )
 		{
+			// сбрасываем нумерацию
 			$entry= ['rfLatestNumber' => 0, 'message' => JText::_('PLG_RADICALFORM_RESET_NUMBER') ];
 			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
 			return "ok";
@@ -619,107 +895,14 @@ class plgSystemRadicalform extends JPlugin
 
 			return $output;
 		}
-		$uploaddir = JPATH_ROOT . '/tmp/rf-' . $uniq;
+
 
 		if (isset($get['file']) && $get['file'] == 1)
 		{
 			// здесь нам передали файл. что же, будем обрабатывать
 
-			// вначале проверим есть ли старые брошенные наши папки
-			$folders = JFolder::folders(JPATH_ROOT . '/tmp', "rf-*", false, true);
+			return $this->processUploadedFiles($files, $uniq);
 
-			foreach ($folders as $folder)
-			{
-				$dtime = intval(time() - filectime($folder));
-				if ($dtime > 86400) // все что старше суток - под нож!
-				{
-					JFolder::delete($folder);
-				}
-			}
-
-			$output = [];
-			if (!empty($files))
-			{
-
-				if (!file_exists($uploaddir))
-				{
-					mkdir($uploaddir); // создаем папку если ее нет для файлов
-				}
-
-				// надо посчитать вначале размер всех файлов в папке
-				$totalsize = 0;
-				$folders   = JFolder::folders($uploaddir);
-				foreach ($folders as $folder)
-				{
-					foreach (glob($uploaddir . "/" . $folder . "/*.*") as $filename)
-					{
-						$totalsize += filesize($filename);
-					}
-				}
-
-				$lang = Factory::getLanguage();
-
-				foreach ($files as $key => $file)
-				{
-					if ($file['error'] == 4) // ERROR NO FILE
-						continue;
-
-					if ($file['error'])
-					{
-						switch ($file['error'])
-						{
-							case 1:
-								$output["error"] = JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_PHP_INI_ALLOWS');
-								break;
-
-							case 2:
-								$output["error"] = JText::_('PLG_RADICALFORM_FILE_TO_LARGE_THAN_HTML_FORM_ALLOWS');
-								break;
-
-							case 3:
-								$output["error"] = JText::_('PLG_RADICALFORM_ERROR_PARTIAL_UPLOAD');
-						}
-					}
-					else
-					{
-
-						if (($file['size'] + $totalsize) < $this->maxDirSize)
-						{
-							if (!$file['name'])
-							{
-								$output['error'] = JText::_('PLG_RADICALFORM_ERROR_WRONG_TYPE');
-							}
-							else
-							{
-
-								if (!file_exists($uploaddir . "/" . $key))
-								{
-									mkdir($uploaddir . "/" . $key); // создаем папку если ее нет для файлов
-								}
-								$uploadedFileName = JFILE::makeSafe($lang->transliterate($file['name']));
-								if (JFile::upload($file['tmp_name'], $uploaddir . "/" . $key . "/" . $uploadedFileName))
-								{
-									$output["name"] = $uploadedFileName;
-								}
-								else
-								{
-									$output["error"] = JText::_('PLG_RADICALFORM_ERROR_UPLOAD');
-								}
-							}
-						}
-						else
-						{
-
-							$output["error"] = JText::_('PLG_RADICALFORM_TOO_MANY_UPLOADS');
-						}
-
-					}
-
-				}
-
-			}
-
-			return $output;
 		}
 
 
@@ -737,9 +920,10 @@ class plgSystemRadicalform extends JPlugin
 
 		$mailer->setSender($sender);
 
+		// вызов внешнего плагина
 		PluginHelper::importPlugin('radicalform');
 		$params = $this->params;
-		$params->set('uploaddir', $uploaddir);
+		$params->set('uploaddir', $this->params->get('uploadstorage') . '/rf-' . $uniq);
 		$params->set('rfLatestNumber',$latestNumber);
 		$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
 
@@ -775,28 +959,37 @@ class plgSystemRadicalform extends JPlugin
 
 		$mailer->setSubject($subject);
 
-		$needToSendFiles = false;
+		// формируем поле загруженных файлов
+		$url = ((!empty($_SERVER['HTTPS'])) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'];
+		$downloadPath=$this->params->get('downloadpath');
+		$totalsize=0;
 		if (isset($input["needToSendFiles"]) && ($input["needToSendFiles"] == 1))
 		{
 			// просматриваем все подпапки нашей папки для выгрузки
-			$folders = JFolder::folders($uploaddir);
+			$folders = JFolder::folders($this->params->get('uploadstorage') . '/rf-' . $uniq);
 			foreach ($folders as $folder)
 			{
 				//прикрепляем файлы
-				$filesForAttachment = JFolder::files($uploaddir . "/" . $folder, ".", false, true);
+				$filesForAttachment = JFolder::files($this->params->get('uploadstorage') . '/rf-' . $uniq . "/" . $folder, ".", false, true);
 
 				foreach ($filesForAttachment as $file)
 				{
 					if (isset($input[$folder]))
 					{
-						$input[$folder] .= ", " . basename($file);
+						$input[$folder] .= $this->params->get('delimiter',"<br />")."${url}/${downloadPath}/${uniq}/${folder}/".basename($file);
 					}
 					else
 					{
-						$input[$folder] = basename($file);
+						$input[$folder] = "${url}/${downloadPath}/${uniq}/${folder}/".basename($file);
 					}
-					$mailer->addAttachment($file);
-					$needToSendFiles = true;
+					if($this->params->get('attachfiles',0))
+					{
+						if(($totalsize+filesize($file)) < $this->maxDirSize)
+						{
+							$totalsize=$totalsize+filesize($file);
+							$mailer->addAttachment($file);
+						}
+					}
 				}
 
 			}
@@ -1000,6 +1193,7 @@ class plgSystemRadicalform extends JPlugin
 
 		$textOutput=str_replace("<br />"," \r\n",$telegram);
 		$textOutput=str_replace(["<b>","</b>"],"",$textOutput);
+		
 		if($this->params->get('emailon'))
 		{
 			// if we need to send email
@@ -1059,10 +1253,7 @@ class plgSystemRadicalform extends JPlugin
 				}
 				else
 				{
-					if($needToSendFiles)
-					{
-						JFolder::delete($uploaddir);
-					}
+
 					return ['ok',$textOutput];
 				}
 			}
@@ -1070,10 +1261,6 @@ class plgSystemRadicalform extends JPlugin
 		}
 		else
 		{
-			if($needToSendFiles)
-			{
-				JFolder::delete($uploaddir);
-			}
 			return ['ok',$textOutput];
 		}
 
