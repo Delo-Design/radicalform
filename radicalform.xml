@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2020 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>2.5.1</version>
-    <creationDate>2020-07-29</creationDate>
+    <version>2.6.0</version>
+    <creationDate>2020-08-12</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -228,32 +228,7 @@
                         disabled="false"
                         filter="raw">
                 </field>
-                <field
-                        name="waitingupload"
-                        type="text"
-                        label="PLG_RADICALFORM_WAITING_FOR_UPLOAD"
-                        description="PLG_RADICALFORM_WAITING_FOR_UPLOAD_DESCRIPTION"
-                        required="false"
-                        default="Ждите..."
-                        size="10"
-                        class="input-xxlarge"
-                        readonly="false"
-                        disabled="false"
-                        filter="raw">
-                </field>
-                <field
-                        name="maxfile"
-                        type="text"
-                        label="PLG_RADICALFORM_MAXFILE"
-                        description="PLG_RADICALFORM_MAXFILE_DESCRIPTION"
-                        required="false"
-                        default="20000000"
-                        size="10"
-                        class=""
-                        readonly="false"
-                        disabled="false"
-                        filter="">
-                </field>
+
                 <field
                         name="aftersend"
                         type="textarea"
@@ -312,6 +287,108 @@
                     <option value="0">JOFF</option>
                 </field>
                 <field type="spacer"  name="myspacer13" hr="true"/>
+            </fieldset>
+            <fieldset name="forfiles" label="PLG_RADICALFORM_FILESPARAMS">
+                <field
+                        name="waitingupload"
+                        type="text"
+                        label="PLG_RADICALFORM_WAITING_FOR_UPLOAD"
+                        description="PLG_RADICALFORM_WAITING_FOR_UPLOAD_DESCRIPTION"
+                        required="false"
+                        default="Ждите..."
+                        size="10"
+                        class="input-xxlarge"
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+                <field
+                        name="attachfiles"
+                        type="radio"
+                        label="PLG_RADICALFORM_ATTACHFILES_LABEL"
+                        description="PLG_RADICALFORM_ATTACHFILES_DESCRIPTION"
+                        class="btn-group btn-group-yesno"
+                        default="0"
+                >
+                    <option value="1">JYES</option>
+                    <option value="0">JNO</option>
+                </field>
+                <field
+                        name="maxfile"
+                        type="text"
+                        label="PLG_RADICALFORM_MAXFILE"
+                        description="PLG_RADICALFORM_MAXFILE_DESCRIPTION"
+                        required="false"
+                        default="20"
+                        size="10"
+                        class="input-small"
+                        readonly="false"
+                        disabled="false"
+                        showon="attachfiles:1"
+                        filter="">
+                </field>
+                <field
+                        name="maxstorage"
+                        type="text"
+                        label="PLG_RADICALFORM_MAXSTORAGE"
+                        description="PLG_RADICALFORM_MAXSTORAGE_DESCRIPTION"
+                        required="false"
+                        default="1000"
+                        size="10"
+                        class="input-small"
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+                </field>
+                <field
+                        name="maxtime"
+                        type="text"
+                        label="PLG_RADICALFORM_MAXTIME"
+                        description="PLG_RADICALFORM_MAXSTIME_DESCRIPTION"
+                        required="false"
+                        default="30"
+                        size="10"
+                        class="input-small"
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+                </field>
+                <field
+                        name="uploadstorage"
+                        type="text"
+                        label="PLG_RADICALFORM_UPLOADSTORAGE"
+                        description="PLG_RADICALFORM_UPLOADSTORAGE_DESCRIPTION"
+                        required="false"
+                        class="input-xxlarge"
+                        readonly="false"
+                        disabled="false"
+                        filter="">
+                </field>
+                <field
+                        name="delimiter"
+                        type="text"
+                        label="PLG_RADICALFORM_DELIMITER"
+                        description="PLG_RADICALFORM_DELIMITER_DESCRIPTION"
+                        required="false"
+                        default="&lt;br /&gt;"
+                        size="10"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+                <field
+                        name="downloadpath"
+                        type="text"
+                        label="PLG_RADICALFORM_DOWNLOADPATH"
+                        description="PLG_RADICALFORM_DOWNLOADPATH_DESCRIPTION"
+                        required="false"
+                        size="20"
+                        class=""
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
             </fieldset>
             <fieldset name="advanced" label="PLG_RADICALFORM_ADVANCEDPARAMS">
                 <field

@@ -239,6 +239,7 @@ RadicalFormClass = function () {
                     }
                     if (response.success) {
                         if (response.data[0][0]==="ok") {
+
                             if (RadicalForm.Jivosite === "1") {
                                 try {
                                     var result = jivo_api.sendOfflineMessage({
