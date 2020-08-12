@@ -78,6 +78,8 @@ A radically new approach to creating feedback forms
 1. Added integration with the Jivosite service.
 1. You can add your custom code
 1. Export to CSV file
+1. There is a possibility of expansion using Joomla plug-ins
+1. It is possible to upload files to the server and send files as links
 
 
 
