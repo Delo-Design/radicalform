@@ -323,6 +323,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$html = "${logFiles}<p class='firstEntry'>${warningAboutRotation}</p>".'<div class="alert">' . JText::sprintf('PLG_RADICALFORM_HISTORY_EMPTY',$page."plg_system_radicalform.php") . '</div>';
 		}
 
+		$html = preg_replace('/(?<!a href=\'|\")(?<!src=\"|\')((http)+(s)?:\/\/[^<>\s]+)(?<![\.,:])/i', "<a href='$0' target='_blank'>$0</a>", $html);
 		return $html;
 	}
 
