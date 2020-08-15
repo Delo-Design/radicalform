@@ -91,21 +91,19 @@ RadicalFormClass = function () {
         }
         RadicalForm.FormFields = [];
         [].forEach.call(form.querySelectorAll("[name]"), function (el) {
+           // remove danger classes so they can animated later
             selfClass.danger_classes.forEach(function (item) {
                 el.classList.remove(item);
             });
-        });
-
-        // let's see the fields of form to check for validity and required
-        for (var i = 0, len = form.elements.length; i < len; i++) {
-            field = form.elements[i];
-            if ((field.classList.contains('required') && field.value.trim() === "") ||
-                (field.classList.contains('required') && (!field.checked) && (field.type === "checkbox")) ||
-                (!field.checkValidity())) {
-                RadicalForm.FormFields.push(field);
+            // let's see the fields of form to check for validity and required
+            if ((el.classList.contains('required') && el.value.trim() === "") ||
+                (el.classList.contains('required') && (!el.checked) && (el.type === "checkbox")) ||
+                (!el.checkValidity())) {
+                RadicalForm.FormFields.push(el);
                 needReturn = true;
             }
-        }
+        });
+
 
         setTimeout(function () {
             for (var i = 0; i < RadicalForm.FormFields.length; i++) {
