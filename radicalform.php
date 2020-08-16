@@ -490,7 +490,7 @@ class plgSystemRadicalform extends JPlugin
 			$uniq =  basename(dirname(dirname($path)));
 
 
-			if (preg_match('#^' . $entry . '#', $path))
+			if (preg_match('#' . $entry . '#', $path))
 			{
 				$filename=basename($path);
 				$uri->setPath($root);
