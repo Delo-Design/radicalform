@@ -13,6 +13,7 @@
     <files>
         <filename plugin="radicalform">radicalform.php</filename>
         <filename>buttonradicalform.php</filename>
+        <filename>storageindicator.php</filename>
         <filename>historyradicalform.php</filename>
         <filename>telegramchatids.xml</filename>
         <filename>customcode.xml</filename>
@@ -389,6 +390,13 @@
                         disabled="false"
                         filter="raw">
                 </field>
+                <field
+                        name="storageind"
+                        type="storageindicator"
+                        id="storageindicator"
+                        label=" "
+                        value="PLG_RADICALFORM_TELEGRAMCHECK_LABEL"
+                />
             </fieldset>
             <fieldset name="advanced" label="PLG_RADICALFORM_ADVANCEDPARAMS">
                 <field
