@@ -30,6 +30,7 @@
     <media folder="media" destination="plg_system_radicalform">
         <folder>js</folder>
         <folder>css</folder>
+        <folder>images</folder>
         <filename>index.html</filename>
     </media>
     <updateservers>
