@@ -394,7 +394,9 @@ class plgSystemRadicalform extends JPlugin
 
 		foreach ($folders as $folder)
 		{
-			$dtime = intval(time() - filectime($folder));
+			// we use name of the directory as a time of creation of the directory
+			$t2=explode("-",basename($folder));
+			$dtime = intval(time() - intval($t2[1]/1000));
 			if ($dtime > ( $maxtime)) // все что старше указанного срока - под нож!
 			{
 				JFolder::delete($folder);
