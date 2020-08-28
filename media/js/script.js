@@ -375,6 +375,7 @@ RadicalFormClass = function () {
                         response = JSON.parse(this.response);
                     } catch (e) {
                         console.error(request.status + ' ' + e.message + ' ' + this.response);
+                        rf_filenames_list.insertAdjacentHTML('beforeend', "<div class='" + RadicalForm.ErrorFile + "'>Unknown Error. See Console.</div>");
                         response = false;
                         return;
                     }

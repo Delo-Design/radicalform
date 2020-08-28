@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2020 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>2.6.1</version>
-    <creationDate>2020-08-16</creationDate>
+    <version>2.6.2</version>
+    <creationDate>2020-08-28</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -30,6 +30,7 @@
     <media folder="media" destination="plg_system_radicalform">
         <folder>js</folder>
         <folder>css</folder>
+        <folder>images</folder>
         <filename>index.html</filename>
     </media>
     <updateservers>

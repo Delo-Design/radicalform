@@ -125,7 +125,9 @@ class plgSystemRadicalform extends JPlugin
 
 		$regex = array('#(\.){2,}#', '#[^A-Za-z0-9\.\_\-]#', '#^\.#');
 
-		return trim(preg_replace($regex, '', $file));
+		$repl = array('.','','');
+
+		return trim(preg_replace($regex, $repl, $file));
 	}
 
 
@@ -250,7 +252,7 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			$mtime = filemtime(JPATH_ROOT . "/media/plg_system_radicalform/js/script.min.js");
+			$mtime = filemtime(JPATH_ROOT . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
 			$jsParams = array(
 				'DangerClass'         => $this->params->get('dangerclass'),
 				'ErrorFile'           => $this->params->get('errorfile'),
@@ -271,7 +273,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$jsParams['IP'] = json_encode(array('ip' => $_SERVER['REMOTE_ADDR']));
 			}
-			$js = "<script src=\"" . JURI::base(true) . "/media/plg_system_radicalform/js/script.min.js?$mtime\" async></script>" . $lnEnd
+			$js = "<script src=\"" . JURI::base(true) . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ])."?$mtime\" async></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm=" . json_encode($jsParams) . ";";
 
@@ -378,6 +380,7 @@ class plgSystemRadicalform extends JPlugin
 	private function processUploadedFiles($files, $uniq)
 	{
 
+
 		$uploaddir = $this->params->get('uploadstorage') . '/rf-' . $uniq;
 
 		if(!file_exists($this->params->get('uploadstorage')))
@@ -391,7 +394,9 @@ class plgSystemRadicalform extends JPlugin
 
 		foreach ($folders as $folder)
 		{
-			$dtime = intval(time() - filectime($folder));
+			// we use name of the directory as a time of creation of the directory
+			$t2=explode("-",basename($folder));
+			$dtime = intval(time() - intval($t2[1]/1000));
 			if ($dtime > ( $maxtime)) // все что старше указанного срока - под нож!
 			{
 				JFolder::delete($folder);
@@ -410,11 +415,33 @@ class plgSystemRadicalform extends JPlugin
 			// надо посчитать вначале размер всех файлов в папке
 			$totalsize = $this->getDirectorySize($this->params->get('uploadstorage'));
 
-
 			$lang = Factory::getLanguage();
 
 			foreach ($files as $key => $file)
 			{
+				if ($file['name'])
+				{
+					$mime= $this->mimetype($file['tmp_name']);
+					$mimetype=explode('/',  $mime);
+
+					if($mimetype[0]=="text")
+					{
+						$output["error"] = JText::_('PLG_RADICALFORM_ERROR_WRONG_TYPE');
+						continue;
+					}
+					if(strpos($mime,"svg")!==false)
+					{
+						$output["error"] = JText::_('PLG_RADICALFORM_ERROR_WRONG_TYPE');
+						continue;
+					}
+				}
+				else
+				{
+					$output["error"] = JText::_('PLG_RADICALFORM_ERROR_WRONG_TYPE');
+					continue;
+				}
+
+
 				if ($file['error'] == 4) // ERROR NO FILE
 					continue;
 
@@ -506,8 +533,34 @@ class plgSystemRadicalform extends JPlugin
 	}
 
 	/**
+	 *  Check file mime type and return it
+	 * @param $filepath
+	 *
+	 * @return mixed|string
+	 *
+	 * @since version
+	 */
+	private function mimetype($filepath)
+	{
+		if (function_exists('finfo_open'))
+		{
+			$finfo    = finfo_open(FILEINFO_MIME_TYPE);
+			$mimetype = finfo_file($finfo, $filepath);
+			finfo_close($finfo);
+		}
+		else
+		{
+			$mimetype = mime_content_type($filepath);
+		}
+		return $mimetype;
+	}
+
+	/**
 	 * Show image
-	 * @param $name
+	 *
+	 * @param $uniq - uniq number of the uploaded form
+	 * @param $folder - name of the file field
+	 * @param $name - name of the uploaded file
 	 *
 	 *
 	 * @since version
@@ -517,29 +570,45 @@ class plgSystemRadicalform extends JPlugin
 		$filepath=$this->params->get('uploadstorage').DIRECTORY_SEPARATOR."rf-".$uniq.DIRECTORY_SEPARATOR.$folder.DIRECTORY_SEPARATOR.$name;
 		if(file_exists($filepath))
 		{
-			if (function_exists('finfo_open'))
+			$mimetype=explode('/',  $this->mimetype($filepath));
+
+			if(($mimetype[0]=="text") || (strpos($mimetype[1],"svg")))
 			{
-				$finfo    = finfo_open(FILEINFO_MIME_TYPE);
-				$mimetype = finfo_file($finfo, $filepath);
-				finfo_close($finfo);
+				$this->renderFileNotFound();
 			}
 			else
 			{
-				$mimetype = mime_content_type($filepath);
-			}
-			header("Content-Type: ${mimetype}");
+				header("Content-Type: ".$this->mimetype($filepath));
 
-			header('Expires: 0');
-			header('Cache-Control: no-cache');
-			header("Content-Length: " .(string)(filesize($filepath)) );
-			echo  file_get_contents($filepath);
+				header('Expires: 0');
+				header('Cache-Control: no-cache');
+				header("Content-Length: " .(string)(filesize($filepath)) );
+				echo  file_get_contents($filepath);
+
+			}
 		}
 		else
 		{
-			header('HTTP/1.1 404 Not Found');
+			$this->renderFileNotFound();
 		}
 
 		$this->app->close(200);
+	}
+
+	/**
+	 * Render image for 404 and error file
+	 *
+	 *  @since
+	 */
+	public function renderFileNotFound()
+	{
+		$filenotfound=JPATH_ROOT.HTMLHelper ::_('image', 'plg_system_radicalform/filenotfound.svg', '', null, true, 1);
+		header('HTTP/1.1 404 Not Found');
+		header("Content-Type: ".$this->mimetype($filenotfound));
+		header('Expires: 0');
+		header('Cache-Control: no-cache');
+		header("Content-Length: " .(string)(filesize($filenotfound)) );
+		echo  file_get_contents($filenotfound);
 	}
 
 	public function onAjaxRadicalform()
