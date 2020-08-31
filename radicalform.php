@@ -13,7 +13,9 @@ defined('_JEXEC') or die;
  */
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\MVC\Model\BaseDatabaseModel;
 use Joomla\CMS\Plugin\PluginHelper;
+use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\String\StringHelper;
 use Joomla\CMS\HTML\HTMLHelper;
@@ -32,6 +34,9 @@ class plgSystemRadicalform extends JPlugin
 	public function __construct(& $subject, $config)
 	{
 		parent::__construct($subject, $config);
+
+		$cache = Factory::getCache('_system', 'callback');
+		$cache->clean();
 
 		JLoader::register('JFile', JPATH_LIBRARIES . '/joomla/filesystem/file.php');
 		JLoader::register('JFolder', JPATH_LIBRARIES . '/joomla/filesystem/folder.php');
@@ -53,53 +58,48 @@ class plgSystemRadicalform extends JPlugin
 		);
 
 		$this->maxStorageTime = $this->params->get('maxtime',30);
-		if(empty($this->params->get('uploadstorage')))
+
+		// if we have empty storage directory or wrong directory - try to fix it
+		if(empty($this->params->get('uploadstorage')) || (!file_exists($this->params->get('uploadstorage'))) )
 		{
-			try
-			{
-				// Get the params for the radicalform plugin
-				$params = $this->db->setQuery(
-					$this->db->getQuery(true)
-						->select($this->db->quoteName('params'))
-						->from($this->db->quoteName('#__extensions'))
-						->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
-						->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'))
-						->where($this->db->quoteName('element') . ' = ' . $this->db->quote('radicalform'))
-				)->loadResult();
-			}
-			catch (Exception $e)
-			{
-				echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()) . '<br />';
+			BaseDatabaseModel::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_plugins/models/');
+			Table::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_plugins/tables/');
 
-				return;
-			}
-
-			$params = json_decode($params, true);
+			$plugin   = PluginHelper::getPlugin('system', 'radicalform');
 
 			// set the directory to safe place
 
-			$params['uploadstorage'] = JPATH_ROOT. '/images/'.$this->uniqidReal();
-			mkdir($params['uploadstorage']);
+			$params['uploadstorage'] =
 
-			$params = json_encode($params);
+			/* @var PluginsModelPlugin $model */
+			$model = BaseDatabaseModel::getInstance('Plugin', 'PluginsModel', array('ignore_request' => true));
+			$data  = $model->getItem($plugin->id);
 
-			$query = $this->db->getQuery(true)
-				->update($this->db->quoteName('#__extensions'))
-				->set($this->db->quoteName('params') . ' = ' . $this->db->quote($params))
-				->where($this->db->quoteName('type') . ' = ' . $this->db->quote('plugin'))
-				->where($this->db->quoteName('folder') . ' = ' . $this->db->quote('system'))
-				->where($this->db->quoteName('element') . ' = ' . $this->db->quote('radicalform'));
-
-			try
+			$data = (array) $data;
+			if(empty($this->params->get('uploadstorage')))
 			{
-				$this->db->setQuery($query)->execute();
-			}
-			catch (Exception $e)
-			{
-				echo JText::sprintf('JLIB_DATABASE_ERROR_FUNCTION_FAILED', $e->getCode(), $e->getMessage()) . '<br />';
+				// empty directory
+				$data['params']['uploadstorage'] = JPATH_ROOT. '/images/'.$this->uniqidReal();
+				mkdir($data['params']['uploadstorage']);
 
-				return;
 			}
+			else
+			{
+				// if directory not exist
+				//try to find it
+				if (file_exists(JPATH_ROOT. '/images/'.basename($this->params->get('uploadstorage'))))
+				{
+					$data['params']['uploadstorage'] = JPATH_ROOT. '/images/'.basename($this->params->get('uploadstorage'));
+				}
+				else
+				{
+					// empty directory
+					$data['params']['uploadstorage'] = JPATH_ROOT. '/images/'.$this->uniqidReal();
+					mkdir($data['params']['uploadstorage']);
+				}
+			}
+
+			$model->save($data);
 		}
 
 
