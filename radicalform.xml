@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2020 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>2.6.2</version>
-    <creationDate>2020-08-28</creationDate>
+    <version>2.6.3</version>
+    <creationDate>2020-09-01</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -35,7 +35,7 @@
     </media>
     <updateservers>
         <server type="extension" priority="1" name="Radical Form">
-            https://hika.su/update/free/radicalform.xml
+            https://hika.su/update/free/plg_radicalform.xml
         </server>
     </updateservers>
 
