@@ -69,8 +69,6 @@ class plgSystemRadicalform extends JPlugin
 
 			// set the directory to safe place
 
-			$params['uploadstorage'] =
-
 			/* @var PluginsModelPlugin $model */
 			$model = BaseDatabaseModel::getInstance('Plugin', 'PluginsModel', array('ignore_request' => true));
 			$data  = $model->getItem($plugin->id);
@@ -79,7 +77,7 @@ class plgSystemRadicalform extends JPlugin
 			if(empty($this->params->get('uploadstorage')))
 			{
 				// empty directory
-				$data['params']['uploadstorage'] = JPATH_ROOT. '/images/'.$this->uniqidReal();
+				$data['params']['uploadstorage'] = JPATH_ROOT. '/images/radicalform'.$this->uniqidReal();
 				mkdir($data['params']['uploadstorage']);
 
 			}
@@ -94,7 +92,7 @@ class plgSystemRadicalform extends JPlugin
 				else
 				{
 					// empty directory
-					$data['params']['uploadstorage'] = JPATH_ROOT. '/images/'.$this->uniqidReal();
+					$data['params']['uploadstorage'] = JPATH_ROOT. '/images/radicalform'.$this->uniqidReal();
 					mkdir($data['params']['uploadstorage']);
 				}
 			}
