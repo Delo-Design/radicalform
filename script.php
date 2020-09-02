@@ -75,7 +75,7 @@ class plgSystemRadicalformInstallerScript
 
 				if (!isset($params['uploadstorage']))
 				{
-					$params['uploadstorage'] =  JPATH_ROOT.'/images/'.$this->uniqidReal();
+					$params['uploadstorage'] =  JPATH_ROOT.'/images/radicalform'.$this->uniqidReal();
 					mkdir($params['uploadstorage']);
 				}
 
