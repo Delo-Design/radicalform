@@ -55,7 +55,27 @@ RadicalFormClass = function () {
             });
         });
 
-        this.on(container, "form ." + selfClass.danger_classes.join('.'), 'change', function (target, e) {
+        this.on(container, "form .rf-button-delete", 'click', function (target, e) {
+
+            var request = new XMLHttpRequest();
+            request.open('POST', RadicalForm.Base + '/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=1', true);
+
+            request.onload = function() {
+                if (this.status >= 200 && this.status < 400) {
+                    // Success!
+                    var data = JSON.parse(this.response);
+                    console.log("test", data);
+                } else {
+                    // We reached our target server, but it returned an error
+
+                }
+            };
+
+            request.send();
+
+        });
+
+        this.on(container, "form ." + selfClass.danger_classes.join('.'), 'keypress', function (target, e) {
             selfClass.danger_classes.forEach(function (item) {
                 target.target.classList.remove(item);
             });
@@ -347,7 +367,8 @@ RadicalFormClass = function () {
             formData = new FormData(),
             form = selfClass.closest(this, 'form'),
             rf_filenames_list = form.querySelector('.rf-filenames-list') || document.createElement('div'),
-            buttonPressed = this;
+            buttonPressed = this,
+            rfDelete="&nbsp;<svg class=\"rf-button-delete\" style=\"cursor: pointer;\" height=\"16\" viewBox=\"0 0 512 512\" width=\"16\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M256 0C114.836 0 0 114.836 0 256s114.836 256 256 256 256-114.836 256-256S397.164 0 256 0zm0 0\" fill=\"#f44336\"/><path d=\"M350.273 320.105c8.34 8.344 8.34 21.825 0 30.168a21.275 21.275 0 01-15.086 6.25c-5.46 0-10.921-2.09-15.082-6.25L256 286.164l-64.105 64.11a21.273 21.273 0 01-15.083 6.25 21.275 21.275 0 01-15.085-6.25c-8.34-8.344-8.34-21.825 0-30.169L225.836 256l-64.11-64.105c-8.34-8.344-8.34-21.825 0-30.168 8.344-8.34 21.825-8.34 30.169 0L256 225.836l64.105-64.11c8.344-8.34 21.825-8.34 30.168 0 8.34 8.344 8.34 21.825 0 30.169L286.164 256zm0 0\" fill=\"#fafafa\"/></svg>";
 
         formData.append(this.name, this.files[0]);
 
@@ -394,7 +415,7 @@ RadicalFormClass = function () {
                             if(!form.querySelector("input[name=needToSendFiles]")) {
                                 form.insertAdjacentHTML('beforeend', '<input type="hidden" name="needToSendFiles" value="1" />');
                             }
-                            rf_filenames_list.insertAdjacentHTML('beforeend', "<div>" + response.data[0].name + "</div>");
+                            rf_filenames_list.insertAdjacentHTML('beforeend', "<div>" + response.data[0].name + rfDelete + "</div>");
                         }
 
                     } else {
