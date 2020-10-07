@@ -250,7 +250,7 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			$mtime = filemtime(JPATH_ROOT . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
+			$mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
 			$jsParams = array(
 				'DangerClass'         => $this->params->get('dangerclass'),
 				'ErrorFile'           => $this->params->get('errorfile'),
@@ -271,7 +271,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$jsParams['IP'] = json_encode(array('ip' => $_SERVER['REMOTE_ADDR']));
 			}
-			$js = "<script src=\"" . JURI::base(true) . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ])."?$mtime\" async></script>" . $lnEnd
+			$js = "<script src=\"" .  HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ])."?$mtime\" async></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm=" . json_encode($jsParams) . ";";
 
