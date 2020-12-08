@@ -609,9 +609,11 @@ class plgSystemRadicalform extends JPlugin
         $uniq =  (int) $uniq;
 
         $filename = $this->params->get('uploadstorage') . '/rf-' . $uniq."/".$catalog."/".$name;
-        unlink($filename);
+        if(file_exists($filename))
+        {
+            unlink($filename);
+        }
         return "ok";
-
     }
 
 	/**
