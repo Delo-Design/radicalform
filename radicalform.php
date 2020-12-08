@@ -250,7 +250,8 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-			$mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
+
+            $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
 			$jsParams = array(
 				'DangerClass'         => $this->params->get('dangerclass'),
 				'ErrorFile'           => $this->params->get('errorfile'),
@@ -271,6 +272,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$jsParams['IP'] = json_encode(array('ip' => $_SERVER['REMOTE_ADDR']));
 			}
+
 			$js = "<script src=\"" .  HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ])."?$mtime\" async></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm=" . json_encode($jsParams) . ";";
@@ -479,6 +481,7 @@ class plgSystemRadicalform extends JPlugin
 							if (JFile::upload($file['tmp_name'], $uploaddir . "/" . $key . "/" . $uploadedFileName))
 							{
 								$output["name"] = $uploadedFileName;
+								$output["key"] = $key;
 							}
 							else
 							{
@@ -593,6 +596,28 @@ class plgSystemRadicalform extends JPlugin
 		$this->app->close(200);
 	}
 
+    /**
+     * Delete uploaded by user file
+     * @param $name - name of the file to delete
+     * @param $uniq - uniq id for current form
+     *
+     * @return string - status of deleting file
+     * @since
+     */
+    public function deleteUploadedFile($catalog, $name, $uniq)
+    {
+        $name = basename($name);
+        $catalog = basename($catalog);
+        $uniq =  (int) $uniq;
+
+        $filename = $this->params->get('uploadstorage') . '/rf-' . $uniq."/".$catalog."/".$name;
+        if(file_exists($filename))
+        {
+            unlink($filename);
+        }
+        return "ok";
+    }
+
 	/**
 	 * Render image for 404 and error file
 	 *
@@ -637,6 +662,12 @@ class plgSystemRadicalform extends JPlugin
 		{
 			return $this->showImage($uri->getVar('uniq'), $uri->getVar('folder'), $name);
 		}
+
+		if (isset($get['deletefile']) )
+        {
+            return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);;
+        }
+
 
 		if (isset($get['admin']) && ( $get['admin'] == 4 || $get['admin'] == 5 ))
 		{
@@ -1023,6 +1054,10 @@ class plgSystemRadicalform extends JPlugin
 				if(isset($input[$match[1]]))
 				{
 					$set=$input[$match[1]];
+					if(is_array($set))
+                    {
+                        $set = implode(", ", $set);
+                    }
 					$subject = preg_replace("|$match[0]|", $set, $subject, 1);
 				}
 			}
