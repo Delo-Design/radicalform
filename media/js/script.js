@@ -55,16 +55,27 @@ RadicalFormClass = function () {
             });
         });
 
-        this.on(container, "form .rf-button-delete", 'click', function (target, e) {
+        this.on(container, "form ." + selfClass.danger_classes.join('.'), 'change', function (target, e) {
+            selfClass.danger_classes.forEach(function (item) {
+                target.target.classList.remove(item);
+            });
+        });
 
+        this.on(container, "form .rf-button-delete", 'click', function (target, e) {
+        // click on delete button for uploaded files
             var request = new XMLHttpRequest();
-            request.open('POST', RadicalForm.Base + '/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=1', true);
+
+            var filename = selfClass.closest(target.target, "div").querySelector("span").textContent,
+                catalog =  selfClass.closest(target.target, "div").dataset.name;
+
+            request.open('POST', RadicalForm.Base + '/index.php?option=com_ajax&plugin=radicalform&format=json&group=system&deletefile=' + filename + '&uniq='+selfClass.uniq + '&catalog='+ catalog, true);
 
             request.onload = function() {
                 if (this.status >= 200 && this.status < 400) {
                     // Success!
                     var data = JSON.parse(this.response);
-                    console.log("test", data);
+                    console.log("test2", data);
+                    selfClass.closest(target.target, "div").parentNode.removeChild(selfClass.closest(target.target, "div"));
                 } else {
                     // We reached our target server, but it returned an error
 
@@ -73,12 +84,6 @@ RadicalFormClass = function () {
 
             request.send();
 
-        });
-
-        this.on(container, "form ." + selfClass.danger_classes.join('.'), 'keypress', function (target, e) {
-            selfClass.danger_classes.forEach(function (item) {
-                target.target.classList.remove(item);
-            });
         });
 
         if (container.querySelectorAll(".rf-filenames-list").length !== container.querySelectorAll("form .rf-filenames-list").length) {
@@ -415,7 +420,7 @@ RadicalFormClass = function () {
                             if(!form.querySelector("input[name=needToSendFiles]")) {
                                 form.insertAdjacentHTML('beforeend', '<input type="hidden" name="needToSendFiles" value="1" />');
                             }
-                            rf_filenames_list.insertAdjacentHTML('beforeend', "<div>" + response.data[0].name + rfDelete + "</div>");
+                            rf_filenames_list.insertAdjacentHTML('beforeend', "<div data-name='" + response.data[0].key + "'><span>" + response.data[0].name + "</span>" + rfDelete + "</div>");
                         }
 
                     } else {
