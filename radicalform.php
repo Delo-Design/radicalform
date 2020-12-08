@@ -115,8 +115,13 @@ class plgSystemRadicalform extends JPlugin
 	}
 
 
-
-	public function makeSafe($file)
+    /**
+     * Make filename safe
+     * @param $file - filename
+     * @return string
+     * @since
+     */
+    public function makeSafe($file)
 	{
 		// Remove any trailing dots, as those aren't ever valid file names.
 		$file = rtrim($file, '.');
@@ -267,6 +272,8 @@ class plgSystemRadicalform extends JPlugin
 				'Verbox'              => $this->params->get('verbox'),
 				'Subject'             => $this->params->get('rfSubject'),
 				'Token'               => JHtml::_('form.token'),
+				'DeleteColor'         => $this->params->get('buttondeletecolor', "#fafafa"),
+				'DeleteBackground'    => $this->params->get('buttondeletecolorbackground', "#f44336")
 			);
 			if ($this->params->get('insertip'))
 			{
@@ -606,8 +613,8 @@ class plgSystemRadicalform extends JPlugin
      */
     public function deleteUploadedFile($catalog, $name, $uniq)
     {
-        $name = basename($name);
-        $catalog = basename($catalog);
+        $name = $this->makeSafe(basename($name));
+        $catalog = $this->makeSafe(basename($catalog));
         $uniq =  (int) $uniq;
 
         $filename = $this->params->get('uploadstorage') . '/rf-' . $uniq."/".$catalog."/".$name;

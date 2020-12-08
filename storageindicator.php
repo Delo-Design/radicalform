@@ -59,7 +59,7 @@ class JFormFieldStorageindicator extends JFormField {
 			$class="progress-danger";
 		}
 		$html.=JText::sprintf('PLG_RADICALFORM_TOTALFREE',($totalstorage-$storagedirectory),$totalfree).'<div class="progress '.$class.'" style="max-width: 800px"> <div class="bar" style="width: '.$upfree.'%;"></div> </div>';
-		return "<hr><br>".JText::sprintf('PLG_RADICALFORM_TOTALSIZE',$totalstorage,$storagedirectory).$html;
+		return JText::sprintf('PLG_RADICALFORM_TOTALSIZE',$totalstorage,$storagedirectory).$html;
 	}
 
 }

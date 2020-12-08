@@ -6,8 +6,8 @@
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2020 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>2.6.3</version>
-    <creationDate>2020-09-01</creationDate>
+    <version>2.7.0</version>
+    <creationDate>2020-12-08</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -292,6 +292,13 @@
             </fieldset>
             <fieldset name="forfiles" label="PLG_RADICALFORM_FILESPARAMS">
                 <field
+                        name="storageind"
+                        type="storageindicator"
+                        id="storageindicator"
+                        label=" "
+                        value="PLG_RADICALFORM_TELEGRAMCHECK_LABEL"
+                />
+                <field
                         name="waitingupload"
                         type="text"
                         label="PLG_RADICALFORM_WAITING_FOR_UPLOAD"
@@ -386,18 +393,35 @@
                         description="PLG_RADICALFORM_DOWNLOADPATH_DESCRIPTION"
                         required="false"
                         size="20"
-                        class=""
+                        class="input-small"
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
+
+
+                <field
+                        name="buttondeletecolor"
+                        type="color"
+                        label="PLG_RADICALFORM_BUTTONDELETECOLOR"
+                        description="PLG_RADICALFORM_BUTTONDELETECOLOR_DESCRIPTION"
+                        required="false"
+                        default="#fbfbfb"
                         readonly="false"
                         disabled="false"
                         filter="raw">
                 </field>
                 <field
-                        name="storageind"
-                        type="storageindicator"
-                        id="storageindicator"
-                        label=" "
-                        value="PLG_RADICALFORM_TELEGRAMCHECK_LABEL"
-                />
+                        name="buttondeletecolorbackground"
+                        type="color"
+                        label="PLG_RADICALFORM_BUTTONDELETECOLORBACKGROUND"
+                        description="PLG_RADICALFORM_BUTTONDELETECOLORBACKGROUND_DESCRIPTION"
+                        required="false"
+                        default="#f44336"
+                        readonly="false"
+                        disabled="false"
+                        filter="raw">
+                </field>
             </fieldset>
             <fieldset name="advanced" label="PLG_RADICALFORM_ADVANCEDPARAMS">
                 <field
