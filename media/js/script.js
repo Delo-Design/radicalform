@@ -20,7 +20,8 @@ RadicalFormClass = function () {
      *
      * @type {array}
      */
-    this.danger_classes = RadicalForm.DangerClass.split(" ");
+    this.danger_classes = RadicalForm.DangerClass.trim().split(/\s+/);
+    RadicalForm.ErrorFile = RadicalForm.ErrorFile.trim().split(/\s+/);
 
     /**
      * Init for DOM element
@@ -141,13 +142,19 @@ RadicalFormClass = function () {
         if (this.dataset.rfCall !== undefined) {
             var rfCall = String(this.dataset.rfCall);
             if (rfCall[0] === "0") {
-                try {
-                   var returnOfpreCall = rfCall_0(this, needReturn);
-                   if ( (returnOfpreCall !== undefined) && (returnOfpreCall === false) ) {
-                       needReturn = true;
-                   }
-                } catch (e) {
-                    console.error('Radical Form JS Code: ', e);
+                if (typeof (rfCall_0) === "function") {
+                    try {
+                        var returnOfpreCall = rfCall_0(this, needReturn);
+                        if ((returnOfpreCall !== undefined) && (returnOfpreCall === false)) {
+                            needReturn = true;
+                        }
+                    } catch (e) {
+                        console.error('Radical Form JS Code: ', e);
+                    }
+                }
+                else
+                {
+                    console.error("Function rfCall_0 doesn't set at RadicalForm plugin settings");
                 }
             }
         }
