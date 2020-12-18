@@ -228,14 +228,6 @@ class plgSystemRadicalform extends JPlugin
 	}
 
 
-	public function onBeforeCompileHead()
-	{
-		if($this->params->get('keepalive'))
-		{
-			HTMLHelper::_('behavior.keepalive');
-		}
-	}
-
 	public function onAfterRender()
 	{
 
@@ -255,8 +247,16 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-
             $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
+            $session = \JFactory::getSession();
+            $lifeTime    = $session->getExpire();
+            $refreshTime = $lifeTime <= 60 ? 45 : $lifeTime - 60;
+
+            // The longest refresh period is one hour to prevent integer overflow.
+            if ($refreshTime > 3600 || $refreshTime <= 0)
+            {
+                $refreshTime = 3600;
+            }
 			$jsParams = array(
 				'DangerClass'         => $this->params->get('dangerclass'),
 				'ErrorFile'           => $this->params->get('errorfile'),
@@ -271,16 +271,17 @@ class plgSystemRadicalform extends JPlugin
 				'Jivosite'            => $this->params->get('jivosite'),
 				'Verbox'              => $this->params->get('verbox'),
 				'Subject'             => $this->params->get('rfSubject'),
-				'Token'               => JHtml::_('form.token'),
-				'DeleteColor'         => $this->params->get('buttondeletecolor', "#fafafa"),
+				'KeepAlive'           => $this->params->get('keepalive'),
+				'TokenValue'          => JSession::getFormToken(),
+				'TokenExpire'          => $refreshTime*1000,
+ 				'DeleteColor'         => $this->params->get('buttondeletecolor', "#fafafa"),
 				'DeleteBackground'    => $this->params->get('buttondeletecolorbackground', "#f44336")
 			);
 			if ($this->params->get('insertip'))
 			{
 				$jsParams['IP'] = json_encode(array('ip' => $_SERVER['REMOTE_ADDR']));
 			}
-
-			$js = "<script src=\"" .  HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ])."?$mtime\" async></script>" . $lnEnd
+            $js = "<script src=\"" .  HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ])."?$mtime\" async></script>" . $lnEnd
 				. "<script>"
 				. "var RadicalForm=" . json_encode($jsParams) . ";";
 
@@ -1017,6 +1018,8 @@ class plgSystemRadicalform extends JPlugin
 
 		if (Factory::getSession()->isNew() || !Factory::getSession()->checkToken())
 		{
+            $input = ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_INVALID_TOKEN') ];
+            JLog::add(json_encode($input), JLog::WARNING, 'plg_system_radicalform');
 			return JText::_('PLG_RADICALFORM_INVALID_TOKEN');
 		};
 
