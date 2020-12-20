@@ -176,6 +176,14 @@ class JFormFieldHistoryradicalform extends JFormField {
 						{
 							$extrainfo.=JText::_('PLG_RADICALFORM_USERAGENT').'<b>'.$json["rfUserAgent"]."</b><br>";
 						}
+                        if(isset($json["rf-time"]))
+                        {
+                            $extrainfo.=JText::_('PLG_RADICALFORM_USER_TIME').'<b>'.$json["rf-time"]."</b><br>";
+                        }
+                        if(isset($json["rf-duration"]))
+                        {
+                            $extrainfo.=JText::sprintf('PLG_RADICALFORM_FORM_DURATION', $json["rf-duration"]);
+                        }
 
 					}
 					$extrainfo.="</div>";
@@ -183,6 +191,14 @@ class JFormFieldHistoryradicalform extends JFormField {
 					{
 						unset($json["url"]);
 					}
+                    if(isset($json["rf-duration"]))
+                    {
+                        unset($json["rf-duration"]);
+                    }
+                    if(isset($json["rf-time"]))
+                    {
+                        unset($json["rf-time"]);
+                    }
 					if(isset($json["reffer"]))
 					{
 						unset($json["reffer"]);

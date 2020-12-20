@@ -219,6 +219,14 @@ class plgSystemRadicalform extends JPlugin
 		{
 			unset($input["needToSendFiles"]);
 		}
+        if(isset($input["rf-time"]))
+        {
+            unset($input["rf-time"]);
+        }
+        if(isset($input["rf-duration"]))
+        {
+            unset($input["rf-duration"]);
+        }
 		if(isset($input[JSession::getFormToken()]))
 		{
 			unset($input[JSession::getFormToken()]);
@@ -272,7 +280,6 @@ class plgSystemRadicalform extends JPlugin
 				'Verbox'              => $this->params->get('verbox'),
 				'Subject'             => $this->params->get('rfSubject'),
 				'KeepAlive'           => $this->params->get('keepalive'),
-				'TokenValue'          => JSession::getFormToken(),
 				'TokenExpire'          => $refreshTime*1000,
  				'DeleteColor'         => $this->params->get('buttondeletecolor', "#fafafa"),
 				'DeleteBackground'    => $this->params->get('buttondeletecolorbackground', "#f44336")
@@ -676,6 +683,10 @@ class plgSystemRadicalform extends JPlugin
             return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);;
         }
 
+        if (isset($input['gettoken']) )
+        {
+            return JSession::getFormToken();
+        }
 
 		if (isset($get['admin']) && ( $get['admin'] == 4 || $get['admin'] == 5 ))
 		{
@@ -812,6 +823,14 @@ class plgSystemRadicalform extends JPlugin
 							{
 								$extrainfo.=JText::_('PLG_RADICALFORM_USERAGENT').$json["rfUserAgent"]."\n";
 							}
+                            if(isset($json["rf-time"]))
+                            {
+                                $extrainfo.=JText::_('PLG_RADICALFORM_USER_TIME').$json["rf-time"]."\n";
+                            }
+                            if(isset($json["rf-duration"]))
+                            {
+                                $extrainfo.=JText::sprintf('PLG_RADICALFORM_FORM_DURATION', $json["rf-duration"])."\n";
+                            }
 							$extrainfo.="\"";
 						}
 
@@ -835,6 +854,14 @@ class plgSystemRadicalform extends JPlugin
 						{
 							unset($json["rfUserAgent"]);
 						}
+                        if(isset($json["rf-time"]))
+                        {
+                            unset($json["rf-time"]);
+                        }
+                        if(isset($json["rf-duration"]))
+                        {
+                            unset($json["rf-duration"]);
+                        }
 
 						$csv.="${latestNumber};\"".$jdate->format('H:i:s',true)."\n".$jdate->format('d.m.Y',true)."\";${target}${formid}${item[1]};";
 						$csv.="\"";
@@ -1120,6 +1147,9 @@ class plgSystemRadicalform extends JPlugin
 		$ref=$input["reffer"];
 		$pagetitle=$input["pagetitle"];
 		$useragent=$input["rfUserAgent"];
+
+        $rfTime=isset($input["rf-time"]) ? $input["rf-time"] : '';
+        $rfDuration=isset($input["rf-duration"]) ? $input["rf-duration"]  : '';
 		$formID= isset($input["rfFormID"]) ? JText::_($input["rfFormID"]) : '';
 
 		if(file_exists($this->logPath))
@@ -1212,7 +1242,9 @@ class plgSystemRadicalform extends JPlugin
 
 			$footer.= JText::_('PLG_RADICALFORM_PAGETITLE') ."<strong>".htmlentities($pagetitle)."</strong> <br />";
 			$footer.= JText::_('PLG_RADICALFORM_USERAGENT') ."<strong>".htmlentities($useragent)."</strong> <br />";
-			$footer.= JText::_('PLG_RADICALFORM_RESOLUTION') .$resolution;
+            $footer.= JText::_('PLG_RADICALFORM_RESOLUTION') ."<strong>".$resolution."</strong> <br />";
+            $footer.= JText::_('PLG_RADICALFORM_USER_TIME') ."<strong>".$rfTime."</strong> <br />";
+            $footer.= JText::sprintf('PLG_RADICALFORM_FORM_DURATION', $rfDuration);
 		}
 		else
 		{
