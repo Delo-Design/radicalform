@@ -45,14 +45,22 @@ RadicalFormClass = function () {
      */
     this.init = function(container) {
 
+        if(typeof container === 'string') {
+            container = document.querySelector(container);
+        } else {
+            if(container === null || container === undefined) {
+                container = document.querySelector('body')
+            }
+        }
+
         //here we initialize all forms without .rf-form class and those don't have .rf-form inside - we added this class so they have it
         //only forms with this class is used in our work
-        var allForms= Array.from(document.querySelectorAll('form:not(.rf-form)')),
-            formsWithClass,
+        var allForms= Array.from(container.querySelectorAll('form:not(.rf-form)')),
             filteredForms;
         filteredForms = allForms.filter(function(el) {
             if(el.querySelector(".rf-form"))
             {
+                // we don't add rf-form class to forms with our form inside
                 return false;
             }
             return (el.querySelector(".rf-button-send"));
@@ -62,13 +70,22 @@ RadicalFormClass = function () {
             el.classList.add('rf-form');
         });
 
-        if(typeof container === 'string') {
-            container = document.querySelector(container);
-        } else {
-            if(container === null || container === undefined) {
-                container = document.querySelector('body')
+        var request1 = new XMLHttpRequest();
+        var AjaxFormDataforToken = new FormData();
+        AjaxFormDataforToken.append('gettoken', '1');
+        request1.open('POST', RadicalForm.Base + '/index.php?option=com_ajax&plugin=radicalform&format=json&group=system', true);
+
+        request1.onload = function() {
+            if (this.status >= 200 && this.status < 400) {
+                // Success!
+                var data = JSON.parse(this.response);
+                [].forEach.call(container.querySelectorAll('.rf-form .rf-button-send'), function (el) {
+                    el.insertAdjacentHTML('afterend', '<input type="hidden" name="'+data.data[0]+'" value="1" />');
+                });
             }
-        }
+
+        };
+        request1.send(AjaxFormDataforToken);
 
         this.on(container, ".rf-form ." + selfClass.danger_classes.join('.'), 'keypress', function (target, e) {
             selfClass.danger_classes.forEach(function (item) {
@@ -118,9 +135,6 @@ RadicalFormClass = function () {
         [].forEach.call(container.querySelectorAll("input[type='file'].rf-upload-button"), function (el) {
             el.addEventListener('change', selfClass.fileSend);
         });
-
-
-
     };
 
     /**
@@ -133,7 +147,7 @@ RadicalFormClass = function () {
             form = selfClass.closest(this, '.rf-form');
 
         var numberOfInputsWithNames=form.querySelectorAll('input[name], select[name], textarea[name]').length - form.querySelectorAll('input[type="file"]').length;
-        if (numberOfInputsWithNames < 1) {
+        if (numberOfInputsWithNames < 2) {
             alert("There is no input tags in your form with 'name' attribute!\r\n Please add 'name' attribute to your input tags!");
             needReturn = true;
         }
@@ -202,8 +216,9 @@ RadicalFormClass = function () {
                 AjaxFormData.append('rfFormID', form.getAttribute('id'));
             }
             AjaxFormData.append('uniq', selfClass.uniq);
-            AjaxFormData.append(RadicalForm.TokenValue, '1');
             AjaxFormData.append('url', window.location.href);
+            AjaxFormData.append('rf-time', selfClass.showTime());
+            AjaxFormData.append('rf-duration', (performance.now()/1000).toFixed(2));
             AjaxFormData.append('reffer', document.referrer);
             AjaxFormData.append('resolution', screen.width + 'x' + screen.height);
             AjaxFormData.append('pagetitle', document.title.replace(/&/g, "&amp;")
@@ -573,6 +588,25 @@ RadicalFormClass = function () {
                     break;
             }
         }
+    }
+    this.showTime = function () {
+        var monthsArr = ["01", "02", "03", "04", "05", "06",
+            "07", "08", "09", "10", "11", "12"];
+        var dateObj = new Date();
+        var year = dateObj.getFullYear();
+        var month = dateObj.getMonth();
+        var numDay = dateObj.getDate();
+        var hour = dateObj.getHours();
+        var minute = dateObj.getMinutes();
+        var second = dateObj.getSeconds();
+
+        if (minute < 10) minute = "0" + minute;
+
+        if (second < 10) second = "0" + second;
+
+        var out =  hour + ":" + minute + ":" + second + ", " + numDay + "." + monthsArr[month]
+            + "." + year ;
+        return out;
     }
 
 };
