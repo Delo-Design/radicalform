@@ -16,43 +16,57 @@ jQuery(document).ready(function () {
             page;
         currentGetParams = getUrlParams(location.search);
 
-        document.querySelector("#historyclear").addEventListener('click', function (event) {
-            $("#historyclear").html("Wait...")
-                .prop('disabled', true);
-            if ('page' in currentGetParams )
-            {
-                page=currentGetParams.page;
-            }
-            else
-            {
-                page="0";
-            }
+        var historyClear = document.querySelector("#historyclear");
+        if(historyClear)
+        {
+            historyClear.addEventListener('click', function (event) {
+                historyClear.innerHTML  = "Wait...";
+                historyClear.disabled = true;
+                if ('page' in currentGetParams )
+                {
+                    page=currentGetParams.page;
+                }
+                else
+                {
+                    page="0";
+                }
 
-            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2&page="+page, function (data) {
-                location.reload();
+                $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=2&page="+page, function (data) {
+                    location.reload();
+                });
+
+                event.preventDefault();
             });
+        }
 
-            event.preventDefault();
-        });
-
-        document.querySelector("#numberclear").addEventListener('click', function (event) {
-            $("#numberclear").html("Wait...")
-                .prop('disabled', true);
-            $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=3", function (data) {
-                location.reload();
+        var numberClear = document.querySelector("#numberclear");
+        if(numberClear)
+        {
+            numberClear.addEventListener('click', function (event) {
+                numberClear.innerHTML  = "Wait...";
+                numberClear.disabled = true;
+                $.getJSON("index.php?option=com_ajax&plugin=radicalform&format=json&group=system&admin=3", function (data) {
+                    location.reload();
+                });
+                event.preventDefault();
             });
-            event.preventDefault();
-        });
+        }
 
-        document.querySelector("#exportcsv").addEventListener('click', function (event) {
-            var t=document.querySelector("#exportcsv");
-            var temp=t.outerHTML;
-            t.outerHTML="<button class='btn' id='exportcsv' disabled>Wait...</button>";
+        var exportCSV = document.querySelector("#exportcsv");
+        if(exportCSV)
+        {
+            exportCSV.addEventListener('click', function (event) {
+                var temp=exportCSV.innerHTML;
+                exportCSV.innerHTML = "Wait...";
+                exportCSV.disabled = true;
 
-            setTimeout(function () {
-                document.querySelector("#exportcsv").outerHTML=temp;
-            }, 3000)
-        });
+                setTimeout(function () {
+                    exportCSV.innerHTML = temp;
+                    exportCSV.disabled = false;
+                }, 3000)
+            });
+        }
+
 
 
 

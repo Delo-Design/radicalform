@@ -1199,14 +1199,10 @@ class plgSystemRadicalform extends JPlugin
 				if($this->params->get('glue')=="<br />" || $this->params->get('glue')=="<br>" )
 				{
 					array_unshift($record," ");
-					$record=implode($this->params->get('glue'), $record);
-				}
-				else
-				{
-					$record=implode($this->params->get('glue'), $record);
-				}
+                }
+                $record=implode($this->params->get('glue'), $record);
 
-			}
+            }
 			if($key=="phone")
 			{
 				$mainbody .= "<p>".JText::_($key) . ": <strong><a href='tel://". $record ."'>" . $record . "</a></strong></p>";

@@ -21,7 +21,7 @@ RadicalFormClass = function () {
      * @type {array}
      */
     this.danger_classes = RadicalForm.DangerClass.trim().split(/\s+/);
-    RadicalForm.ErrorFile = RadicalForm.ErrorFile.trim().split(/\s+/);
+    this.error_file_classes = RadicalForm.ErrorFile.trim().split(/\s+/);
 
     if (RadicalForm.KeepAlive != 0) {
         window.setInterval(function() {
@@ -476,18 +476,18 @@ RadicalFormClass = function () {
                         response = JSON.parse(this.response);
                     } catch (e) {
                         console.error(request.status + ' ' + e.message + ' ' + this.response);
-                        rf_filenames_list.insertAdjacentHTML('beforeend', "<div class='" + RadicalForm.ErrorFile + "'>Unknown Error. See Console.</div>");
+                        rf_filenames_list.insertAdjacentHTML('beforeend', "<div class='" + selfClass.error_file_classes.join(' ') + "'>Unknown Error. See Console.</div>");
                         response = false;
                         return;
                     }
                     if (response.success) {
-                        var el=rf_filenames_list.querySelector("." + RadicalForm.ErrorFile);
+                        var el=rf_filenames_list.querySelector("." + selfClass.error_file_classes.join('.'));
 
                         if (el) {
                             el.parentNode.removeChild(el);
                         }
                         if ("error" in response.data[0]) {
-                            rf_filenames_list.insertAdjacentHTML('beforeend', "<div class='" + RadicalForm.ErrorFile + "'>" + response.data[0].error + "</div>");
+                            rf_filenames_list.insertAdjacentHTML('beforeend', "<div class='" + selfClass.error_file_classes.join(' ') + "'>" + response.data[0].error + "</div>");
                         } else {
                             if (rf_filenames_list.textContent.trim() === "") {
                                 rf_filenames_list.insertAdjacentHTML('beforeend', "<div>" + RadicalForm.thisFilesWillBeSend + "</div>");
@@ -517,13 +517,13 @@ RadicalFormClass = function () {
             };
 
         } else {
-            var el=rf_filenames_list.querySelector("." + RadicalForm.ErrorFile);
+            var el=rf_filenames_list.querySelector("." + selfClass.error_file_classes.join('.'));
 
             if (el) {
                 el.parentNode.removeChild(el);
             }
 
-            rf_filenames_list.insertAdjacentHTML('beforeend',"<div class='" + RadicalForm.ErrorFile + "'>" + RadicalForm.ErrorMax + "</div>"); // size is more than limit
+            rf_filenames_list.insertAdjacentHTML('beforeend',"<div class='" + selfClass.error_file_classes.join(' ') + "'>" + RadicalForm.ErrorMax + "</div>"); // size is more than limit
         }
 
     };
