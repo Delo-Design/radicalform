@@ -4,10 +4,10 @@
     <author>Progreccor</author>
     <authorEmail>info@hika.su</authorEmail>
     <authorUrl>https://hika.su</authorUrl>
-    <copyright>Copyright (C) 2020 Progreccor. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2021 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>3.0.1</version>
-    <creationDate>2020-12-20</creationDate>
+    <version>3.0.2</version>
+    <creationDate>2021-06-17</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
