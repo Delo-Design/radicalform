@@ -123,10 +123,21 @@ RadicalFormClass = function () {
 
         });
 
-
-        if (container.querySelectorAll(".rf-filenames-list").length !== container.querySelectorAll(".rf-form .rf-filenames-list").length) {
-            alert('ERROR!\r\nThere is \r\n.rf-filenames-list\r\n outside of form!\r\n Please move .rf-filenames-list inside the form. ');
+        var isFramed = false;
+        try {
+            isFramed = window != window.top || document != top.document || self.location != top.location;
+        } catch (e) {
+            isFramed = true;
         }
+        if (!isFramed) {
+            /* page loaded not in the frame - (Yootheme pagebuilder not loaded) */
+            if (container.querySelectorAll(".rf-button-send").length !== container.querySelectorAll(".rf-form .rf-button-send").length) {
+                alert('ERROR!\r\nThere is form without\r\n the CSS class .rf-form!\r\n Please add CSS class .rf-form to your form. ');
+            } else if (container.querySelectorAll(".rf-filenames-list").length !== container.querySelectorAll(".rf-form .rf-filenames-list").length) {
+                alert('ERROR!\r\nThere is \r\n.rf-filenames-list\r\n outside of form!\r\n Please move .rf-filenames-list inside the form. ');
+            }
+        }
+
 
         [].forEach.call(container.querySelectorAll('.rf-form .rf-button-send'), function (el) {
             el.addEventListener('click', selfClass.formSend);
