@@ -157,7 +157,7 @@ RadicalFormClass = function () {
             field,
             form = selfClass.closest(this, '.rf-form');
         if (form === null ) {
-            alert("There is no parent with css class .rf-form for you send button!\r\nSee possible explanation in console log.");
+            alert("There is no parent with css class .rf-form for your send button!\r\nSee possible explanation in console log.");
             console.log("If you use uikit 3 - it moves the modal window to the end of the document the moment it is opened.\n" +
                 "\n" +
                 "Thus, the window at the moment of its opening may not be where it was in the original layout.\n" +
