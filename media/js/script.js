@@ -163,6 +163,7 @@ RadicalFormClass = function () {
                 "Thus, the window at the moment of its opening may not be where it was in the original layout.\n" +
                 "\n" +
                 "Check this with the browser's developer tools at the moment the modal window is open.");
+            e.preventDefault();
             return;
         }
 
