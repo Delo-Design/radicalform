@@ -156,6 +156,16 @@ RadicalFormClass = function () {
         var needReturn = false,
             field,
             form = selfClass.closest(this, '.rf-form');
+        if (form === null ) {
+            alert("There is no parent with css class .rf-form for your send button!\r\nSee possible explanation in console log.");
+            console.log("If you use uikit 3 - it moves the modal window to the end of the document the moment it is opened.\n" +
+                "\n" +
+                "Thus, the window at the moment of its opening may not be where it was in the original layout.\n" +
+                "\n" +
+                "Check this with the browser's developer tools at the moment the modal window is open.");
+            e.preventDefault();
+            return;
+        }
 
         var numberOfInputsWithNames=form.querySelectorAll('input[name], select[name], textarea[name]').length - form.querySelectorAll('input[type="file"]').length;
         if (numberOfInputsWithNames < 2) {
@@ -615,11 +625,57 @@ RadicalFormClass = function () {
 
         if (second < 10) second = "0" + second;
 
-        var out =  hour + ":" + minute + ":" + second + ", " + numDay + "." + monthsArr[month]
-            + "." + year ;
-        return out;
+        return hour + ":" + minute + ":" + second + ", " + numDay + "." + monthsArr[month]
+            + "." + year;
     }
+    this.nextStep = function (el,targetStep,animationStep,previous) {
+    // This function is for RadicalForm Elements Steps
+        var steps=targetStep.split(",");
+        var step = document.querySelector(steps[0]);
+        console.log(step);
+        var needReturn = false;
 
+        if(previous) {
+            // we go to the previous step so we need to remove all events from button next of the previous step
+            var elementForClone = document.querySelector(previous),
+                elementCloned = elementForClone.cloneNode(true);
+
+            elementForClone.parentNode.replaceChild(elementCloned, elementForClone);
+
+        } else {
+            RadicalForm.FormFields = [];
+            [].forEach.call(step.querySelectorAll("[name]"), function (el) {
+                // remove danger classes so they can animated later
+                selfClass.danger_classes.forEach(function (item) {
+                    el.classList.remove(item);
+                });
+                // let's see the fields of form to check for validity and required
+                if ((el.classList.contains('required') && el.value.trim() === "") ||
+                    (el.classList.contains('required') && (!el.checked) && (el.type === "checkbox")) ||
+                    (!el.checkValidity())) {
+                    RadicalForm.FormFields.push(el);
+                    needReturn = true;
+                }
+            });
+
+            setTimeout(function () {
+                for (var i = 0; i < RadicalForm.FormFields.length; i++) {
+                    selfClass.danger_classes.forEach(function (item) {
+                        RadicalForm.FormFields[i].classList.add(item);
+                    })
+                }
+            }, 70);
+        }
+
+        if (!needReturn) {
+            if(animationStep) {
+                UIkit.toggle(el,{target: targetStep, animation: animationStep}).toggle();
+            } else {
+                UIkit.toggle(el,{target: targetStep}).toggle();
+            }
+        }
+
+    }
 };
 
 ready(function () {
