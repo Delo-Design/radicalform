@@ -632,7 +632,6 @@ RadicalFormClass = function () {
     // This function is for RadicalForm Elements Steps
         var steps=targetStep.split(",");
         var step = document.querySelector(steps[0]);
-        console.log(step);
         var needReturn = false;
 
         if(previous) {
