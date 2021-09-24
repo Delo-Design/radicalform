@@ -35,9 +35,6 @@ class plgSystemRadicalform extends JPlugin
 	{
 		parent::__construct($subject, $config);
 
-		$cache = Factory::getCache('_system', 'callback');
-		$cache->clean();
-
 		JLoader::register('JFile', JPATH_LIBRARIES . '/joomla/filesystem/file.php');
 		JLoader::register('JFolder', JPATH_LIBRARIES . '/joomla/filesystem/folder.php');
 		$this->maxDirSize = $this->params->get('maxfile',20)*1048576;
