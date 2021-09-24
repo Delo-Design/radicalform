@@ -663,12 +663,6 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
-		$name = $uri->getVar('img');
-		if(!empty($name))
-		{
-			return $this->showImage($uri->getVar('uniq'), $uri->getVar('folder'), $name);
-		}
-
 		if (isset($get['deletefile']) )
         {
             return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);;
