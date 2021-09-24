@@ -35,9 +35,6 @@ class plgSystemRadicalform extends JPlugin
 	{
 		parent::__construct($subject, $config);
 
-		$cache = Factory::getCache('_system', 'callback');
-		$cache->clean();
-
 		JLoader::register('JFile', JPATH_LIBRARIES . '/joomla/filesystem/file.php');
 		JLoader::register('JFolder', JPATH_LIBRARIES . '/joomla/filesystem/folder.php');
 		$this->maxDirSize = $this->params->get('maxfile',20)*1048576;
@@ -525,28 +522,22 @@ class plgSystemRadicalform extends JPlugin
 	 */
 	public function onAfterInitialise()
 	{
-			$uri    = Uri::getInstance();
-			$path   = $uri->getPath();
-			$root   = Uri::root(true);
-			$entry  = $root . "/".$this->params->get('downloadpath') ;
+		$uri    = Uri::getInstance();
+		$path   = $uri->getPath();
+		$root   = Uri::root(true);
+		$entry  = $root . "/".$this->params->get('downloadpath') ;
+
+		if (preg_match('#' . $entry . '#', $path))
+		{
 			$folder = basename(dirname($path));
-			$uniq =  basename(dirname(dirname($path)));
+			$uniq = basename(dirname(dirname($path)));
+			$filename = basename($path);
 
-
-			if (preg_match('#' . $entry . '#', $path))
-			{
-				$filename=basename($path);
-				$uri->setPath($root);
-				$uri->setVar('option', 'com_ajax');
-				$uri->setVar('plugin', 'radicalform');
-				$uri->setVar('group', 'system');
-				$uri->setVar('format', 'raw');
-				$uri->setVar('img', $filename);
-				$uri->setVar('uniq', $uniq);
-				$uri->setVar('folder', $folder);
-			}
+			$this->showImage($uniq, $folder, $filename);
+		}
 
 	}
+
 
 	/**
 	 *  Check file mime type and return it
@@ -670,12 +661,6 @@ class plgSystemRadicalform extends JPlugin
 			{
 				$page = $get['page'].".";
 			}
-		}
-
-		$name = $uri->getVar('img');
-		if(!empty($name))
-		{
-			return $this->showImage($uri->getVar('uniq'), $uri->getVar('folder'), $name);
 		}
 
 		if (isset($get['deletefile']) )
