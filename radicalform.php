@@ -525,28 +525,22 @@ class plgSystemRadicalform extends JPlugin
 	 */
 	public function onAfterInitialise()
 	{
-			$uri    = Uri::getInstance();
-			$path   = $uri->getPath();
-			$root   = Uri::root(true);
-			$entry  = $root . "/".$this->params->get('downloadpath') ;
+		$uri    = Uri::getInstance();
+		$path   = $uri->getPath();
+		$root   = Uri::root(true);
+		$entry  = $root . "/".$this->params->get('downloadpath') ;
+
+		if (preg_match('#' . $entry . '#', $path))
+		{
 			$folder = basename(dirname($path));
-			$uniq =  basename(dirname(dirname($path)));
+			$uniq = basename(dirname(dirname($path)));
+			$filename = basename($path);
 
-
-			if (preg_match('#' . $entry . '#', $path))
-			{
-				$filename=basename($path);
-				$uri->setPath($root);
-				$uri->setVar('option', 'com_ajax');
-				$uri->setVar('plugin', 'radicalform');
-				$uri->setVar('group', 'system');
-				$uri->setVar('format', 'raw');
-				$uri->setVar('img', $filename);
-				$uri->setVar('uniq', $uniq);
-				$uri->setVar('folder', $folder);
-			}
+			$this->showImage($uniq, $folder, $filename);
+		}
 
 	}
+
 
 	/**
 	 *  Check file mime type and return it
