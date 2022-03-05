@@ -1049,7 +1049,16 @@ class plgSystemRadicalform extends JPlugin
 		$params = $this->params;
 		$params->set('uploaddir', $this->params->get('uploadstorage') . '/rf-' . $uniq);
 		$params->set('rfLatestNumber',$latestNumber);
-		$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
+
+		try
+		{
+			$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
+		}
+		catch(Throwable $e)
+		{
+			// TODO лог
+		}
+
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
@@ -1255,7 +1264,14 @@ class plgSystemRadicalform extends JPlugin
 
 					if (file_exists($tPath) and is_file($tPath))
 					{
-						include $tPath;
+						try
+						{
+							include $tPath;
+						}
+						catch(Throwable $e)
+						{
+							// TODO лог
+						}
 					}
 				}
 			}
