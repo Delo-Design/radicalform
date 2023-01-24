@@ -76,7 +76,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 		}
 		else
 		{
-			$logFiles .= "<li class='nav-item'><a  class='nav-link active' aria-current='page' >plg_system_radicalform.php</a></li> ";
+			$logFiles .= "<li class='nav-item active'><a  class='nav-link active' aria-current='page' >plg_system_radicalform.php</a></li> ";
 		}
 
 		foreach (glob($log_path . "/*.plg_system_radicalform.php") as $filename)
@@ -84,7 +84,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 			$currentNumber =  strstr ( pathinfo($filename, PATHINFO_BASENAME) , ".", true );
 			if($currentNumber == $page)
 			{
-				$logFiles .= "<li class='nav-item'><a  class='nav-link active' aria-current='page' >".pathinfo($filename, PATHINFO_BASENAME)."</a></li> ";
+				$logFiles .= "<li class='nav-item active'><a  class='nav-link active' aria-current='page' >".pathinfo($filename, PATHINFO_BASENAME)."</a></li> ";
 			}
 			else
 			{
@@ -338,7 +338,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 		}
 		else
 		{
-			$html = "${logFiles}<p class='firstEntry'>${warningAboutRotation}</p>".'<div class="alert">' . JText::sprintf('PLG_RADICALFORM_HISTORY_EMPTY',$page."plg_system_radicalform.php") . '</div>';
+			$html = "${logFiles}<p class='firstEntry'>${warningAboutRotation}</p>".'<div class="historytable"><div class="alert alert-info  alert-dismissible show">' . JText::sprintf('PLG_RADICALFORM_HISTORY_EMPTY',$page."plg_system_radicalform.php") . '</div></div>';
 		}
 
 		$html = preg_replace('/(?<!a href=\'|\")(?<!src=\"|\')((http)+(s)?:\/\/[^<>\s]+)(?<![\.,:])/i', "<a href='$0' target='_blank'>$0</a>", $html);
