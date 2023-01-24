@@ -291,7 +291,7 @@ class plgSystemRadicalform extends JPlugin
 
 			if (!empty($this->params->get('rfCall_0')))
 			{
-				$js .= "function rfCall_0(here) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+				$js .= "function rfCall_0(here, needReturn) { try { " . $this->params->get('rfCall_0') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
 			}
 			if (!empty($this->params->get('rfCall_1')))
 			{
@@ -663,9 +663,10 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
-		if (isset($get['deletefile']) )
+
+		if (isset($get['deletefile']) && isset($get['catalog']) && isset($get['uniq']))
         {
-            return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);;
+            return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);
         }
 
         if (isset($input['gettoken']) )
@@ -985,26 +986,40 @@ class plgSystemRadicalform extends JPlugin
 
 		if (isset($get['admin']) && $get['admin'] == 2 )
 		{
-			// очищаем текущий файл или удаляем, если он архивный (1-plg_system_radicalform.php и т.д.)
-			if($page)
+			if ($this->app->isClient('administrator'))
 			{
-				unlink($log_path . '/'.$page.'plg_system_radicalform.php');
-			}
-			else
+				// очищаем текущий файл или удаляем, если он архивный (1-plg_system_radicalform.php и т.д.)
+				if($page)
+				{
+					unlink($log_path . '/'.$page.'plg_system_radicalform.php');
+				}
+				else
+				{
+					unlink($this->logPath);
+					$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
+					JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+				}
+				return "ok";
+			} else
 			{
-				unlink($this->logPath);
-				$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
-				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+				return false;
 			}
-			return "ok";
+
 		}
 
 		if (isset($get['admin']) && $get['admin'] == 3 )
 		{
-			// сбрасываем нумерацию
-			$entry= ['rfLatestNumber' => 0, 'message' => JText::_('PLG_RADICALFORM_RESET_NUMBER') ];
-			JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
-			return "ok";
+			if ($this->app->isClient('administrator'))
+			{
+				// сбрасываем нумерацию
+				$entry = ['rfLatestNumber' => 0, 'message' => JText::_('PLG_RADICALFORM_RESET_NUMBER')];
+				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+
+				return "ok";
+			} else
+			{
+				return false;
+			}
 		}
 
 		if (isset($input['uniq']))
@@ -1049,7 +1064,16 @@ class plgSystemRadicalform extends JPlugin
 		$params = $this->params;
 		$params->set('uploaddir', $this->params->get('uploadstorage') . '/rf-' . $uniq);
 		$params->set('rfLatestNumber',$latestNumber);
-		$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
+
+		try
+		{
+			$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
+		}
+		catch(Throwable $e)
+		{
+			// TODO лог
+		}
+
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
@@ -1255,7 +1279,14 @@ class plgSystemRadicalform extends JPlugin
 
 					if (file_exists($tPath) and is_file($tPath))
 					{
-						include $tPath;
+						try
+						{
+							include $tPath;
+						}
+						catch(Throwable $e)
+						{
+							// TODO лог
+						}
 					}
 				}
 			}
@@ -1301,23 +1332,6 @@ class plgSystemRadicalform extends JPlugin
 				}
 			}
 
-		}
-
-		if($this->params->get('dialog'))
-		{
-			$data=str_replace("<br />"," \r\n",$telegram);
-			$data=str_replace(["<b>","</b>"],"*",$data);
-			$data_string = json_encode(array("text" =>$data));
-			$ch = curl_init($this->params->get('dialogurl'));
-			curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
-			curl_setopt($ch, CURLOPT_POSTFIELDS, $data_string);
-			curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-			curl_setopt($ch, CURLOPT_HTTPHEADER, array(
-					'Content-Type: application/json',
-					'Content-Length: ' . strlen($data_string))
-			);
-
-			curl_exec($ch);
 		}
 
 		$textOutput=str_replace("<br />"," \r\n",$telegram);

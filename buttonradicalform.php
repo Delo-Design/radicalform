@@ -13,7 +13,7 @@ class JFormFieldButtonradicalform extends JFormField {
 	function getInput() {
 		JHtml::_('script', 'plg_system_radicalform/adminscript.min.js', array('version' => filemtime ( __FILE__ ), 'relative' => true));
 		JHtml::_('stylesheet', 'plg_system_radicalform/adminscript.css', array('version' => filemtime ( __FILE__ ), 'relative' => true));
-		return "<button onclick=\"\" id='".$this->element['id']."' class=\"btn control-group\">
+		return "<button onclick=\"\" id='".$this->element['id']."' class=\"btn btn-secondary control-group\">
 	<span class=\"icon-refresh\"></span>
 	".JText::_($this->element['value'])."</button><div id=\"radicalformresult\"></div>";
 	}
