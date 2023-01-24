@@ -663,6 +663,7 @@ class plgSystemRadicalform extends JPlugin
 			}
 		}
 
+
 		if (isset($get['deletefile']) && isset($get['catalog']) && isset($get['uniq']))
         {
             return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);
