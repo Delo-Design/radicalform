@@ -10,8 +10,9 @@ function ready(fn) {
 }
 ready(function () {
     const table = document.querySelector(".rf-telegram-chatid table");
-    table.classList.add("table-striped","table-bordered");
-
+    if(table) {
+        table.classList.add("table-striped", "table-bordered");
+    }
 
     function getUrlParams(url){
         var regex = /[?&]([^=#]+)=([^&#]*)/g,
