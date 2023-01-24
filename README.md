@@ -26,7 +26,6 @@
 1. Есть функция логирования отправленных форм
 1. Есть функция выбора адресата для каждой формы
 1. Возможно использовать в качестве кнопки "Заказ в один клик" в интернет магазинах и других продающих страницах
-1. Есть интеграция с мессенджером [Диалог](https://dlg.im/ru/download/)
 1. Есть возможность вставки в тему письма любого поля формы
 1. Предусмотрена валидация HTML5 полей формы
 1. Есть возможность изменения поля Reply To
@@ -69,7 +68,6 @@ A radically new approach to creating feedback forms
 1. There is a function of logging sent forms
 1. There is a function for selecting a destination for each form
 1. It is possible to use the "One-Click Order" button in online stores and other selling pages
-1. There is integration with the messenger [Dialog](https://dlg.im/en/download/)
 1. There is a possibility of inserting in the subject of a letter of any form field
 1. HTML5 validation of form fields is provided
 1. You can change the Reply To field.
