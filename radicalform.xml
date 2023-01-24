@@ -75,6 +75,7 @@
                         label="PLG_RADICALFORM_RF_CALL_0"
                         description="PLG_RADICALFORM_RF_CALL_0_DESCRIPTION"
                         filter="raw"
+                        syntax="php"
                         editor="codemirror|none"
                         type="editor"
                         class="input-xxlarge"
@@ -85,7 +86,7 @@
                         label="PLG_RADICALFORM_RF_CALL_1"
                         description="PLG_RADICALFORM_RF_CALL_1_DESCRIPTION"
                         editor="codemirror|none"
-                        syntax="js"
+                        syntax="php"
                         buttons="false"
                         filter="raw"
                 />
@@ -93,15 +94,17 @@
                         name="rfCall_2"
                         editor="codemirror|none"
                         type="editor"
+                        syntax="php"
                         label="PLG_RADICALFORM_RF_CALL_2"
                         description="PLG_RADICALFORM_RF_CALL_2_DESCRIPTION"
-                         filter="raw"
+                        filter="raw"
                         default="alert(rfMessage);"
                 />
                 <field
                         name="rfCall_3"
                         editor="codemirror|none"
                         type="editor"
+                        syntax="php"
                         label="PLG_RADICALFORM_RF_CALL_3"
                         description="PLG_RADICALFORM_RF_CALL_3_DESCRIPTION"
                         filter="raw"
@@ -122,6 +125,7 @@
                         name="rfCall_9"
                         editor="codemirror|none"
                         type="editor"
+                        syntax="php"
                         label="PLG_RADICALFORM_RF_CALL_9"
                         description="PLG_RADICALFORM_RF_CALL_9_DESCRIPTION"
                         filter="raw"
@@ -504,9 +508,9 @@
                        formsource="plugins/system/radicalform/telegramchatids.xml" multiple="true"
                        label="PLG_RADICALFORM_TELEGRAMCHATIDCHOOSE_LABEL"
                        description="PLG_RADICALFORM_TELEGRAMCHATIDCHOOSE_DESC"
-
                        layout="joomla.form.field.subform.repeatable-table"
                        showon="telegram:1"
+                       class="rf-telegram-chatid"
                 />
 
                 <field
@@ -518,31 +522,7 @@
                         value="PLG_RADICALFORM_TELEGRAMCHECK_LABEL"
                 />
 
-                <field
-                        name="dialog"
-                        type="radio"
-                        label="PLG_RADICALFORM_DIALOG_LABEL"
-                        description="PLG_RADICALFORM_DIALOG_DESCRIPTION"
-                        class="btn-group btn-group-yesno"
-                        default="0"
-                >
-                    <option value="1">JON</option>
-                    <option value="0">JOFF</option>
-                </field>
-                <field
-                        name="dialogurl"
-                        type="textarea"
-                        label="PLG_RADICALFORM_DIALOG_URL"
-                        description="PLG_RADICALFORM_DIALOG_URL_DESCRIPTION"
-                        required="false"
-                        default=""
-                        size="20"
-                        class="input-xxlarge"
-                        readonly="false"
-                        disabled="false"
-                        showon="dialog:1"
-                        filter="raw">
-                </field>
+
                 <field
                         name="jivosite"
                         type="radio"
