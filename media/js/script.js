@@ -628,23 +628,44 @@ RadicalFormClass = function () {
         return hour + ":" + minute + ":" + second + ", " + numDay + "." + monthsArr[month]
             + "." + year;
     }
-    this.nextStep = function (el,targetStep,animationStep,previous) {
     // This function is for RadicalForm Elements Steps
-        var steps=targetStep.split(",");
-        var step = document.querySelector(steps[0]);
-        var needReturn = false;
+    this.nextStep = function (el,targetStep,animationStep,previous) {
+
+        // targetStep - это путь от родительского класса к обрамляющему фрейму шага, которое гасится атрибутом hidden при переключении шагов
+        // el - это текущая кнопка "далее"
+
+        var step = selfClass.closest(el,targetStep); // это путь текущему фрейму шага, который все обрамляет
+        var needReturn = false; // признак нарушения заполненности полей
+        var elementsArray = document.querySelectorAll(targetStep + " .rf-next"); // список всех кнопок квиза
+        var currentButtonNext = step.querySelector(".rf-next"); // ищем текущую кнопку Next, так как при нажатии на Previous мы должны работать с кнопками Next
+        var currentIndex = Array.from(elementsArray).indexOf(currentButtonNext);
+        // Если элемент не найден или является последним в массиве
+        if (currentIndex === -1 || currentIndex === elementsArray.length - 1) {
+            console.log("Last element");
+            return null; // то ничего не делаем и возвращаемся
+        }
+
+        var nextEl = elementsArray[currentIndex + 1]; // следующая кнопка далее
+        var previousEl = null;
+        var previousStep = null;
+        if (currentIndex > 0) {
+            previousEl = elementsArray[currentIndex - 1]; // предыдущая кнопка далее
+            previousStep = selfClass.closest(previousEl, targetStep);
+        }
+
+        var nextStep = selfClass.closest(nextEl, targetStep);
 
         if(previous) {
-            // we go to the previous step so we need to remove all events from button next of the previous step
-            var elementForClone = document.querySelector(previous),
+            // we go to the previous step, so we need to remove all events from button next of the previous step
+            var elementForClone = previousEl,
                 elementCloned = elementForClone.cloneNode(true);
 
             elementForClone.parentNode.replaceChild(elementCloned, elementForClone);
-
+            nextStep = previousStep;
         } else {
             RadicalForm.FormFields = [];
             [].forEach.call(step.querySelectorAll("[name]"), function (el) {
-                // remove danger classes so they can animated later
+                // remove danger classes so they can be animated later
                 selfClass.danger_classes.forEach(function (item) {
                     el.classList.remove(item);
                 });
@@ -668,9 +689,14 @@ RadicalFormClass = function () {
 
         if (!needReturn) {
             if(animationStep) {
-                UIkit.toggle(el,{target: targetStep, animation: animationStep}).toggle();
+                UIkit.toggle(el,{
+                    target: [step, nextStep],
+                    animation: animationStep
+                }).toggle();
             } else {
-                UIkit.toggle(el,{target: targetStep}).toggle();
+                UIkit.toggle(el,{
+                    target: [step, nextStep]
+                }).toggle();
             }
         }
 
