@@ -688,7 +688,7 @@ class plgSystemRadicalform extends JPlugin
 				$jdate->setTimezone($timezone);
 				$filename="rfexport_".$jdate->format('d-m-Y_H-i_s',true).".csv";
 
-				header("Content-disposition: attachment; filename=${filename}");
+				header("Content-disposition: attachment; filename={$filename}");
 				header("Content-Type: text/csv");
 				header('Expires: 0');
 				header('Cache-Control: no-cache');
@@ -849,7 +849,7 @@ class plgSystemRadicalform extends JPlugin
                             unset($json["rf-duration"]);
                         }
 
-						$csv.="${latestNumber};\"".$jdate->format('H:i:s',true)."\n".$jdate->format('d.m.Y',true)."\";${target}${formid}${item[1]};";
+						$csv.="{$latestNumber};\"".$jdate->format('H:i:s',true)."\n".$jdate->format('d.m.Y',true)."\";{$target}{$formid}{$item[1]};";
 						$csv.="\"";
 						if (is_array($json))
 						{
@@ -867,7 +867,7 @@ class plgSystemRadicalform extends JPlugin
 						}
 						if ($this->params->get('hiddeninfo'))
 						{
-							$csv.="\";${extrainfo};\r\n";
+							$csv.="\";{$extrainfo};\r\n";
 						}
 						else
 						{
@@ -1128,11 +1128,11 @@ class plgSystemRadicalform extends JPlugin
 				{
 					if (isset($input[$folder]))
 					{
-						$input[$folder] .= $this->params->get('delimiter',"<br />")."${url}/${downloadPath}/${uniq}/${folder}/".basename($file);
+						$input[$folder] .= $this->params->get('delimiter',"<br />")."{$url}/{$downloadPath}/{$uniq}/{$folder}/".basename($file);
 					}
 					else
 					{
-						$input[$folder] = "${url}/${downloadPath}/${uniq}/${folder}/".basename($file);
+						$input[$folder] = "{$url}/{$downloadPath}/{$uniq}/{$folder}/".basename($file);
 					}
 					if($this->params->get('attachfiles',0))
 					{

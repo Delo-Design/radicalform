@@ -88,7 +88,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 			}
 			else
 			{
-				$logFiles .= "<li class='nav-item'><a href='{$currentURL}&page=${currentNumber}#attrib-list' class='nav-link' >".pathinfo($filename, PATHINFO_BASENAME)."</a></li> ";
+				$logFiles .= "<li class='nav-item'><a href='{$currentURL}&page={$currentNumber}#attrib-list' class='nav-link' >".pathinfo($filename, PATHINFO_BASENAME)."</a></li> ";
 			}
 		}
 		$logFiles .= '</ul>';
@@ -338,7 +338,7 @@ class JFormFieldHistoryradicalform extends JFormField {
 		}
 		else
 		{
-			$html = "${logFiles}<p class='firstEntry'>${warningAboutRotation}</p>".'<div class="historytable"><div class="alert alert-info  alert-dismissible show">' . JText::sprintf('PLG_RADICALFORM_HISTORY_EMPTY',$page."plg_system_radicalform.php") . '</div></div>';
+			$html = "{$logFiles}<p class='firstEntry'>{$warningAboutRotation}</p>".'<div class="historytable"><div class="alert alert-info  alert-dismissible show">' . JText::sprintf('PLG_RADICALFORM_HISTORY_EMPTY',$page."plg_system_radicalform.php") . '</div></div>';
 		}
 
 		$html = preg_replace('/(?<!a href=\'|\")(?<!src=\"|\')((http)+(s)?:\/\/[^<>\s]+)(?<![\.,:])/i', "<a href='$0' target='_blank'>$0</a>", $html);
