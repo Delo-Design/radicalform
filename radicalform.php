@@ -252,7 +252,7 @@ class plgSystemRadicalform extends JPlugin
 		$lnEnd = Factory::getDocument()->_getLineEnd();
 		if (strpos($body, 'rf-button-send') !== false)
 		{
-            $mtime = filemtime($_SERVER['DOCUMENT_ROOT'] . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
+            $mtime = filemtime(JPATH_SITE . HTMLHelper ::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true ]));
             $session = \JFactory::getSession();
             $lifeTime    = $session->getExpire();
             $refreshTime = $lifeTime <= 60 ? 45 : $lifeTime - 60;
