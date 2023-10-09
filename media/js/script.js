@@ -640,7 +640,7 @@ RadicalFormClass = function () {
         var currentButtonNext = step.querySelector(".rf-next"); // ищем текущую кнопку Next, так как при нажатии на Previous мы должны работать с кнопками Next
         var currentIndex = Array.from(elementsArray).indexOf(currentButtonNext);
         // Если элемент не найден или является последним в массиве
-        if (currentIndex === -1 || currentIndex === elementsArray.length - 1) {
+        if (currentIndex === -1 || currentIndex === elementsArray.length - 1 || !previous) {
             console.log("Last element");
             return null; // то ничего не делаем и возвращаемся
         }
