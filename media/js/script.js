@@ -645,17 +645,16 @@ RadicalFormClass = function () {
                 console.log("Last element reached ");
                 return null; // то ничего не делаем и возвращаемся
             }
+            var nextEl = elementsArray[currentIndex + 1]; // следующая кнопка далее
+            var nextStep = selfClass.closest(nextEl, targetStep);
         }
 
-        var nextEl = elementsArray[currentIndex + 1]; // следующая кнопка далее
         var previousEl = null;
         var previousStep = null;
         if (currentIndex > 0) {
             previousEl = elementsArray[currentIndex - 1]; // предыдущая кнопка далее
             previousStep = selfClass.closest(previousEl, targetStep);
         }
-
-        var nextStep = selfClass.closest(nextEl, targetStep);
 
         if(previous) {
             // we go to the previous step, so we need to remove all events from button next of the previous step
