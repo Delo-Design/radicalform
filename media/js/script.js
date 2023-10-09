@@ -639,10 +639,12 @@ RadicalFormClass = function () {
         var elementsArray = document.querySelectorAll(targetStep + " .rf-next"); // список всех кнопок квиза
         var currentButtonNext = step.querySelector(".rf-next"); // ищем текущую кнопку Next, так как при нажатии на Previous мы должны работать с кнопками Next
         var currentIndex = Array.from(elementsArray).indexOf(currentButtonNext);
-        // Если элемент не найден или является последним в массиве
-        if (currentIndex === -1 || currentIndex === elementsArray.length - 1 || !previous) {
-            console.log("Last element reached ");
-            return null; // то ничего не делаем и возвращаемся
+        // Если элемент не найден или является последним в массиве и при этому не является кнопкой назад
+        if(!previous) {
+            if (currentIndex === -1 || currentIndex === elementsArray.length - 1 ) {
+                console.log("Last element reached ");
+                return null; // то ничего не делаем и возвращаемся
+            }
         }
 
         var nextEl = elementsArray[currentIndex + 1]; // следующая кнопка далее
