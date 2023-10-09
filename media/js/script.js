@@ -641,7 +641,7 @@ RadicalFormClass = function () {
         var currentIndex = Array.from(elementsArray).indexOf(currentButtonNext);
         // Если элемент не найден или является последним в массиве
         if (currentIndex === -1 || currentIndex === elementsArray.length - 1 || !previous) {
-            console.log("Last element reached");
+            console.log("Last element reached ");
             return null; // то ничего не делаем и возвращаемся
         }
 
