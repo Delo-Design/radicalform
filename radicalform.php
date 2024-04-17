@@ -13,14 +13,16 @@ defined('_JEXEC') or die;
  */
 
 use Joomla\CMS\Factory;
+use Joomla\CMS\Log\Log;
 use Joomla\CMS\MVC\Model\BaseDatabaseModel;
+use Joomla\CMS\Plugin\CMSPlugin;
 use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\CMS\Table\Table;
 use Joomla\CMS\Uri\Uri;
 use Joomla\String\StringHelper;
 use Joomla\CMS\HTML\HTMLHelper;
 
-class plgSystemRadicalform extends JPlugin
+class plgSystemRadicalform extends CMSPlugin
 {
 	private $logPath;
 
@@ -42,7 +44,7 @@ class plgSystemRadicalform extends JPlugin
 
 		$this->logPath = str_replace('\\', '/', Factory::getConfig()->get('log_path')).'/plg_system_radicalform.php';
 
-		JLog::addLogger(
+		Log::addLogger(
 			array(
 				// Sets file name
 				'text_file' => 'plg_system_radicalform.php',
@@ -50,7 +52,7 @@ class plgSystemRadicalform extends JPlugin
 				'text_entry_format' => "{DATETIME}\t{CLIENTIP}\t{MESSAGE}\t{PRIORITY}"
 			),
 			// Sets all but DEBUG log level messages to be sent to the file
-			JLog::ALL & ~JLog::DEBUG,
+			Log::ALL & ~Log::DEBUG,
 			array('plg_system_radicalform')
 		);
 
@@ -997,7 +999,7 @@ class plgSystemRadicalform extends JPlugin
 				{
 					unlink($this->logPath);
 					$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY') ];
-					JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+					Log::add(json_encode($entry), Log::NOTICE, 'plg_system_radicalform');
 				}
 				return "ok";
 			} else
@@ -1013,7 +1015,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				// сбрасываем нумерацию
 				$entry = ['rfLatestNumber' => 0, 'message' => JText::_('PLG_RADICALFORM_RESET_NUMBER')];
-				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+				Log::add(json_encode($entry), Log::NOTICE, 'plg_system_radicalform');
 
 				return "ok";
 			} else
@@ -1046,7 +1048,7 @@ class plgSystemRadicalform extends JPlugin
 		if (Factory::getSession()->isNew() || !Factory::getSession()->checkToken())
 		{
             $input = ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_INVALID_TOKEN') ];
-            JLog::add(json_encode($input), JLog::WARNING, 'plg_system_radicalform');
+            Log::add(json_encode($input), Log::WARNING, 'plg_system_radicalform');
 			return JText::_('PLG_RADICALFORM_INVALID_TOKEN');
 		};
 
@@ -1167,7 +1169,7 @@ class plgSystemRadicalform extends JPlugin
 			{
 				unlink($this->logPath);
 				$entry= ['rfLatestNumber' => $latestNumber, 'message' => JText::_('PLG_RADICALFORM_CLEAR_HISTORY_BY_MAX_LOG') ];
-				JLog::add(json_encode($entry), JLog::NOTICE, 'plg_system_radicalform');
+				Log::add(json_encode($entry), Log::NOTICE, 'plg_system_radicalform');
 				$latestNumber++;
 			}
 		}
@@ -1175,7 +1177,7 @@ class plgSystemRadicalform extends JPlugin
 		$input['rfLatestNumber'] = $latestNumber;
 		$input = array_filter($input, function($value) { return $value !== ''; }); // delete empty fields in input array
 
-		JLog::add(json_encode($input), JLog::NOTICE, 'plg_system_radicalform');
+		Log::add(json_encode($input), Log::NOTICE, 'plg_system_radicalform');
 
 		if (isset($input["rfTarget"]) && (!empty($input["rfTarget"])))
 		{
@@ -1383,7 +1385,7 @@ class plgSystemRadicalform extends JPlugin
 				{
 					$input=[];
 					$input["message"]=JText::_('PLG_RADICALFORM_MAIL_DISABLED');
-					JLog::add(json_encode($input), JLog::WARNING, 'plg_system_radicalform');
+					Log::add(json_encode($input), Log::WARNING, 'plg_system_radicalform');
 					return JText::_('PLG_RADICALFORM_MAIL_DISABLED');
 				}
 
@@ -1391,7 +1393,7 @@ class plgSystemRadicalform extends JPlugin
 				{
 					$input=[];
 					$input["message"]=$send->getMessage();
-					JLog::add(json_encode($input), JLog::WARNING, 'plg_system_radicalform');
+					Log::add(json_encode($input), Log::WARNING, 'plg_system_radicalform');
 					return $send->getMessage();
 				}
 				else
