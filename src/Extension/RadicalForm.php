@@ -711,10 +711,23 @@ class RadicalForm extends CMSPlugin
         Log::add(json_encode(array_filter($input, function ($v) { return $v !== ''; })), Log::NOTICE, 'plg_system_radicalform');
 
         $target = $input["rfTarget"] ?? false;
+
+        // Save meta fields before clearInput() removes them
+        $metaFields = [
+            'url'         => $input['url'] ?? '',
+            'reffer'      => $input['reffer'] ?? '',
+            'resolution'  => $input['resolution'] ?? '',
+            'pagetitle'   => $input['pagetitle'] ?? '',
+            'rfUserAgent' => $input['rfUserAgent'] ?? '',
+            'rf-time'     => $input['rf-time'] ?? '',
+            'rf-duration' => $input['rf-duration'] ?? 0,
+            'rfFormID'    => $input['rfFormID'] ?? '',
+        ];
+
         $input = $this->clearInput($input);
 
         // Build message
-        $telegram = "<b>" . ($this->params->get('insertformid') ? ($input["rfFormID"] ?? $subject) : $subject) . "</b><br /><br />";
+        $telegram = "<b>" . ($this->params->get('insertformid') ? ($metaFields['rfFormID'] ?: $subject) : $subject) . "</b><br /><br />";
         $mainbody = "";
         foreach ($input as $key => $record) {
             $val = is_array($record) ? implode($this->params->get('glue'), $record) : $record;
@@ -726,8 +739,8 @@ class RadicalForm extends CMSPlugin
             $telegram .= Text::_($key) . ": <b>" . $val . "</b><br />";
         }
 
-        $header = $this->params->get('insertformid') ? "<h2>" . ($input["rfFormID"] ?? '') . "</h2>" : "";
-        $footer = $this->params->get('extendedinfo') ? $this->buildFooter($latestNumber, $input, $_SERVER['REMOTE_ADDR']) : "";
+        $header = $this->params->get('insertformid') ? "<h2>" . $metaFields['rfFormID'] . "</h2>" : "";
+        $footer = $this->params->get('extendedinfo') ? $this->buildFooter($latestNumber, $metaFields, $_SERVER['REMOTE_ADDR']) : "";
 
         // Template logic
         $layoutPath = PluginHelper::getLayoutPath('system', 'radicalform');
