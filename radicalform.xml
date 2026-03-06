@@ -13,6 +13,7 @@
     <scriptfile>script.php</scriptfile>
     <files>
         <folder plugin="radicalform">src</folder>
+        <folder>services</folder>
         <filename>telegramchatids.xml</filename>
         <filename>customcode.xml</filename>
         <filename>emailalternatives.xml</filename>
