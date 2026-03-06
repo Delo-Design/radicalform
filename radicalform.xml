@@ -1,20 +1,18 @@
-<?xml version="1.0"?>
-<extension type="plugin" version="3.7" method="upgrade" group="system">
+<?xml version="1.0" encoding="UTF-8"?>
+<extension type="plugin" version="5.0" method="upgrade" group="system">
     <name>PLG_RADICALFORM</name>
     <author>Progreccor</author>
     <authorEmail>info@hika.su</authorEmail>
     <authorUrl>https://hika.su</authorUrl>
     <copyright>Copyright (C) 2023 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>3.1.5</version>
+    <version>4.0.0</version>
     <creationDate>2024-04-17</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
+    <namespace path="src">RadicalForm\Plugin\System\RadicalForm</namespace>
     <scriptfile>script.php</scriptfile>
     <files>
-        <filename plugin="radicalform">radicalform.php</filename>
-        <filename>buttonradicalform.php</filename>
-        <filename>storageindicator.php</filename>
-        <filename>historyradicalform.php</filename>
+        <folder>src</folder>
         <filename>telegramchatids.xml</filename>
         <filename>customcode.xml</filename>
         <filename>emailalternatives.xml</filename>
@@ -40,7 +38,7 @@
     </updateservers>
 
     <config>
-        <fields name="params" addfieldpath="/plugins/system/radicalform">
+        <fields name="params" addfieldprefix="RadicalForm\Plugin\System\RadicalForm\Field">
             <fieldset name="basic">
 
                 <field
