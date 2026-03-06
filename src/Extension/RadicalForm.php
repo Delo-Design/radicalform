@@ -219,17 +219,26 @@ class RadicalForm extends CMSPlugin
      */
     public function onAfterRender()
     {
-        if ($this->app->isClient('administrator')) return false;
+        if ($this->app->isClient('administrator')) return;
+
+        // Ensure we are in an HTML document
+        if ($this->app->getDocument()->getType() !== 'html') return;
 
         $data = $this->app->input->getArray();
-        if (isset($data['tmpl']) && $data['tmpl'] === 'component') return false;
+        if (isset($data['tmpl']) && $data['tmpl'] === 'component') return;
 
         $body = $this->app->getBody();
+
+        // If the button is not there, we don't need the scripts
         if (strpos($body, 'rf-button-send') === false) return;
 
         $lnEnd = $this->app->getDocument()->getLineEnd();
-        $scriptPath = HTMLHelper::_('script', 'plg_system_radicalform/script.min.js', ['relative' => true, 'pathOnly' => true]);
-        $mtime = file_exists(JPATH_SITE . $scriptPath) ? filemtime(JPATH_SITE . $scriptPath) : time();
+        
+        // Construct script path manually if HTMLHelper fails or to ensure it's correct
+        $scriptRelPath = 'media/plg_system_radicalform/js/script.min.js';
+        $scriptFullPath = JPATH_SITE . '/' . $scriptRelPath;
+        $mtime = file_exists($scriptFullPath) ? filemtime($scriptFullPath) : time();
+        $scriptPath = Uri::root(true) . '/' . $scriptRelPath;
 
         $session = $this->app->getSession();
         $lifeTime = $session->getExpire();
@@ -259,27 +268,36 @@ class RadicalForm extends CMSPlugin
             $jsParams['IP'] = json_encode(['ip' => $_SERVER['REMOTE_ADDR']]);
         }
 
-        $js = "<script src=\"" . $scriptPath . "?$mtime\" async></script>" . $lnEnd
-            . "<script>"
-            . "var RadicalForm=" . json_encode($jsParams) . ";";
+        $js = $lnEnd . "<!-- Radical Form Scripts -->" . $lnEnd
+            . "<script src=\"" . $scriptPath . "?$mtime\" async></script>" . $lnEnd
+            . "<script>" . $lnEnd
+            . "var RadicalForm=" . json_encode($jsParams) . ";" . $lnEnd;
 
         // Logic for rfCall functions
         $calls = ['rfCall_0' => '(here, needReturn)', 'rfCall_1' => '(rfMessage, here)', 'rfCall_2' => '(rfMessage, here)', 'rfCall_3' => '(rfMessage, here)'];
         foreach ($calls as $key => $args) {
-            if (!empty($this->params->get($key))) {
-                $js .= "function {$key}{$args} { try { " . $this->params->get($key) . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+            $code = trim($this->params->get($key, ''));
+            if (!empty($code)) {
+                $js .= "function {$key}{$args} { try { " . $code . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " . $lnEnd;
             }
         }
 
         if (!empty($this->params->get('rfCall_9on'))) {
-            $js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_9') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+            $js .= "function rfCall_9(rfMessage, here) { try { " . $this->params->get('rfCall_9') . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " . $lnEnd;
         } else {
             $fallback = $this->params->get('rfCall_2') ?: ($this->params->get('rfCall_1') ?: ($this->params->get('rfCall_3') ?: "alert(rfMessage);"));
-            $js .= "function rfCall_9(rfMessage, here) { try { " . $fallback . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; ";
+            $js .= "function rfCall_9(rfMessage, here) { try { " . $fallback . " } catch (e) { console.error('Radical Form JS Code: ', e); } }; " . $lnEnd;
         }
-        $js .= " </script>" . $lnEnd;
+        $js .= "</script>" . $lnEnd;
 
-        $body = str_replace("</body>", $js . "</body>", $body);
+        // Use case-insensitive regex for </body> replacement
+        if (preg_match('/<\/body>/i', $body)) {
+            $body = preg_replace('/<\/body>/i', $js . "</body>", $body, 1);
+        } else {
+            // Fallback if </body> is missing (unlikely for a page with the button, but still)
+            $body .= $js;
+        }
+
         $this->app->setBody($body);
     }
 
