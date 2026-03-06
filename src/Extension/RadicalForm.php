@@ -72,6 +72,21 @@ class RadicalForm extends CMSPlugin
     protected $maxStorageSize;
 
     /**
+     * Subscribe to Joomla events.
+     * Required for Joomla 4+ — without this, plugin methods are never called.
+     *
+     * @return  array
+     */
+    public static function getSubscribedEvents(): array
+    {
+        return [
+            'onAfterRender'      => 'onAfterRender',
+            'onAfterInitialise'  => 'onAfterInitialise',
+            'onAjaxRadicalform'  => 'onAjaxRadicalform',
+        ];
+    }
+
+    /**
      * Constructor
      *
      * @param   object  &$subject  The object to observe
@@ -221,20 +236,18 @@ class RadicalForm extends CMSPlugin
     {
         if ($this->app->isClient('administrator')) return;
 
-        // Ensure we are in an HTML document
-        if ($this->app->getDocument()->getType() !== 'html') return;
+        // Skip non-HTML responses (AJAX, raw, etc.)
+        $format = $this->app->input->getCmd('format', 'html');
+        if ($format !== 'html' && $format !== '') return;
 
-        $data = $this->app->input->getArray();
-        if (isset($data['tmpl']) && $data['tmpl'] === 'component') return;
+        $tmpl = $this->app->input->getCmd('tmpl', '');
+        if ($tmpl === 'component') return;
 
         $body = $this->app->getBody();
 
-        // If the button is not there, we don't need the scripts
+        // If the button class is not present, skip
         if (strpos($body, 'rf-button-send') === false) return;
 
-        $lnEnd = $this->app->getDocument()->getLineEnd();
-        
-        // Construct script path manually if HTMLHelper fails or to ensure it's correct
         $scriptRelPath = 'media/plg_system_radicalform/js/script.min.js';
         $scriptFullPath = JPATH_SITE . '/' . $scriptRelPath;
         $mtime = file_exists($scriptFullPath) ? filemtime($scriptFullPath) : time();
