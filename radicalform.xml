@@ -12,7 +12,7 @@
     <namespace path="src">RadicalForm\Plugin\System\RadicalForm</namespace>
     <scriptfile>script.php</scriptfile>
     <files>
-        <folder>src</folder>
+        <folder plugin="radicalform">src</folder>
         <filename>telegramchatids.xml</filename>
         <filename>customcode.xml</filename>
         <filename>emailalternatives.xml</filename>
