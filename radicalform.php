@@ -1061,21 +1061,10 @@ class plgSystemRadicalform extends CMSPlugin
 
 		$mailer->setSender($sender);
 
-		// вызов внешнего плагина
-		PluginHelper::importPlugin('radicalform');
+
 		$params = $this->params;
 		$params->set('uploaddir', $this->params->get('uploadstorage') . '/rf-' . $uniq);
 		$params->set('rfLatestNumber',$latestNumber);
-
-		try
-		{
-			$this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
-		}
-		catch(Throwable $e)
-		{
-			// TODO лог
-		}
-
 
 		if (isset($input["rfSubject"]) && (!empty($input["rfSubject"])))
 		{
@@ -1149,6 +1138,16 @@ class plgSystemRadicalform extends CMSPlugin
 			}
 		}
 
+        // вызов внешнего плагина
+        PluginHelper::importPlugin('radicalform');
+        try
+        {
+            $this->app->triggerEvent('onBeforeSendRadicalForm', array($this->clearInput($input), &$input,$params));
+        }
+        catch(Throwable $e)
+        {
+            // TODO лог
+        }
 
 		unset($input["uniq"]);
 		unset($input["needToSendFiles"]);
