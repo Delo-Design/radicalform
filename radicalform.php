@@ -666,6 +666,30 @@ class plgSystemRadicalform extends CMSPlugin
 		}
 
 
+
+		 // Вычисляем номер заявки (rfLatestNumber)
+	   	 $config = Factory::getConfig();
+	    	$log_path = str_replace('\\', '/', $config->get('log_path'));
+	    	$data = $this->getCSV($log_path . '/plg_system_radicalform.php', "\t");
+	
+	    	// Удаляем комментарии и пустые строки
+	    	if (count($data) > 0) {
+	        	for ($i = 0; $i < 6; $i++) {
+	            	if (count($data[$i]) < 4 || $data[$i][0][0] == '#') {
+	                	unset($data[$i]);
+		            }
+		        }
+	    	}
+		$latestNumber = 1;
+		    if (count($data) > 0) {
+		        $data = array_reverse($data);
+		        $json = json_decode($data[0][2], true);
+		        if (is_array($json) && isset($json['rfLatestNumber'])) {
+		            $latestNumber = $json['rfLatestNumber'] + 1;
+		        }
+		    }
+			$input['rfLatestNumber'] = $latestNumber;  
+		
 		if (isset($get['deletefile']) && isset($get['catalog']) && isset($get['uniq']))
         {
             return $this->deleteUploadedFile($get['catalog'], $get['deletefile'], $get['uniq']);
@@ -969,22 +993,6 @@ class plgSystemRadicalform extends CMSPlugin
 				}
 			}
 		}
-
-		// here we get latest serial number from log file
-		$latestNumber=1;
-		if(count($data)>0)
-		{
-			$data = array_reverse($data);
-			$json = json_decode($data[0][2], true);
-			if (is_array($json))
-			{
-				if (isset($json['rfLatestNumber']))
-				{
-					$latestNumber = $json['rfLatestNumber'] + 1;
-				}
-			}
-		}
-
 
 		if (isset($get['admin']) && $get['admin'] == 2 )
 		{
