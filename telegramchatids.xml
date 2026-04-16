@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <form>
-    <field name="chat_id" type="text" label="Chat_id" />
-    <field name="username" type="text" label="Username" />
-    <field name="target" type="text" label="Target ID" />
+    <field name="chat_id" type="text" label="Chat_id" class="w-100" />
+    <field name="username" type="text" label="Username" class="w-100" />
+    <field name="target" type="text" label="Target ID" class="w-100" />
 
 </form>

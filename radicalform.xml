@@ -2,12 +2,12 @@
 <extension type="plugin" version="3.7" method="upgrade" group="system">
     <name>PLG_RADICALFORM</name>
     <author>Progreccor</author>
-    <authorEmail>info@hika.su</authorEmail>
-    <authorUrl>https://hika.su</authorUrl>
-    <copyright>Copyright (C) 2023 Progreccor. All rights reserved.</copyright>
+    <authorEmail>vladimir@radicalmart.ru</authorEmail>
+    <authorUrl>https://radicalmart.ru</authorUrl>
+    <copyright>Copyright (C) 2026 Progreccor. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later;</license>
-    <version>3.1.5</version>
-    <creationDate>2024-04-17</creationDate>
+    <version>3.1.6</version>
+    <creationDate>2026-04-15</creationDate>
     <description>PLG_RADICALFORM_DESC</description>
     <scriptfile>script.php</scriptfile>
     <files>
@@ -18,6 +18,7 @@
         <filename>telegramchatids.xml</filename>
         <filename>customcode.xml</filename>
         <filename>emailalternatives.xml</filename>
+        <filename>antispamrules.xml</filename>
         <filename>index.html</filename>
         <folder>tmpl</folder>
     </files>
@@ -74,6 +75,7 @@
                         name="rfCall_0"
                         label="PLG_RADICALFORM_RF_CALL_0"
                         description="PLG_RADICALFORM_RF_CALL_0_DESCRIPTION"
+                        height = "140"
                         filter="raw"
                         syntax="php"
                         editor="codemirror|none"
@@ -85,6 +87,7 @@
                         type="editor"
                         label="PLG_RADICALFORM_RF_CALL_1"
                         description="PLG_RADICALFORM_RF_CALL_1_DESCRIPTION"
+                        height = "140"
                         editor="codemirror|none"
                         syntax="php"
                         buttons="false"
@@ -97,6 +100,7 @@
                         syntax="php"
                         label="PLG_RADICALFORM_RF_CALL_2"
                         description="PLG_RADICALFORM_RF_CALL_2_DESCRIPTION"
+                        height = "140"
                         filter="raw"
                         default="alert(rfMessage);"
                 />
@@ -107,6 +111,7 @@
                         syntax="php"
                         label="PLG_RADICALFORM_RF_CALL_3"
                         description="PLG_RADICALFORM_RF_CALL_3_DESCRIPTION"
+                        height = "140"
                         filter="raw"
 
                 />
@@ -128,6 +133,7 @@
                         syntax="php"
                         label="PLG_RADICALFORM_RF_CALL_9"
                         description="PLG_RADICALFORM_RF_CALL_9_DESCRIPTION"
+                        height = "140"
                         filter="raw"
                         default="alert(rfMessage);"
                         showon="rfCall_9on:1"
@@ -565,6 +571,52 @@
                 />
 
 
+            </fieldset>
+            <fieldset name="antispam" label="PLG_RADICALFORM_ANTISPAM">
+                <field
+                        name="antispam_message"
+                        type="text"
+                        label="PLG_RADICALFORM_ANTISPAM_MESSAGE"
+                        description="PLG_RADICALFORM_ANTISPAM_MESSAGE_DESC"
+                        required="false"
+                        default="PLG_RADICALFORM_ANTISPAM_BLOCKED"
+                        class="input-xxlarge"
+                        filter="raw">
+                </field>
+                <field
+                        name="duration_range"
+                        type="text"
+                        label="PLG_RADICALFORM_DURATION_RANGE"
+                        description="PLG_RADICALFORM_DURATION_RANGE_DESC"
+                        required="false"
+                        default=""
+                        class="input-xxlarge"
+                        filter="raw">
+                </field>
+                <field
+                        name="ip_blacklist"
+                        type="textarea"
+                        label="PLG_RADICALFORM_IP_BLACKLIST"
+                        description="PLG_RADICALFORM_IP_BLACKLIST_DESC"
+                        required="false"
+                        rows="8"
+                        class="input-xxlarge"
+                        filter="raw">
+                </field>
+                <field name="content_rules" type="subform"
+                       formsource="plugins/system/radicalform/antispamrules.xml" multiple="true"
+                       label="PLG_RADICALFORM_CONTENT_RULES"
+                       class="reg-rules"
+                       description="PLG_RADICALFORM_CONTENT_RULES_DESC"
+                       layout="joomla.form.field.subform.repeatable-table"
+                />
+                <field
+                        name="antispam_regex_note"
+                        type="note"
+                        class="alert alert-info input-xxlarge"
+                        label="PLG_RADICALFORM_CONTENT_RULE_REGEX_NOTE_LABEL"
+                        description="PLG_RADICALFORM_CONTENT_RULE_REGEX_NOTE"
+                />
             </fieldset>
             <fieldset name="list" label="PLG_RADICALFORM_HISTORY">
                 <field

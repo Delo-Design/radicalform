@@ -285,11 +285,13 @@ class JFormFieldHistoryradicalform extends JFormField {
 						$target .
 						$formid.
 						'<td><a href="http://whois.domaintools.com/' . $item[1] . '" target="_blank">' . $item[1] . '</a></td>';
-					if (isset($item[3]) && $item[3] == "WARNING")
-					{
-						$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . '</td>' .
-							'</tr>';
-					}
+						if (isset($item[3]) && $item[3] == "WARNING")
+						{
+							$warningTitle = isset($json["rfAntiSpam"]) ? JText::_('PLG_RADICALFORM_ANTISPAM') : $item[3];
+							$warningContent = ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . $extrainfo;
+							$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;"><details><summary style="cursor: pointer; color: #9f2620;">' . htmlspecialchars($warningTitle) . '</summary><div class="rfMarginTop">' . $warningContent . '</div></details></td>' .
+								'</tr>';
+						}
 					else
 					{
 						$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[2])) . $extrainfo.'</td>' .
@@ -321,11 +323,13 @@ class JFormFieldHistoryradicalform extends JFormField {
 						'<td class="nowrap">' . $item[0] . '</td>' .
 						'<td>' . $item[1] . '</td>' .
 						'<td><a href="http://whois.domaintools.com/' . $item[2] . '" target="_blank">' . $item[2] . '</a></td>';
-					if (isset($item[4]) && $item[4] == "WARNING")
-					{
-						$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .
-							'</tr>';
-					}
+						if (isset($item[4]) && $item[4] == "WARNING")
+						{
+							$warningTitle = isset($json["rfAntiSpam"]) ? JText::_('PLG_RADICALFORM_ANTISPAM') : $item[4];
+							$warningContent = $json_result ? '' . $itog . '' : htmlspecialchars($item[3]);
+							$html .= '<td style="max-width: 700px; overflow: hidden; color: #9f2620;"><details><summary style="cursor: pointer; color: #9f2620;">' . htmlspecialchars($warningTitle) . '</summary><div class="rfMarginTop">' . $warningContent . '</div></details></td>' .
+								'</tr>';
+						}
 					else
 					{
 						$html .= '<td style="max-width: 700px; overflow: hidden;">' . ($json_result ? '' . $itog . '' : htmlspecialchars($item[3])) . '</td>' .

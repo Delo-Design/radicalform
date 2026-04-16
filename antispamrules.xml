@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<form>
+    <field
+        name="fields"
+        hint="PLG_RADICALFORM_CONTENT_RULE_FIELDS_HINT"
+        class="w-100"
+        type="text"
+        label="PLG_RADICALFORM_CONTENT_RULE_FIELDS"
+        description="PLG_RADICALFORM_CONTENT_RULE_FIELDS_DESC"
+    />
+    <field
+        name="mode"
+        class="w-100"
+        type="list"
+        label="PLG_RADICALFORM_CONTENT_RULE_MODE"
+        default="contains"
+    >
+        <option value="contains">PLG_RADICALFORM_CONTENT_RULE_MODE_CONTAINS</option>
+        <option value="regex">PLG_RADICALFORM_CONTENT_RULE_MODE_REGEX</option>
+    </field>
+    <field
+        name="pattern"
+        class="w-100"
+        type="text"
+        label="PLG_RADICALFORM_CONTENT_RULE_PATTERN"
+        description="PLG_RADICALFORM_CONTENT_RULE_PATTERN_DESC"
+    />
+    <field
+        name="comment"
+        class="w-100"
+        type="text"
+        label="PLG_RADICALFORM_CONTENT_RULE_COMMENT"
+        description="PLG_RADICALFORM_CONTENT_RULE_COMMENT_DESC"
+    />
+</form>

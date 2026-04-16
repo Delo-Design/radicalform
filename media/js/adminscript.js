@@ -9,9 +9,47 @@ function ready(fn) {
     }
 }
 ready(function () {
-    const table = document.querySelector(".rf-telegram-chatid table");
-    if(exportCSV) {
+    function initTelegramTable() {
+        var telegramContainer = document.querySelector('#attrib-advanced .rf-telegram-chatid');
+
+        if (telegramContainer) {
+            var currentTable = telegramContainer.matches('table') ? telegramContainer : telegramContainer.querySelector('table');
+
+            if (currentTable) {
+                currentTable.classList.add('table-striped', 'table-bordered');
+            }
+
+            return;
+        }
+
+        var hiddenInput = document.querySelector('#attrib-advanced input[name="jform[params][chatids]"]');
+
+        if (!hiddenInput) {
+            return;
+        }
+
+        var controls = hiddenInput.closest('.controls');
+
+        if (!controls) {
+            return;
+        }
+
+        var telegramTable = controls.querySelector('table');
+
+        if (telegramTable) {
+            telegramTable.classList.add('rf-telegram-chatid');
+        }
+    }
+
+    initTelegramTable();
+
+    const table = document.querySelector(".reg-rules table");
+    if(table) {
         table.classList.add("table-striped", "table-bordered");
+    }
+    const table1 = document.querySelector(".rf-telegram-chatid table");
+    if(table1) {
+        table1.classList.add("table-striped", "table-bordered");
     }
 
     function getUrlParams(url){
@@ -142,7 +180,7 @@ ready(function () {
                             if(!found) {
                                 var event = document.createEvent('HTMLEvents');
                                 event.initEvent('click', true, false);
-                                document.querySelector("#attrib-advanced .rf-telegram-chatid thead button").dispatchEvent(event);
+                                document.querySelector("#attrib-advanced .rf-telegram-chatid thead .btn").dispatchEvent(event);
 
                                 var lastString=document.querySelectorAll("#attrib-advanced .rf-telegram-chatid tr:last-child input");
                                 lastString[0].value=output[i].chatID;
@@ -184,5 +222,3 @@ ready(function () {
     });
 
 });
-
-

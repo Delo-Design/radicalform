@@ -14,15 +14,26 @@ class JFormFieldStorageindicator extends JFormField {
 		$fileSize = 0;
 		$dir = scandir($path);
 
-		foreach($dir as $file)
-		{
-			if (($file!='.') && ($file!='..'))
-				if(is_dir($path . '/' . $file))
-					$fileSize += $this->getDirectorySize($path.'/'.$file);
-				else
-					$fileSize += filesize($path . '/' . $file);
-		}
+        foreach($dir as $file)
+        {
+            if ($file != '.' && $file != '..')
+            {
+                $fullPath = $path . '/' . $file;
 
+                // Пропускаем символьные ссылки
+                if (is_link($fullPath)) {
+                    continue;
+                }
+
+	                if (is_dir($fullPath)) {
+	                    // Рекурсивно считаем размер для директорий
+	                    $fileSize += $this->getDirectorySize($fullPath);
+	                } else {
+                    // Считаем размер файла
+                    $fileSize += filesize($fullPath);
+                }
+            }
+        }
 		return $fileSize;
 	}
 
